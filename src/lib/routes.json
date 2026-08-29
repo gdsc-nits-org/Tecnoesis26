@@ -1,0 +1,14 @@
+[
+	{
+		"path": "/robotron",
+		"component": "src/lib/components/Home.svelte"
+	},
+	{
+		"path": "/cyberwrap",
+		"component": "src/lib/components/About.svelte"
+	},
+	{
+		"path": "/nitshacks",
+		"component": "src/lib/components/About.svelte"
+	}
+]
