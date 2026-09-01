@@ -1,7 +1,17 @@
-import type { Cookies } from '@sveltejs/kit';
+import { redirect, type Cookies } from '@sveltejs/kit';
+import { getSupabaseUser } from '$lib/supabase';
 
-export const SESSION_COOKIE_NAME = 'tecnoesis_session';
+export async function hasActiveSession(cookies: Cookies): Promise<boolean> {
+	const user = await getSupabaseUser(cookies);
+	return Boolean(user);
+}
 
-export function hasActiveSession(cookies: Cookies): boolean {
-	return Boolean(cookies.get(SESSION_COOKIE_NAME));
+export async function requireAuth(cookies: Cookies): Promise<{ user: NonNullable<Awaited<ReturnType<typeof getSupabaseUser>>> }> {
+	const user = await getSupabaseUser(cookies);
+
+	if (!user) {
+		throw redirect(302, '/auth/login');
+	}
+
+	return { user };
 }

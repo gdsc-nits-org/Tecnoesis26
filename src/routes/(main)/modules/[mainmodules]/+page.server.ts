@@ -1,11 +1,11 @@
 import type { PageServerLoad } from './$types';
-import { fetchBackend } from '$lib/server/backend';
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	const data = await fetchBackend(fetch, `/modules/${encodeURIComponent(params.mainmodules)}`);
-
+export const load: PageServerLoad = async ({ params }) => {
 	return {
 		mainmodule: params.mainmodules,
-		data
+		data: {
+			module: params.mainmodules,
+			message: 'SSR data for this module is handled directly in SvelteKit server load.'
+		}
 	};
 };

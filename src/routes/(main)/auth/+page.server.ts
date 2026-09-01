@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { hasActiveSession } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	if (hasActiveSession(cookies)) {
+	if (await hasActiveSession(cookies)) {
 		throw redirect(302, '/dashboard');
 	}
 
