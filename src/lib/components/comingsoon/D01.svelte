@@ -1,9 +1,36 @@
+<script>
+	let scene;
+
+	function handlePointerMove(event) {
+		if (!scene) return;
+
+		const bounds = scene.getBoundingClientRect();
+		const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+		const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+		scene.style.setProperty('--parallax-x', `${x * 16}px`);
+		scene.style.setProperty('--parallax-y', `${y * 12}px`);
+	}
+
+	function resetParallax() {
+		if (!scene) return;
+
+		scene.style.setProperty('--parallax-x', '0px');
+		scene.style.setProperty('--parallax-y', '0px');
+	}
+</script>
+
 <svelte:head>
 	<title>Tecnoesis 2026</title>
 </svelte:head>
 
 <div class="coming-soon">
-	<div class="scene">
+	<div
+		class="scene"
+		bind:this={scene}
+		on:pointermove={handlePointerMove}
+		on:pointerleave={resetParallax}
+	>
 		<img
 			src="/coming-soon/D01/background.png"
 			alt=""
@@ -50,11 +77,8 @@
 			class="scene-layer layer-1"
 		/>
 
-		<img
-			src="/coming-soon/D01/decor.png"
-			alt=""
-			class="decor"
-		/>
+		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-a" />
+		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-b" />
 		<img
 			src="/coming-soon/D01/button.png"
 			alt="Toggle"
@@ -89,9 +113,11 @@
 
 	.scene {
 		position: relative;
-		width: min(100vw, 160dvh);
+		width: max(100vw, 160dvh);
 		aspect-ratio: 1440 / 900;
 		overflow: hidden;
+		--parallax-x: 0px;
+		--parallax-y: 0px;
 	}
 
 	
@@ -137,6 +163,8 @@
 
 	.layer-1 {
 		z-index: 8;
+		transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
+		transition: transform 180ms ease-out;
 	}
 
 
@@ -150,6 +178,25 @@
 		z-index: 9;
 		pointer-events: none;
 		user-select: none;
+		will-change: transform;
+	}
+
+	.decor-a {
+		animation: diagonal-fall 18s linear infinite;
+	}
+
+	.decor-b {
+		animation: diagonal-fall 18s linear infinite;
+		animation-delay: -9s;
+	}
+
+	@keyframes diagonal-fall {
+		from {
+			transform: translate3d(-7%, -12%, 0) rotate(-2deg);
+		}
+		to {
+			transform: translate3d(7%, 12%, 0) rotate(2deg);
+		}
 	}
 
 	.button {
@@ -159,5 +206,42 @@
 		width: 5%;
 		height: auto;
 		z-index: 20;
+	}
+
+	@media (max-width: 600px) {
+		.coming-soon {
+			align-items: stretch;
+		}
+
+		.scene {
+			width: 100vw;
+			height: 100dvh;
+			aspect-ratio: auto;
+		}
+
+		.scene-layer {
+			object-fit: cover;
+			object-position: 35% center;
+		}
+
+		.decor {
+			left: 0;
+			width: 100%;
+		}
+
+		.button {
+			left: 4%;
+			bottom: 3%;
+			width: 12%;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.layer-1,
+		.decor-a,
+		.decor-b {
+			animation: none;
+			transition: none;
+		}
 	}
 </style>
