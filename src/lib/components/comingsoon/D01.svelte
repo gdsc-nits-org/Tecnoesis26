@@ -1,4 +1,5 @@
 <script>
+<<<<<<< Updated upstream
 	let scene;
 
 	function handlePointerMove(event) {
@@ -18,18 +19,60 @@
 		scene.style.setProperty('--parallax-x', '0px');
 		scene.style.setProperty('--parallax-y', '0px');
 	}
+=======
+	import { onMount } from 'svelte';
+
+	let parallaxX = $state(0);
+	let parallaxY = $state(0);
+	let isZoomed = $state(false);
+	let isFocused = $state(false);
+
+	/** @param {MouseEvent} event */
+	function handleMouseMove(event) {
+		parallaxX = ((event.clientX / window.innerWidth) * 2 - 1) * 10;
+		parallaxY = ((event.clientY / window.innerHeight) * 2 - 1) * 7;
+	}
+
+	function showComingSoon() {
+		if (!isZoomed) {
+			isZoomed = true;
+			return;
+		}
+
+		isFocused = true;
+	}
+
+	onMount(() => {
+		window.addEventListener('mousemove', handleMouseMove);
+
+		return () => window.removeEventListener('mousemove', handleMouseMove);
+	});
+>>>>>>> Stashed changes
 </script>
 
 <svelte:head>
 	<title>Tecnoesis 2026</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <div class="coming-soon">
 	<div
+<<<<<<< Updated upstream
 		class="scene"
 		bind:this={scene}
 		on:pointermove={handlePointerMove}
 		on:pointerleave={resetParallax}
+=======
+		class:zoomed={isZoomed}
+		class:focused={isFocused}
+		class="scene"
+		style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}
+>>>>>>> Stashed changes
 	>
 		<img
 			src="/coming-soon/D01/background.png"
@@ -71,11 +114,21 @@
 			class="scene-layer rectangle-63"
 		/>
 
-		<img
-			src="/coming-soon/D01/layer-1.png"
-			alt=""
+		<button
+			type="button"
 			class="scene-layer layer-1"
-		/>
+			aria-label={isFocused ? 'Tecnoesis logo focused' : 'Open Tecnoesis coming soon message'}
+			onclick={showComingSoon}
+		>
+			<img src="/coming-soon/D01/layer-1.png" alt="" />
+		</button>
+
+		<div class:visible={isZoomed} class="coming-soon-message" aria-live="polite">
+			<span class="coming-soon-title">
+				<span class="type-line">COMING</span>
+				<span class="type-line">SOON</span>
+			</span>
+		</div>
 
 		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-a" />
 		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-b" />
@@ -116,8 +169,21 @@
 		width: max(100vw, 160dvh);
 		aspect-ratio: 1440 / 900;
 		overflow: hidden;
+<<<<<<< Updated upstream
 		--parallax-x: 0px;
 		--parallax-y: 0px;
+=======
+		transition: transform 1.2s cubic-bezier(0.2, 0.75, 0.25, 1);
+		transform-origin: center;
+	}
+
+	.scene.zoomed {
+		transform: scale(1.12);
+	}
+
+	.scene.focused {
+		transform: scale(1.25);
+>>>>>>> Stashed changes
 	}
 
 	
@@ -143,14 +209,26 @@
 
 	.layer-4 {
 		z-index: 3;
+		opacity: 0.94;
+		filter: contrast(1.08) saturate(1.08);
+		animation: spacecraft-cruise 18s ease-in-out infinite alternate;
+		will-change: transform;
 	}
 
 	.layer-3 {
 		z-index: 4;
+		opacity: 0.95;
+		filter: contrast(1.08) saturate(1.06);
+		animation: skyline-breathe 16s ease-in-out infinite alternate;
+		will-change: transform;
 	}
 
 	.layer-2 {
 		z-index: 5;
+		opacity: 0.94;
+		filter: contrast(1.1) saturate(1.08);
+		animation: clouds-drift 24s ease-in-out infinite alternate;
+		will-change: transform;
 	}
 
 	.rectangle-62 {
@@ -163,8 +241,104 @@
 
 	.layer-1 {
 		z-index: 8;
+<<<<<<< Updated upstream
 		transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
 		transition: transform 180ms ease-out;
+=======
+		padding: 0;
+		border: 0;
+		background: transparent;
+		transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
+		transition: transform 0.3s ease-out;
+		pointer-events: auto;
+		cursor: pointer;
+	}
+
+	.layer-1 img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: fill;
+	}
+
+	.layer-1:focus-visible {
+		outline: 3px solid #ff5fa2;
+		outline-offset: -6px;
+	}
+
+	.scene.focused .layer-1 {
+		transform: translate3d(
+			calc(var(--parallax-x) - 1%),
+			calc(var(--parallax-y) + 33%),
+			0
+		) scale(1.55);
+		transform-origin: 50% 12%;
+	}
+
+	.scene.focused .coming-soon-message {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.coming-soon-message {
+		position: absolute;
+		inset: 0 2% 0 52%;
+		z-index: 15;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		gap: 0.8rem;
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transform: translate3d(
+			calc(var(--parallax-x) * 0.7),
+			calc(var(--parallax-y) * 0.7),
+			0
+		);
+		transition:
+			opacity 0.4s ease,
+			transform 0.3s ease-out;
+	}
+
+	.coming-soon-message.visible {
+		visibility: visible;
+		opacity: 1;
+	}
+
+	.coming-soon-title {
+		color: #fff;
+		font-family: 'Zen Dots', sans-serif;
+		font-size: clamp(2rem, 5.7vw, 5.2rem);
+		font-weight: 400;
+		letter-spacing: 0.025em;
+		line-height: 0.88;
+		text-align: left;
+		display: grid;
+		gap: 0.12em;
+		transform: translateY(1rem) scale(0.86);
+		opacity: 0;
+	}
+
+	.coming-soon-message.visible .coming-soon-title {
+		animation:
+			message-title-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+	}
+
+	.type-line {
+		display: block;
+		width: 0;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.coming-soon-message.visible .type-line:first-child {
+		animation: typewriter-coming 1.1s steps(7, end) 0.35s forwards;
+	}
+
+	.coming-soon-message.visible .type-line:last-child {
+		animation: typewriter-soon 0.8s steps(4, end) 1.6s forwards;
+>>>>>>> Stashed changes
 	}
 
 
@@ -178,6 +352,7 @@
 		z-index: 9;
 		pointer-events: none;
 		user-select: none;
+<<<<<<< Updated upstream
 		will-change: transform;
 	}
 
@@ -197,6 +372,9 @@
 		to {
 			transform: translate3d(7%, 12%, 0) rotate(2deg);
 		}
+=======
+		animation: decor-fall 5s linear infinite;
+>>>>>>> Stashed changes
 	}
 
 	.button {
@@ -208,9 +386,71 @@
 		z-index: 20;
 	}
 
+<<<<<<< Updated upstream
 	@media (max-width: 600px) {
 		.coming-soon {
 			align-items: stretch;
+=======
+	@keyframes clouds-drift {
+		from {
+			transform: translateX(-1.5%);
+		}
+		to {
+			transform: translateX(1.5%);
+		}
+	}
+
+	@keyframes skyline-breathe {
+		from {
+			transform: translate3d(-0.25%, 0, 0) scale(1);
+		}
+		to {
+			transform: translate3d(0.25%, -0.35%, 0) scale(1.008);
+		}
+	}
+
+	@keyframes spacecraft-cruise {
+		from {
+			transform: translate3d(-0.8%, 0.35%, 0) rotate(-0.15deg);
+		}
+		to {
+			transform: translate3d(0.8%, -0.35%, 0) rotate(0.15deg);
+		}
+	}
+
+	@keyframes decor-fall {
+		from {
+			transform: translate(-2%, -12%) rotate(-2deg);
+		}
+		to {
+			transform: translate(5%, 12%) rotate(2deg);
+		}
+	}
+
+	@keyframes message-title-in {
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	@keyframes typewriter-coming {
+		to {
+			width: 7ch;
+		}
+	}
+
+	@keyframes typewriter-soon {
+		to {
+			width: 4ch;
+		}
+	}
+
+	@media (max-width: 600px), (max-aspect-ratio: 3 / 4) {
+		.coming-soon {
+			width: 100vw;
+			height: 100dvh;
+>>>>>>> Stashed changes
 		}
 
 		.scene {
@@ -220,6 +460,7 @@
 		}
 
 		.scene-layer {
+<<<<<<< Updated upstream
 			object-fit: cover;
 			object-position: 35% center;
 		}
@@ -233,15 +474,116 @@
 			left: 4%;
 			bottom: 3%;
 			width: 12%;
+=======
+			left: calc(50% - 80dvh);
+			width: 160dvh;
+			height: 100dvh;
+			max-width: none;
+		}
+
+		.background,
+		.blur {
+			left: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.decor {
+			left: calc(50% - 69.2dvh);
+			width: 138.4dvh;
+			max-width: none;
+		}
+
+		.button {
+			left: 2.2%;
+			width: 8%;
+		}
+
+		.scene.zoomed {
+			transform: scale(1.04);
+		}
+
+		.scene.focused {
+			transform: scale(1.08);
+		}
+
+		.coming-soon-message {
+			inset: 28% 3% 8%;
+			place-content: center;
+			justify-items: center;
+			transform: translate3d(
+				calc(var(--parallax-x) * 0.35),
+				calc(var(--parallax-y) * 0.35),
+				0
+			);
+		}
+
+		.coming-soon-title {
+			font-size: clamp(2rem, 13vw, 4.8rem);
+			text-align: center;
+		}
+
+		.scene.focused .layer-1 {
+			transform: translate3d(
+				calc(var(--parallax-x) - 18%),
+				calc(var(--parallax-y) + 22%),
+				0
+			) scale(1.28);
+		}
+
+		.scene.focused .layer-2,
+		.scene.focused .layer-3,
+		.scene.focused .layer-4 {
+			filter: blur(2px) contrast(1.04) saturate(1.04);
+>>>>>>> Stashed changes
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+<<<<<<< Updated upstream
 		.layer-1,
 		.decor-a,
 		.decor-b {
 			animation: none;
 			transition: none;
 		}
+=======
+		.layer-2,
+		.layer-3,
+		.layer-4,
+		.decor {
+			animation: none;
+		}
+
+		.layer-1 {
+			transition: none;
+			transform: none;
+		}
+
+		.scene {
+			transition: none;
+		}
+
+		.scene.focused .layer-1 {
+			transition: none;
+		}
+
+		.coming-soon-message {
+			transition: none;
+			transform: none;
+		}
+
+		.coming-soon-message.visible .coming-soon-title {
+			animation: none;
+			opacity: 1;
+			transform: none;
+		}
+
+		.coming-soon-message.visible .type-line {
+			animation: none;
+			width: auto;
+		}
+>>>>>>> Stashed changes
 	}
 </style>
