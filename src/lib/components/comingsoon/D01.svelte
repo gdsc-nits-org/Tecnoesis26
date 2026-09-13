@@ -168,7 +168,7 @@
 
 <header class="site-header" style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}>
 	<img
-		src="/coming-soon/D03/layer-1.svg"
+		src="/coming-soon/D01/layer-1.svg"
 		alt="Tecnoesis Logo"
 		class="header-logo"
 		class:zoomed={isZoomed}
