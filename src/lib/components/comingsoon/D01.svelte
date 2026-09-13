@@ -10,6 +10,11 @@
 	let isUnfocusing = $state(false);
 	let isReversing = $state(false);
 	let spacecrafts = $state([]);
+	const spacecraftImages = {
+		1: 'https://res.cloudinary.com/rfteglss/image/upload/v1789302626/Spacecraft_1.png',
+		2: 'https://res.cloudinary.com/rfteglss/image/upload/v1789302577/Spacecraft_2.png',
+		3: 'https://res.cloudinary.com/rfteglss/image/upload/v1789302577/Spacecraft_3.png'
+	};
 
 	/** @param {PointerEvent} event */
 	function handlePointerMove(event) {
@@ -198,14 +203,18 @@
 		<!-- Spacecrafts -->
 		{#each spacecrafts as craft (craft.id)}
 			<img
-				src={`/coming-soon/D01/Spacecraft ${craft.type}.png`}
+				src={spacecraftImages[craft.type]}
 				alt="Spacecraft"
 				class="spacecraft"
 				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction}; z-index: {craft.zIndex};"
 			/>
 		{/each}
 
-		<img src="/coming-soon/D01/layer-3.png" alt="" class="scene-layer layer-3" />
+		<img
+			src="https://res.cloudinary.com/rfteglss/image/upload/v1789303364/layer3.png"
+			alt=""
+			class="scene-layer layer-3"
+		/>
 
 		<img src="/coming-soon/D01/layer-2.png" alt="" class="scene-layer layer-2" />
 
@@ -216,11 +225,22 @@
 			class="scene-layer layer-1"
 			aria-label={isFocused ? 'Tecnoesis logo focused' : 'Open Tecnoesis coming soon message'}
 		>
-			<img src="/coming-soon/D01/astronaut.png" alt="" />
+			<img
+				src="https://res.cloudinary.com/rfteglss/image/upload/v1789302578/astronaut.png"
+				alt=""
+			/>
 		</button>
 
-		<img src="/coming-soon/D01/rocks.png" alt="" class="fg-element rocks" />
-		<img src="/coming-soon/D01/ground.png" alt="" class="fg-element ground" />
+		<img
+			src="https://res.cloudinary.com/rfteglss/image/upload/v1789302581/rocks.png"
+			alt=""
+			class="fg-element rocks"
+		/>
+		<img
+			src="https://res.cloudinary.com/rfteglss/image/upload/v1789302579/ground.png"
+			alt=""
+			class="fg-element ground"
+		/>
 
 		<div class:visible={isZoomed} class="coming-soon-message" aria-live="polite">
 			<span class="coming-soon-title">
@@ -229,8 +249,16 @@
 			</span>
 		</div>
 
-		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-a" />
-		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-b" />
+		<img
+			src="https://res.cloudinary.com/rfteglss/image/upload/v1789302588/decor.png"
+			alt=""
+			class="decor decor-a"
+		/>
+		<img
+			src="https://res.cloudinary.com/rfteglss/image/upload/v1789302588/decor.png"
+			alt=""
+			class="decor decor-b"
+		/>
 		<img src="/coming-soon/D01/button.png" alt="Toggle" class="button" />
 	</div>
 </div>
