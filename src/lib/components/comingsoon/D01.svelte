@@ -8,6 +8,7 @@
 	let isZoomed = $state(false);
 	let isFocused = $state(false);
 	let isUnfocusing = $state(false);
+	let isReversing = $state(false);
 
 	/** @param {PointerEvent} event */
 	function handlePointerMove(event) {
@@ -35,12 +36,25 @@
 	}
 
 	function showComingSoon() {
-		if (!isZoomed) {
-			isZoomed = true;
-			return;
+		if (!isReversing) {
+			if (!isZoomed) {
+				isZoomed = true;
+				isUnfocusing = false;
+			} else if (!isFocused) {
+				isFocused = true;
+				isUnfocusing = false;
+				isReversing = true;
+			}
+		} else {
+			if (isFocused) {
+				isFocused = false;
+				isUnfocusing = true;
+			} else if (isZoomed) {
+				isZoomed = false;
+				isUnfocusing = false;
+				isReversing = false;
+			}
 		}
-
-		isFocused = true;
 	}
 	let lastScrollTime = 0;
 	let touchStartY = 0;
@@ -58,6 +72,7 @@
 			} else if (!isFocused) {
 				isFocused = true;
 				isUnfocusing = false;
+				isReversing = true;
 				lastScrollTime = now;
 			}
 		} else if (event.deltaY < -10) {
@@ -68,6 +83,7 @@
 			} else if (isZoomed) {
 				isZoomed = false;
 				isUnfocusing = false;
+				isReversing = false;
 				lastScrollTime = now;
 			}
 		}
@@ -95,6 +111,7 @@
 			} else if (!isFocused) {
 				isFocused = true;
 				isUnfocusing = false;
+				isReversing = true;
 				lastScrollTime = now;
 				touchStartY = touchEndY;
 			}
@@ -107,6 +124,7 @@
 			} else if (isZoomed) {
 				isZoomed = false;
 				isUnfocusing = false;
+				isReversing = false;
 				lastScrollTime = now;
 				touchStartY = touchEndY;
 			}
@@ -131,6 +149,7 @@
 	onwheel={handleWheel}
 	ontouchstart={handleTouchStart}
 	ontouchmove={handleTouchMove}
+	onclick={showComingSoon}
 />
 
 <header class="site-header" style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}>
@@ -174,7 +193,6 @@
 			type="button"
 			class="scene-layer layer-1"
 			aria-label={isFocused ? 'Tecnoesis logo focused' : 'Open Tecnoesis coming soon message'}
-			onclick={showComingSoon}
 		>
 			<img src="/coming-soon/D01/astronaut.png" alt="" />
 		</button>
