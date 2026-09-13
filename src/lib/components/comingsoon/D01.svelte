@@ -206,7 +206,10 @@
 				src={spacecraftImages[craft.type]}
 				alt="Spacecraft"
 				class="spacecraft"
-				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction}; z-index: {craft.zIndex};"
+				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction}; z-index: {craft.zIndex}; --flip: {craft.direction ===
+				'reverse'
+					? -1
+					: 1};"
 			/>
 		{/each}
 
@@ -259,7 +262,6 @@
 			alt=""
 			class="decor decor-b"
 		/>
-		<img src="/coming-soon/D01/button.png" alt="Toggle" class="button" />
 	</div>
 </div>
 
@@ -425,16 +427,16 @@
 		object-fit: contain;
 		pointer-events: none;
 		user-select: none;
-		animation: drift-horizontal linear infinite alternate;
+		animation: drift-horizontal linear infinite;
 		will-change: transform;
 	}
 
 	@keyframes drift-horizontal {
 		0% {
-			transform: translateX(-30vw) translateY(0);
+			transform: translateX(-100vw) translateY(0) scaleX(var(--flip, 1));
 		}
 		100% {
-			transform: translateX(30vw) translateY(3vh);
+			transform: translateX(100vw) translateY(3vh) scaleX(var(--flip, 1));
 		}
 	}
 
@@ -497,6 +499,8 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
+		transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0);
+		transition: transform 0.3s ease-out;
 		will-change: transform;
 	}
 
@@ -506,6 +510,8 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
+		transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0);
+		transition: transform 0.3s ease-out;
 		will-change: transform;
 	}
 
@@ -601,7 +607,7 @@
 
 	@keyframes scenery-leave {
 		0% {
-			transform: translate3d(0, 0, 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0) scale(1);
 			opacity: 1;
 		}
 		50% {
@@ -623,14 +629,14 @@
 			opacity: 1;
 		}
 		100% {
-			transform: translate3d(0, 0, 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0) scale(1);
 			opacity: 1;
 		}
 	}
 
 	@keyframes scenery-ground {
 		0% {
-			transform: translate3d(0, 0, 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0) scale(1);
 			opacity: 1;
 		}
 		50% {
@@ -652,7 +658,7 @@
 			opacity: 1;
 		}
 		100% {
-			transform: translate3d(0, 0, 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0) scale(1);
 			opacity: 1;
 		}
 	}
