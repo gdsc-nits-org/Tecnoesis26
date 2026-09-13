@@ -57,7 +57,12 @@
 </svelte:head>
 
 <header class="site-header" style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}>
-	<img src="/coming-soon/D03/layer-1.png" alt="Tecnoesis Logo" class="header-logo" />
+	<img
+		src="/coming-soon/D03/layer-1.svg"
+		alt="Tecnoesis Logo"
+		class="header-logo"
+		class:focused={isFocused}
+	/>
 </header>
 
 <div class="coming-soon">
@@ -153,12 +158,13 @@
 	}
 
 	.header-logo {
-		height: 280px;
+		height: 150px;
 		width: auto;
 		object-fit: contain;
 		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
 		transform: translate3d(calc(var(--parallax-x) * 0.3), calc(var(--parallax-y) * 0.3), 0);
 		transition: transform 0.3s ease-out;
+		animation: header-levitate 3s ease-in-out infinite alternate;
 	}
 
 	.scene {
@@ -323,7 +329,6 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
-		animation: clouds-drift 24s ease-in-out infinite alternate;
 		will-change: transform;
 	}
 
@@ -333,7 +338,6 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
-		animation: clouds-drift 24s ease-in-out infinite alternate;
 		will-change: transform;
 	}
 
@@ -343,9 +347,86 @@
 	}
 
 	.scene.focused .layer-1 {
-		transform: translate3d(calc(var(--parallax-x) - 1%), calc(var(--parallax-y) + 33%), 0)
-			scale(1.55);
+		animation: astronaut-zoom-leave 3s ease-in-out forwards;
 		transform-origin: 50% 12%;
+	}
+
+	.scene.focused .rocks {
+		animation: scenery-leave 2s ease-in-out forwards;
+		transform-origin: 10% 90%;
+	}
+
+	.scene.focused .ground {
+		animation: scenery-ground 2s ease-in-out forwards;
+		transform-origin: 10% 90%;
+	}
+	.header-logo.focused {
+		animation: scenery-header 2s forwards;
+		transform-origin: 10% 90%;
+	}
+
+	@keyframes astronaut-zoom-leave {
+		0% {
+			transform: translate3d(var(--parallax-x), var(--parallax-y), 0) scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: translate3d(var(--parallax-x), calc(var(--parallax-y) + 0%), 0) scale(2.5);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(calc(var(--parallax-x) - 150%), calc(var(--parallax-y) + 0%), 0)
+				scale(2.2);
+			opacity: 0;
+		}
+	}
+
+	@keyframes scenery-leave {
+		0% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: translate3d(-100%, 0, 0) scale(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(-250%, 0, 0) scale(1.4);
+			opacity: 0;
+		}
+	}
+	@keyframes scenery-ground {
+		0% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: translate3d(-30%, 50%, 0) scale(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(-250%, 0, 0) scale(1.4);
+			opacity: 0;
+		}
+	}
+	@keyframes scenery-header {
+		0% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(-10vw, 42vh, 0) scale(2);
+			opacity: 1;
+		}
+	}
+
+	@keyframes header-levitate {
+		from {
+			translate: 0 -15px;
+		}
+		to {
+			translate: 0 15px;
+		}
 	}
 
 	.scene.focused .coming-soon-message {
@@ -601,6 +682,11 @@
 
 		.scene.focused .layer-1 {
 			transition: none;
+		}
+
+		.scene.focused .rocks,
+		.scene.focused .ground {
+			animation: none;
 		}
 
 		.coming-soon-message {
