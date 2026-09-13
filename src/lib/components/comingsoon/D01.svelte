@@ -142,7 +142,8 @@
 			size: Math.random() * 3 + 2,
 			duration: Math.random() * 30 + 20,
 			delay: Math.random() * -40,
-			direction: Math.random() > 0.5 ? 'normal' : 'reverse'
+			direction: Math.random() > 0.5 ? 'normal' : 'reverse',
+			zIndex: Math.floor(Math.random() * 5) + 2
 		}));
 
 		window.addEventListener('mousemove', handleMouseMove);
@@ -190,7 +191,7 @@
 		style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}
 	>
 		<!-- <img src="/coming-soon/D01/background.png" alt="" class="scene-layer background" /> -->
-		<img src="/coming-soon/D01/blur layer.png" alt="" class="scene-layer blur" />
+
 		<div class="moon-glow" aria-hidden="true"></div>
 		<div class="moon" aria-hidden="true"></div>
 
@@ -200,7 +201,7 @@
 				src={`/coming-soon/D01/Spacecraft ${craft.type}.png`}
 				alt="Spacecraft"
 				class="spacecraft"
-				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction};"
+				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction}; z-index: {craft.zIndex};"
 			/>
 		{/each}
 
@@ -209,8 +210,6 @@
 		<img src="/coming-soon/D01/layer-2.png" alt="" class="scene-layer layer-2" />
 
 		<!-- <img src="/coming-soon/D01/Rectangle 62.png" alt="" class="scene-layer rectangle-62" /> -->
-
-		<img src="/coming-soon/D01/Rectangle 63.png" alt="" class="scene-layer rectangle-63" />
 
 		<button
 			type="button"
@@ -425,6 +424,7 @@
 		filter: contrast(1.1) saturate(1.08);
 		animation: clouds-drift 24s ease-in-out infinite alternate;
 		will-change: transform;
+		left: 5vw;
 	}
 
 	/* .rectangle-62 {
