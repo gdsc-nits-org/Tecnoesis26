@@ -327,6 +327,7 @@
 		position: relative;
 		width: max(100vw, 160dvh);
 		aspect-ratio: 1440 / 900;
+		flex-shrink: 0;
 		overflow: hidden;
 		--parallax-x: 0px;
 		--parallax-y: 0px;
@@ -503,7 +504,7 @@
 		display: block;
 		position: absolute;
 		bottom: 15%;
-		left: 10%;
+		left: 14%;
 		width: 30%;
 		height: 60%;
 		object-fit: contain;
@@ -952,7 +953,7 @@
 
 		.layer-1 img {
 			width: 35vw;
-			bottom: -3%;
+			bottom: 0%;
 			left: 10%;
 		}
 
