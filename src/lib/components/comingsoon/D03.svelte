@@ -40,7 +40,14 @@
 	}
 
 	:global(body) {
-		background: #0c0b3f;
+		background: linear-gradient(
+			180deg,
+			#09062d 0%,
+			#16083f 28%,
+			#3b116d 54%,
+			#7b1d9c 77%,
+			#c347d1 100%
+		);
 	}
 
 	.coming-soon {

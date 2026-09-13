@@ -72,15 +72,16 @@
 		class:focused={isFocused}
 		style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}
 	>
-		<img src="/coming-soon/D01/background.png" alt="" class="scene-layer background" />
+		<!-- <img src="/coming-soon/D01/background.png" alt="" class="scene-layer background" /> -->
 		<img src="/coming-soon/D01/blur layer.png" alt="" class="scene-layer blur" />
-		<img src="/coming-soon/D01/layer-4.png" alt="" class="scene-layer layer-4" />
+		<div class="moon-glow" aria-hidden="true"></div>
+		<div class="moon" aria-hidden="true"></div>
 
 		<img src="/coming-soon/D01/layer-3.png" alt="" class="scene-layer layer-3" />
 
 		<img src="/coming-soon/D01/layer-2.png" alt="" class="scene-layer layer-2" />
 
-		<img src="/coming-soon/D01/Rectangle 62.png" alt="" class="scene-layer rectangle-62" />
+		<!-- <img src="/coming-soon/D01/Rectangle 62.png" alt="" class="scene-layer rectangle-62" /> -->
 
 		<img src="/coming-soon/D01/Rectangle 63.png" alt="" class="scene-layer rectangle-63" />
 
@@ -120,7 +121,14 @@
 	}
 
 	:global(body) {
-		background: #0c0b3f;
+		background: linear-gradient(
+			180deg,
+			#09062d 0%,
+			#16083f 28%,
+			#3b116d 54%,
+			#7b1d9c 77%,
+			#c347d1 100%
+		);
 	}
 
 	.coming-soon {
@@ -192,12 +200,69 @@
 		z-index: 2;
 	}
 
-	.layer-4 {
-		z-index: 3;
-		opacity: 0.94;
-		filter: contrast(1.08) saturate(1.08);
-		animation: spacecraft-cruise 18s ease-in-out infinite alternate;
+	.moon {
+		position: absolute;
+		z-index: 4;
+		top: 36%;
+		left: 43%;
+		width: 30%;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle at 42% 37%,
+			#b844cf 0%,
+			#9031ad 42%,
+			#68258e 64%,
+			#382064 78%,
+			#30205c 90%,
+			#2e1a5a 100%
+		);
+		box-shadow: 0 0 18px rgba(178, 49, 214, 0.34);
+		animation: moon-breathe 18s ease-in-out infinite alternate;
 		will-change: transform;
+	}
+
+	.moon::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background-image:
+			repeating-radial-gradient(circle at 28% 34%, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 4px),
+			repeating-linear-gradient(113deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 5px);
+		mix-blend-mode: screen;
+		opacity: 0.28;
+	}
+
+	.moon-glow {
+		position: absolute;
+		z-index: 3;
+		top: 17%;
+		left: 24%;
+		width: 68%;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		pointer-events: none;
+		background: radial-gradient(
+			circle,
+			rgba(217, 58, 238, 0.58) 0%,
+			rgba(180, 48, 220, 0.46) 28%,
+			rgba(137, 38, 190, 0.28) 52%,
+			rgba(95, 29, 148, 0.12) 70%,
+			transparent 82%
+		);
+		filter: blur(34px);
+	}
+
+	@keyframes moon-breathe {
+		from {
+			transform: scale(0.99);
+		}
+
+		to {
+			transform: scale(1.015);
+		}
 	}
 
 	.layer-3 {
@@ -216,9 +281,9 @@
 		will-change: transform;
 	}
 
-	.rectangle-62 {
+	/* .rectangle-62 {
 		z-index: 6;
-	}
+	} */
 
 	.rectangle-63 {
 		z-index: 7;
@@ -401,15 +466,6 @@
 		}
 	}
 
-	@keyframes spacecraft-cruise {
-		from {
-			transform: translate3d(-0.8%, 0.35%, 0) rotate(-0.15deg);
-		}
-		to {
-			transform: translate3d(0.8%, -0.35%, 0) rotate(0.15deg);
-		}
-	}
-
 	@keyframes message-title-in {
 		to {
 			opacity: 1;
@@ -429,6 +485,22 @@
 		}
 	}
 
+	/* M screens: keep the moon centered as the scene narrows. */
+	@media (min-width: 601px) and (max-width: 1200px) {
+		.moon {
+			top: 34%;
+			left: 45%;
+			width: 48%;
+		}
+
+		.moon-glow {
+			top: 14%;
+			left: 19%;
+			width: 76%;
+			filter: blur(32px);
+		}
+	}
+
 	@media (max-width: 600px), (max-aspect-ratio: 3 / 4) {
 		.coming-soon {
 			width: 100vw;
@@ -439,6 +511,20 @@
 			width: 100vw;
 			height: 100dvh;
 			aspect-ratio: auto;
+		}
+
+		/* S screens: enlarge the moon to remain visible on the portrait crop. */
+		.moon {
+			top: 32%;
+			left: 28%;
+			width: 60vw;
+		}
+
+		.moon-glow {
+			top: 11%;
+			left: 4%;
+			width: 100vw;
+			filter: blur(26px);
 		}
 
 		.scene-layer {
@@ -499,7 +585,7 @@
 		}
 		.layer-2,
 		.layer-3,
-		.layer-4,
+		.moon,
 		.decor {
 			animation: none;
 		}

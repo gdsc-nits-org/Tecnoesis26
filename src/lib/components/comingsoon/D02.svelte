@@ -11,14 +11,14 @@
 		<img src="/coming-soon/D02/blur layer.png" alt="" class="scene-layer blur" />
 
 		<!-- Main visual layers -->
-		<img src="/coming-soon/D02/layer-4.png" alt="" class="scene-layer layer-4" />
+		<!-- <img src="/coming-soon/D02/layer-4.png" alt="" class="scene-layer layer-4" /> -->
 
 		<img src="/coming-soon/D02/layer-3.png" alt="" class="scene-layer layer-3" />
 
 		<img src="/coming-soon/D02/layer-2.png" alt="" class="scene-layer layer-2" />
 
 		<!-- Rectangles -->
-		<img src="/coming-soon/D02/Rectangle 62.png" alt="" class="scene-layer rectangle-62" />
+		<!-- <img src="/coming-soon/D02/Rectangle 62.png" alt="" class="scene-layer rectangle-62" /> -->
 
 		<img src="/coming-soon/D02/Rectangle 63.png" alt="" class="scene-layer rectangle-63" />
 
@@ -44,7 +44,14 @@
 	}
 
 	:global(body) {
-		background: #0c0b3f;
+		background: linear-gradient(
+			180deg,
+			#09062d 0%,
+			#16083f 28%,
+			#3b116d 54%,
+			#7b1d9c 77%,
+			#c347d1 100%
+		);
 	}
 
 	.coming-soon {
