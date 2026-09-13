@@ -175,7 +175,7 @@
 	<img
 		src="/coming-soon/D01/layer-1.svg"
 		alt="Tecnoesis Logo"
-		class="header-logo"
+		class="header-logo glow-logo"
 		class:zoomed={isZoomed}
 		class:focused={isFocused}
 		class:unfocused={isUnfocusing}
@@ -218,6 +218,8 @@
 			alt=""
 			class="scene-layer layer-3"
 		/>
+
+		<div class="blur-overlay" class:hidden={isFocused || isZoomed}></div>
 
 		<img src="/coming-soon/D01/layer-2.png" alt="" class="scene-layer layer-2" />
 
@@ -315,6 +317,10 @@
 		transform: translate3d(calc(var(--parallax-x) * 0.3), calc(var(--parallax-y) * 0.3), 0);
 		transition: transform 0.3s ease-out;
 		animation: header-levitate 3s ease-in-out infinite alternate;
+	}
+	.header-logo.glow-logo {
+		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 15px rgba(217, 58, 238, 0.7))
+			drop-shadow(0 0 35px rgba(137, 38, 190, 0.5));
 	}
 
 	.scene {
@@ -457,6 +463,23 @@
 		left: 5vw;
 	}
 
+	.blur-overlay {
+		position: absolute;
+		inset: -10%;
+		z-index: 4;
+		backdrop-filter: blur(3px);
+		-webkit-backdrop-filter: blur(3px);
+		pointer-events: none;
+		transition:
+			opacity 1.5s ease-in-out,
+			backdrop-filter 1.5s ease-in-out;
+	}
+	.blur-overlay.hidden {
+		opacity: 0;
+		backdrop-filter: blur(0px);
+		-webkit-backdrop-filter: blur(0px);
+	}
+
 	/* .rectangle-62 {
 		z-index: 6;
 	} */
@@ -480,10 +503,30 @@
 		display: block;
 		position: absolute;
 		bottom: 15%;
-		left: 5%;
+		left: 10%;
 		width: 30%;
 		height: 60%;
 		object-fit: contain;
+		animation: astronaut-levitate 4s ease-in-out infinite alternate;
+		will-change: transform;
+	}
+
+	@keyframes astronaut-levitate {
+		0% {
+			transform: translateY(0);
+		}
+		100% {
+			transform: translateY(-10px);
+		}
+	}
+
+	@keyframes scenery-levitate {
+		0% {
+			translate: 0 0;
+		}
+		100% {
+			translate: 0 -15px;
+		}
 	}
 
 	.fg-element {
@@ -499,9 +542,10 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
-		transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0);
+		transform: translate3d(calc(var(--parallax-x) * 1.8), calc(var(--parallax-y) * 1.6), 0);
 		transition: transform 0.3s ease-out;
 		will-change: transform;
+		animation: scenery-levitate 5s ease-in-out infinite alternate;
 	}
 
 	.ground {
@@ -510,9 +554,10 @@
 		left: 0;
 		z-index: 7;
 		filter: contrast(1.1) saturate(1.08);
-		transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0);
+		transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.5), 0);
 		transition: transform 0.3s ease-out;
 		will-change: transform;
+		animation: scenery-levitate 6s ease-in-out infinite alternate-reverse;
 	}
 
 	.layer-1:focus-visible {
@@ -526,12 +571,16 @@
 	}
 
 	.scene.focused .rocks {
-		animation: scenery-leave 2s ease-in-out forwards;
+		animation:
+			scenery-leave 2s ease-in-out forwards,
+			scenery-levitate 5s ease-in-out infinite alternate;
 		transform-origin: 10% 90%;
 	}
 
 	.scene.focused .ground {
-		animation: scenery-ground 2s ease-in-out forwards;
+		animation:
+			scenery-ground 2s ease-in-out forwards,
+			scenery-levitate 6s ease-in-out infinite alternate-reverse;
 		transform-origin: 10% 90%;
 	}
 
@@ -541,12 +590,16 @@
 	}
 
 	.scene.unfocused .rocks {
-		animation: scenery-leave-reverse 1.5s ease-in-out forwards;
+		animation:
+			scenery-leave-reverse 1.5s ease-in-out forwards,
+			scenery-levitate 5s ease-in-out infinite alternate;
 		transform-origin: 10% 90%;
 	}
 
 	.scene.unfocused .ground {
-		animation: scenery-ground-reverse 1.5s ease-in-out forwards;
+		animation:
+			scenery-ground-reverse 1.5s ease-in-out forwards,
+			scenery-levitate 6s ease-in-out infinite alternate-reverse;
 		transform-origin: 10% 90%;
 	}
 
@@ -607,7 +660,8 @@
 
 	@keyframes scenery-leave {
 		0% {
-			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0)
+				scale(1);
 			opacity: 1;
 		}
 		50% {
@@ -629,14 +683,16 @@
 			opacity: 1;
 		}
 		100% {
-			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.2), calc(var(--parallax-y) * 1.2), 0)
+				scale(1);
 			opacity: 1;
 		}
 	}
 
 	@keyframes scenery-ground {
 		0% {
-			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0)
+				scale(1);
 			opacity: 1;
 		}
 		50% {
@@ -658,7 +714,8 @@
 			opacity: 1;
 		}
 		100% {
-			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0) scale(1);
+			transform: translate3d(calc(var(--parallax-x) * 1.1), calc(var(--parallax-y) * 1.1), 0)
+				scale(1);
 			opacity: 1;
 		}
 	}
@@ -804,15 +861,6 @@
 		}
 	}
 
-	.button {
-		position: absolute;
-		left: 2.2%;
-		bottom: 2%;
-		width: 5%;
-		height: auto;
-		z-index: 20;
-	}
-
 	@keyframes clouds-drift {
 		from {
 			transform: translateX(-1.5%);
@@ -904,20 +952,20 @@
 
 		.layer-1 img {
 			width: 35vw;
-			bottom: -13%;
+			bottom: -3%;
 			left: 10%;
 		}
 
 		.rocks {
 			width: 30vw;
-			bottom: -10%;
-			left: -5%;
+			bottom: -5%;
+			left: -20%;
 		}
 
 		.ground {
 			width: 100vw;
-			bottom: -10%;
-			left: 0;
+			bottom: -5%;
+			left: -9%;
 		}
 
 		.site-header {
