@@ -62,13 +62,17 @@
 		cursor: none;
 	}
 
+	:global(*) {
+		cursor: none !important;
+	}
+
 	@media (hover: none), (pointer: coarse) {
 		.custom-cursor {
 			display: none;
 		}
 
-		:global(body) {
-			cursor: auto;
+		:global(*) {
+			cursor: auto !important;
 		}
 	}
 </style>
