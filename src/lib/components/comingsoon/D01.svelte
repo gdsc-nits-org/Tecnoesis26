@@ -9,6 +9,7 @@
 	let isFocused = $state(false);
 	let isUnfocusing = $state(false);
 	let isReversing = $state(false);
+	let spacecrafts = $state([]);
 
 	/** @param {PointerEvent} event */
 	function handlePointerMove(event) {
@@ -132,6 +133,18 @@
 	}
 
 	onMount(() => {
+		const numSpacecrafts = 15;
+		spacecrafts = Array.from({ length: numSpacecrafts }).map((_, i) => ({
+			id: i,
+			type: Math.floor(Math.random() * 3) + 1,
+			top: Math.random() * 65, // 0% to 45%
+			left: Math.random() * 100,
+			size: Math.random() * 3 + 2,
+			duration: Math.random() * 30 + 20,
+			delay: Math.random() * -40,
+			direction: Math.random() > 0.5 ? 'normal' : 'reverse'
+		}));
+
 		window.addEventListener('mousemove', handleMouseMove);
 
 		return () => window.removeEventListener('mousemove', handleMouseMove);
@@ -180,6 +193,16 @@
 		<img src="/coming-soon/D01/blur layer.png" alt="" class="scene-layer blur" />
 		<div class="moon-glow" aria-hidden="true"></div>
 		<div class="moon" aria-hidden="true"></div>
+
+		<!-- Spacecrafts -->
+		{#each spacecrafts as craft (craft.id)}
+			<img
+				src={`/coming-soon/D02/Spacecraft ${craft.type}.png`}
+				alt="Spacecraft"
+				class="spacecraft"
+				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction};"
+			/>
+		{/each}
 
 		<img src="/coming-soon/D01/layer-3.png" alt="" class="scene-layer layer-3" />
 
@@ -366,6 +389,25 @@
 
 		to {
 			transform: scale(1.015);
+		}
+	}
+
+	.spacecraft {
+		position: absolute;
+		z-index: 3;
+		object-fit: contain;
+		pointer-events: none;
+		user-select: none;
+		animation: drift-horizontal linear infinite alternate;
+		will-change: transform;
+	}
+
+	@keyframes drift-horizontal {
+		0% {
+			transform: translateX(-30vw) translateY(0);
+		}
+		100% {
+			transform: translateX(30vw) translateY(3vh);
 		}
 	}
 
