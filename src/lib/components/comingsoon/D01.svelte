@@ -7,6 +7,7 @@
 	let parallaxY = $state(0);
 	let isZoomed = $state(false);
 	let isFocused = $state(false);
+	let isUnfocusing = $state(false);
 
 	/** @param {PointerEvent} event */
 	function handlePointerMove(event) {
@@ -41,7 +42,76 @@
 
 		isFocused = true;
 	}
-	
+	let lastScrollTime = 0;
+	let touchStartY = 0;
+
+	/** @param {WheelEvent} event */
+	function handleWheel(event) {
+		const now = Date.now();
+		if (now - lastScrollTime < 1200) return;
+
+		if (event.deltaY > 10) {
+			if (!isZoomed) {
+				isZoomed = true;
+				isUnfocusing = false;
+				lastScrollTime = now;
+			} else if (!isFocused) {
+				isFocused = true;
+				isUnfocusing = false;
+				lastScrollTime = now;
+			}
+		} else if (event.deltaY < -10) {
+			if (isFocused) {
+				isFocused = false;
+				isUnfocusing = true;
+				lastScrollTime = now;
+			} else if (isZoomed) {
+				isZoomed = false;
+				isUnfocusing = false;
+				lastScrollTime = now;
+			}
+		}
+	}
+
+	/** @param {TouchEvent} event */
+	function handleTouchStart(event) {
+		touchStartY = event.touches[0].clientY;
+	}
+
+	/** @param {TouchEvent} event */
+	function handleTouchMove(event) {
+		const now = Date.now();
+		if (now - lastScrollTime < 1200) return;
+
+		const touchEndY = event.touches[0].clientY;
+		const deltaY = touchStartY - touchEndY;
+
+		if (deltaY > 30) {
+			if (!isZoomed) {
+				isZoomed = true;
+				isUnfocusing = false;
+				lastScrollTime = now;
+				touchStartY = touchEndY;
+			} else if (!isFocused) {
+				isFocused = true;
+				isUnfocusing = false;
+				lastScrollTime = now;
+				touchStartY = touchEndY;
+			}
+		} else if (deltaY < -30) {
+			if (isFocused) {
+				isFocused = false;
+				isUnfocusing = true;
+				lastScrollTime = now;
+				touchStartY = touchEndY;
+			} else if (isZoomed) {
+				isZoomed = false;
+				isUnfocusing = false;
+				lastScrollTime = now;
+				touchStartY = touchEndY;
+			}
+		}
+	}
 
 	onMount(() => {
 		window.addEventListener('mousemove', handleMouseMove);
@@ -57,6 +127,12 @@
 	<link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet" />
 </svelte:head>
 
+<svelte:window
+	onwheel={handleWheel}
+	ontouchstart={handleTouchStart}
+	ontouchmove={handleTouchMove}
+/>
+
 <header class="site-header" style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}>
 	<img
 		src="/coming-soon/D03/layer-1.svg"
@@ -64,6 +140,7 @@
 		class="header-logo"
 		class:zoomed={isZoomed}
 		class:focused={isFocused}
+		class:unfocused={isUnfocusing}
 	/>
 </header>
 
@@ -77,6 +154,7 @@
 		onpointerleave={resetParallax}
 		class:zoomed={isZoomed}
 		class:focused={isFocused}
+		class:unfocused={isUnfocusing}
 		style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}
 	>
 		<!-- <img src="/coming-soon/D01/background.png" alt="" class="scene-layer background" /> -->
@@ -309,7 +387,7 @@
 		transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
 		transition: transform 0.3s ease-out;
 		pointer-events: auto;
-		cursor: none;
+		cursor: pointer;
 	}
 
 	.layer-1 img {
@@ -366,12 +444,34 @@
 		animation: scenery-ground 2s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
+
+	.scene.unfocused .layer-1 {
+		animation: astronaut-zoom-leave 3s ease-in-out reverse forwards;
+		transform-origin: 50% 12%;
+	}
+
+	.scene.unfocused .rocks {
+		animation: scenery-leave 2s ease-in-out reverse forwards;
+		transform-origin: 10% 90%;
+	}
+
+	.scene.unfocused .ground {
+		animation: scenery-ground 2s ease-in-out reverse forwards;
+		transform-origin: 10% 90%;
+	}
+
 	.header-logo.zoomed {
 		animation: header-levitate 3s ease-in-out infinite alternate;
 	}
 	.header-logo.focused {
 		animation:
 			scenery-header 2s forwards,
+			header-levitate 3s ease-in-out infinite alternate;
+		transform-origin: 10% 90%;
+	}
+	.header-logo.unfocused {
+		animation:
+			scenery-header 2s reverse forwards,
 			header-levitate 3s ease-in-out infinite alternate;
 		transform-origin: 10% 90%;
 	}
@@ -656,7 +756,8 @@
 			height: auto;
 		}
 
-		.header-logo.focused {
+		.header-logo.focused,
+		.header-logo.unfocused {
 			transform-origin: center;
 		}
 
