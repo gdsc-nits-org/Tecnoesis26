@@ -142,7 +142,7 @@
 	<title>Tecnoesis 2026</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap" rel="stylesheet" />
 </svelte:head>
 
 <svelte:window
@@ -294,10 +294,6 @@
 		display: block;
 		pointer-events: none;
 		user-select: none;
-	}
-
-	.background {
-		z-index: 1;
 	}
 
 	.blur {
@@ -464,17 +460,17 @@
 	}
 
 	.scene.unfocused .layer-1 {
-		animation: astronaut-zoom-leave 3s ease-in-out reverse forwards;
+		animation: astronaut-zoom-leave-reverse 2s ease-in-out forwards;
 		transform-origin: 50% 12%;
 	}
 
 	.scene.unfocused .rocks {
-		animation: scenery-leave 2s ease-in-out reverse forwards;
+		animation: scenery-leave-reverse 2s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 
 	.scene.unfocused .ground {
-		animation: scenery-ground 2s ease-in-out reverse forwards;
+		animation: scenery-ground-reverse 2s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 
@@ -489,11 +485,19 @@
 	}
 	.header-logo.unfocused {
 		animation:
-			scenery-header 2s reverse forwards,
+			scenery-header-reverse 2s forwards,
 			header-levitate 3s ease-in-out infinite alternate;
 		transform-origin: 10% 90%;
 	}
 
+	.scene.focused .coming-soon-message {
+		animation: coming-soon 1.5s ease-in-out forwards;
+		transform-origin: 10% 90%;
+	}
+	.scene.unfocused .coming-soon-message {
+		animation: coming-soon-reverse 1.5s ease-in-out forwards;
+		transform-origin: 10% 90%;
+	}
 	@keyframes astronaut-zoom-leave {
 		0% {
 			transform: translate3d(var(--parallax-x), var(--parallax-y), 0) scale(1);
@@ -507,6 +511,21 @@
 			transform: translate3d(calc(var(--parallax-x) - 150%), calc(var(--parallax-y) + 0%), 0)
 				scale(2.2);
 			opacity: 0;
+		}
+	}
+	@keyframes astronaut-zoom-leave-reverse {
+		0% {
+			transform: translate3d(calc(var(--parallax-x) - 150%), calc(var(--parallax-y) + 0%), 0)
+				scale(2.2);
+			opacity: 0;
+		}
+		50% {
+			transform: translate3d(var(--parallax-x), calc(var(--parallax-y) + 0%), 0) scale(2.5);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(var(--parallax-x), var(--parallax-y), 0) scale(1);
+			opacity: 1;
 		}
 	}
 
@@ -524,6 +543,21 @@
 			opacity: 0;
 		}
 	}
+	@keyframes scenery-leave-reverse {
+		0% {
+			transform: translate3d(-250%, 0, 0) scale(1.4);
+			opacity: 0;
+		}
+		50% {
+			transform: translate3d(-100%, 0, 0) scale(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+	}
+
 	@keyframes scenery-ground {
 		0% {
 			transform: translate3d(0, 0, 0) scale(1);
@@ -538,6 +572,21 @@
 			opacity: 0;
 		}
 	}
+	@keyframes scenery-ground-reverse {
+		0% {
+			transform: translate3d(-250%, 0, 0) scale(1.4);
+			opacity: 0;
+		}
+		50% {
+			transform: translate3d(-30%, 50%, 0) scale(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+	}
+
 	@keyframes scenery-header {
 		0% {
 			transform: translate3d(0, 0, 0) scale(1);
@@ -545,6 +594,37 @@
 		}
 		100% {
 			transform: translate3d(-10vw, 42vh, 0) scale(2);
+			opacity: 1;
+		}
+	}
+	@keyframes scenery-header-reverse {
+		0% {
+			transform: translate3d(-10vw, 42vh, 0) scale(2);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+	}
+
+	@keyframes coming-soon {
+		0% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(100%, 0, 0) scale(1);
+			opacity: 1;
+		}
+	}
+	@keyframes coming-soon-reverse {
+		0% {
+			transform: translate3d(100%, 0, 0) scale(1);
+			opacity: 1;
+		}
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
 			opacity: 1;
 		}
 	}
@@ -556,11 +636,6 @@
 		to {
 			translate: 0 15px;
 		}
-	}
-
-	.scene.focused .coming-soon-message {
-		opacity: 0;
-		visibility: hidden;
 	}
 
 	.coming-soon-message {
@@ -587,8 +662,8 @@
 
 	.coming-soon-title {
 		color: #fff;
-		font-family: 'Zen Dots', sans-serif;
-		font-size: clamp(2rem, 5.7vw, 5.2rem);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: clamp(3rem, 6.7vw, 7.2rem);
 		font-weight: 400;
 		letter-spacing: 0.025em;
 		line-height: 0.88;
@@ -608,6 +683,10 @@
 		width: 0;
 		overflow: hidden;
 		white-space: nowrap;
+	}
+
+	.type-line:last-child {
+		margin-left: 1.5ch;
 	}
 
 	.coming-soon-message.visible .type-line:first-child {
@@ -685,13 +764,13 @@
 
 	@keyframes typewriter-coming {
 		to {
-			width: 7ch;
+			width: 8.5ch;
 		}
 	}
 
 	@keyframes typewriter-soon {
 		to {
-			width: 4ch;
+			width: 5.5ch;
 		}
 	}
 
@@ -786,6 +865,16 @@
 			}
 			100% {
 				transform: translate3d(0, 35vh, 0) scale(1.1);
+				opacity: 1;
+			}
+		}
+		@keyframes scenery-header-reverse {
+			0% {
+				transform: translate3d(0, 35vh, 0) scale(1.1);
+				opacity: 1;
+			}
+			100% {
+				transform: translate3d(0, 0, 0) scale(1);
 				opacity: 1;
 			}
 		}
