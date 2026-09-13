@@ -53,11 +53,12 @@
 	<title>Tecnoesis 2026</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link
-		href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap"
-		rel="stylesheet"
-	/>
+	<link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet" />
 </svelte:head>
+
+<header class="site-header" style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}>
+	<img src="/coming-soon/D03/layer-1.png" alt="Tecnoesis Logo" class="header-logo" />
+</header>
 
 <div class="coming-soon">
 	<div
@@ -71,45 +72,17 @@
 		class:focused={isFocused}
 		style={`--parallax-x: ${parallaxX}px; --parallax-y: ${parallaxY}px;`}
 	>
-		<img
-			src="/coming-soon/D01/background.png"
-			alt=""
-			class="scene-layer background"
-		/>
-		<img
-			src="/coming-soon/D01/blur layer.png"
-			alt=""
-			class="scene-layer blur"
-		/>
-		<img
-			src="/coming-soon/D01/layer-4.png"
-			alt=""
-			class="scene-layer layer-4"
-		/>
+		<img src="/coming-soon/D01/background.png" alt="" class="scene-layer background" />
+		<img src="/coming-soon/D01/blur layer.png" alt="" class="scene-layer blur" />
+		<img src="/coming-soon/D01/layer-4.png" alt="" class="scene-layer layer-4" />
 
-		<img
-			src="/coming-soon/D01/layer-3.png"
-			alt=""
-			class="scene-layer layer-3"
-		/>
+		<img src="/coming-soon/D01/layer-3.png" alt="" class="scene-layer layer-3" />
 
-		<img
-			src="/coming-soon/D01/layer-2.png"
-			alt=""
-			class="scene-layer layer-2"
-		/>
+		<img src="/coming-soon/D01/layer-2.png" alt="" class="scene-layer layer-2" />
 
-		<img
-			src="/coming-soon/D01/Rectangle 62.png"
-			alt=""
-			class="scene-layer rectangle-62"
-		/>
+		<img src="/coming-soon/D01/Rectangle 62.png" alt="" class="scene-layer rectangle-62" />
 
-		<img
-			src="/coming-soon/D01/Rectangle 63.png"
-			alt=""
-			class="scene-layer rectangle-63"
-		/>
+		<img src="/coming-soon/D01/Rectangle 63.png" alt="" class="scene-layer rectangle-63" />
 
 		<button
 			type="button"
@@ -117,8 +90,11 @@
 			aria-label={isFocused ? 'Tecnoesis logo focused' : 'Open Tecnoesis coming soon message'}
 			onclick={showComingSoon}
 		>
-			<img src="/coming-soon/D01/layer-1.png" alt="" />
+			<img src="/coming-soon/D01/astronaut.png" alt="" />
 		</button>
+
+		<img src="/coming-soon/D01/rocks.png" alt="" class="fg-element rocks" />
+		<img src="/coming-soon/D01/ground.png" alt="" class="fg-element ground" />
 
 		<div class:visible={isZoomed} class="coming-soon-message" aria-live="polite">
 			<span class="coming-soon-title">
@@ -129,12 +105,7 @@
 
 		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-a" />
 		<img src="/coming-soon/D01/decor.png" alt="" class="decor decor-b" />
-		<img
-			src="/coming-soon/D01/button.png"
-			alt="Toggle"
-			class="button"
-		/>
-
+		<img src="/coming-soon/D01/button.png" alt="Toggle" class="button" />
 	</div>
 </div>
 
@@ -161,6 +132,27 @@
 		overflow: hidden;
 	}
 
+	.site-header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		padding: 2rem;
+		display: flex;
+		justify-content: center;
+		z-index: 100;
+		pointer-events: none;
+	}
+
+	.header-logo {
+		height: 280px;
+		width: auto;
+		object-fit: contain;
+		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+		transform: translate3d(calc(var(--parallax-x) * 0.3), calc(var(--parallax-y) * 0.3), 0);
+		transition: transform 0.3s ease-out;
+	}
+
 	.scene {
 		position: relative;
 		width: max(100vw, 160dvh);
@@ -180,7 +172,6 @@
 		transform: scale(1.25);
 	}
 
-	
 	.scene-layer {
 		position: absolute;
 		top: 0;
@@ -246,9 +237,39 @@
 
 	.layer-1 img {
 		display: block;
-		width: 100%;
+		position: absolute;
+		bottom: 15%;
+		left: 5%;
+		width: 30%;
+		height: 60%;
+		object-fit: contain;
+	}
+
+	.fg-element {
+		position: absolute;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.rocks {
+		width: 20%;
 		height: 100%;
-		object-fit: fill;
+		bottom: -10%;
+		left: 0;
+		z-index: 7;
+		filter: contrast(1.1) saturate(1.08);
+		animation: clouds-drift 24s ease-in-out infinite alternate;
+		will-change: transform;
+	}
+
+	.ground {
+		width: 55%;
+		bottom: -10%;
+		left: 0;
+		z-index: 7;
+		filter: contrast(1.1) saturate(1.08);
+		animation: clouds-drift 24s ease-in-out infinite alternate;
+		will-change: transform;
 	}
 
 	.layer-1:focus-visible {
@@ -257,11 +278,8 @@
 	}
 
 	.scene.focused .layer-1 {
-		transform: translate3d(
-			calc(var(--parallax-x) - 1%),
-			calc(var(--parallax-y) + 33%),
-			0
-		) scale(1.55);
+		transform: translate3d(calc(var(--parallax-x) - 1%), calc(var(--parallax-y) + 33%), 0)
+			scale(1.55);
 		transform-origin: 50% 12%;
 	}
 
@@ -281,11 +299,7 @@
 		pointer-events: none;
 		opacity: 0;
 		visibility: hidden;
-		transform: translate3d(
-			calc(var(--parallax-x) * 0.7),
-			calc(var(--parallax-y) * 0.7),
-			0
-		);
+		transform: translate3d(calc(var(--parallax-x) * 0.7), calc(var(--parallax-y) * 0.7), 0);
 		transition:
 			opacity 0.4s ease,
 			transform 0.3s ease-out;
@@ -311,8 +325,7 @@
 	}
 
 	.coming-soon-message.visible .coming-soon-title {
-		animation:
-			message-title-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+		animation: message-title-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 	}
 
 	.type-line {
@@ -329,7 +342,6 @@
 	.coming-soon-message.visible .type-line:last-child {
 		animation: typewriter-soon 0.8s steps(4, end) 1.6s forwards;
 	}
-
 
 	.decor {
 		position: absolute;
@@ -371,53 +383,53 @@
 		z-index: 20;
 	}
 
-		@keyframes clouds-drift {
-			from {
-				transform: translateX(-1.5%);
-			}
-			to {
-				transform: translateX(1.5%);
-			}
+	@keyframes clouds-drift {
+		from {
+			transform: translateX(-1.5%);
 		}
-
-		@keyframes skyline-breathe {
-			from {
-				transform: translate3d(-0.25%, 0, 0) scale(1);
-			}
-			to {
-				transform: translate3d(0.25%, -0.35%, 0) scale(1.008);
-			}
+		to {
+			transform: translateX(1.5%);
 		}
+	}
 
-		@keyframes spacecraft-cruise {
-			from {
-				transform: translate3d(-0.8%, 0.35%, 0) rotate(-0.15deg);
-			}
-			to {
-				transform: translate3d(0.8%, -0.35%, 0) rotate(0.15deg);
-			}
+	@keyframes skyline-breathe {
+		from {
+			transform: translate3d(-0.25%, 0, 0) scale(1);
 		}
-
-		@keyframes message-title-in {
-			to {
-				opacity: 1;
-				transform: translateY(0) scale(1);
-			}
+		to {
+			transform: translate3d(0.25%, -0.35%, 0) scale(1.008);
 		}
+	}
 
-		@keyframes typewriter-coming {
-			to {
-				width: 7ch;
-			}
+	@keyframes spacecraft-cruise {
+		from {
+			transform: translate3d(-0.8%, 0.35%, 0) rotate(-0.15deg);
 		}
-
-		@keyframes typewriter-soon {
-			to {
-				width: 4ch;
-			}
+		to {
+			transform: translate3d(0.8%, -0.35%, 0) rotate(0.15deg);
 		}
+	}
 
-		@media (max-width: 600px), (max-aspect-ratio: 3 / 4) {
+	@keyframes message-title-in {
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	@keyframes typewriter-coming {
+		to {
+			width: 7ch;
+		}
+	}
+
+	@keyframes typewriter-soon {
+		to {
+			width: 4ch;
+		}
+	}
+
+	@media (max-width: 600px), (max-aspect-ratio: 3 / 4) {
 		.coming-soon {
 			width: 100vw;
 			height: 100dvh;
@@ -431,7 +443,39 @@
 
 		.scene-layer {
 			object-fit: cover;
-			object-position: 35% center;
+			object-position: 15% center;
+		}
+
+		.layer-1 {
+			object-fit: contain;
+			object-position: bottom left;
+		}
+
+		.layer-1 img {
+			width: 35vw;
+			bottom: -13%;
+			left: 10%;
+		}
+
+		.rocks {
+			width: 30vw;
+			bottom: -10%;
+			left: -5%;
+		}
+
+		.ground {
+			width: 100vw;
+			bottom: -10%;
+			left: 0;
+		}
+
+		.site-header {
+			padding: 1rem;
+		}
+
+		.header-logo {
+			width: 90vw;
+			height: auto;
 		}
 
 		.decor {
