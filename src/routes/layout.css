@@ -18,4 +18,9 @@
 @theme {
   --font-delicatus: 'Delicatus', sans-serif;
   --font-game-demo: 'GameDemo', sans-serif;
+  --keyframes-wave: wave;
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 }
