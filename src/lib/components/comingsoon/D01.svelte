@@ -197,7 +197,7 @@
 		<!-- Spacecrafts -->
 		{#each spacecrafts as craft (craft.id)}
 			<img
-				src={`/coming-soon/D02/Spacecraft ${craft.type}.png`}
+				src={`/coming-soon/D01/Spacecraft ${craft.type}.png`}
 				alt="Spacecraft"
 				class="spacecraft"
 				style="top: {craft.top}%; left: {craft.left}%; width: {craft.size}%; animation-duration: {craft.duration}s; animation-delay: {craft.delay}s; animation-direction: {craft.direction};"
