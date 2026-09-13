@@ -502,17 +502,17 @@
 	}
 
 	.scene.unfocused .layer-1 {
-		animation: astronaut-zoom-leave-reverse 2s ease-in-out forwards;
+		animation: astronaut-zoom-leave-reverse 1.5s ease-in-out forwards;
 		transform-origin: 50% 12%;
 	}
 
 	.scene.unfocused .rocks {
-		animation: scenery-leave-reverse 2s ease-in-out forwards;
+		animation: scenery-leave-reverse 1.5s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 
 	.scene.unfocused .ground {
-		animation: scenery-ground-reverse 2s ease-in-out forwards;
+		animation: scenery-ground-reverse 1.5s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 
@@ -537,7 +537,7 @@
 		transform-origin: 10% 90%;
 	}
 	.scene.unfocused .coming-soon-message {
-		animation: coming-soon-reverse 1s ease-in-out forwards;
+		animation: coming-soon-reverse 2.4s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 	@keyframes astronaut-zoom-leave {
