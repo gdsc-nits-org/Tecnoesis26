@@ -30,7 +30,10 @@ export function getSupabaseEnvironment(options?: {
 }
 
 export function getSupabaseServerClient(cookies: Cookies): SupabaseServerClient {
-	const { url, anonKey } = getSupabaseEnvironment({ requireAnonKey: true, requireServiceRoleKey: false });
+	const { url, anonKey } = getSupabaseEnvironment({
+		requireAnonKey: true,
+		requireServiceRoleKey: false
+	});
 
 	const safeUrl = url;
 	const safeAnonKey = anonKey ?? '';
@@ -38,7 +41,9 @@ export function getSupabaseServerClient(cookies: Cookies): SupabaseServerClient 
 	return createServerClient(safeUrl, safeAnonKey, {
 		cookies: {
 			getAll: () => cookies.getAll(),
-			setAll: (cookiesToSet: Array<{ name: string; value: string; options?: Record<string, unknown> }>) => {
+			setAll: (
+				cookiesToSet: Array<{ name: string; value: string; options?: Record<string, unknown> }>
+			) => {
 				cookiesToSet.forEach(({ name, value, options }) => {
 					cookies.set(name, value, { ...(options ?? {}), path: '/', sameSite: 'lax' });
 				});
