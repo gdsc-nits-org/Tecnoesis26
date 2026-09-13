@@ -309,7 +309,7 @@
 		transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
 		transition: transform 0.3s ease-out;
 		pointer-events: auto;
-		cursor: pointer;
+		cursor: none;
 	}
 
 	.layer-1 img {
