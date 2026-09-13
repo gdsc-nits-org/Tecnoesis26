@@ -491,11 +491,11 @@
 	}
 
 	.scene.focused .coming-soon-message {
-		animation: coming-soon 1.5s ease-in-out forwards;
+		animation: coming-soon 1s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 	.scene.unfocused .coming-soon-message {
-		animation: coming-soon-reverse 1.5s ease-in-out forwards;
+		animation: coming-soon-reverse 1s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
 	@keyframes astronaut-zoom-leave {
@@ -614,13 +614,13 @@
 			opacity: 1;
 		}
 		100% {
-			transform: translate3d(100%, 0, 0) scale(1);
+			transform: translate3d(150%, 0, 0) scale(1);
 			opacity: 1;
 		}
 	}
 	@keyframes coming-soon-reverse {
 		0% {
-			transform: translate3d(100%, 0, 0) scale(1);
+			transform: translate3d(150%, 0, 0) scale(1);
 			opacity: 1;
 		}
 		100% {
@@ -877,6 +877,19 @@
 				transform: translate3d(0, 0, 0) scale(1);
 				opacity: 1;
 			}
+		}
+
+		.coming-soon-message {
+			inset: 0;
+		}
+
+		.coming-soon-title {
+			text-align: center;
+			justify-items: center;
+		}
+
+		.type-line:last-child {
+			margin-left: 0;
 		}
 
 		.decor {
