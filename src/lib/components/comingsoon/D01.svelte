@@ -41,6 +41,7 @@
 
 		isFocused = true;
 	}
+	
 
 	onMount(() => {
 		window.addEventListener('mousemove', handleMouseMove);
@@ -61,6 +62,7 @@
 		src="/coming-soon/D03/layer-1.svg"
 		alt="Tecnoesis Logo"
 		class="header-logo"
+		class:zoomed={isZoomed}
 		class:focused={isFocused}
 	/>
 </header>
@@ -235,7 +237,11 @@
 		border-radius: inherit;
 		pointer-events: none;
 		background-image:
-			repeating-radial-gradient(circle at 28% 34%, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 4px),
+			repeating-radial-gradient(
+				circle at 28% 34%,
+				rgba(255, 255, 255, 0.12) 0 1px,
+				transparent 1px 4px
+			),
 			repeating-linear-gradient(113deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 5px);
 		mix-blend-mode: screen;
 		opacity: 0.28;
@@ -360,8 +366,13 @@
 		animation: scenery-ground 2s ease-in-out forwards;
 		transform-origin: 10% 90%;
 	}
+	.header-logo.zoomed {
+		animation: header-levitate 3s ease-in-out infinite alternate;
+	}
 	.header-logo.focused {
-		animation: scenery-header 2s forwards;
+		animation:
+			scenery-header 2s forwards,
+			header-levitate 3s ease-in-out infinite alternate;
 		transform-origin: 10% 90%;
 	}
 
@@ -641,8 +652,23 @@
 		}
 
 		.header-logo {
-			width: 90vw;
+			width: 80vw;
 			height: auto;
+		}
+
+		.header-logo.focused {
+			transform-origin: center;
+		}
+
+		@keyframes scenery-header {
+			0% {
+				transform: translate3d(0, 0, 0) scale(1);
+				opacity: 1;
+			}
+			100% {
+				transform: translate3d(0, 35vh, 0) scale(1.1);
+				opacity: 1;
+			}
 		}
 
 		.decor {
