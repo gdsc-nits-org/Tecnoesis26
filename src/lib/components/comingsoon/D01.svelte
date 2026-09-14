@@ -9,9 +9,7 @@
 	let isFocused = $state(false);
 	let isUnfocusing = $state(false);
 	let isReversing = $state(false);
-	/** @type {{ id: number; type: number; top: number; left: number; size: number; duration: number; delay: number; direction: 'normal' | 'reverse'; zIndex: number }[]} */
 	let spacecrafts = $state([]);
-	/** @type {Record<number, string>} */
 	const spacecraftImages = {
 		1: 'https://res.cloudinary.com/rfteglss/image/upload/v1789302626/Spacecraft_1.png',
 		2: 'https://res.cloudinary.com/rfteglss/image/upload/v1789302577/Spacecraft_2.png',
@@ -357,6 +355,10 @@
 		user-select: none;
 	}
 
+	.blur {
+		z-index: 2;
+	}
+
 	.moon {
 		position: absolute;
 		z-index: 4;
@@ -482,6 +484,10 @@
 	/* .rectangle-62 {
 		z-index: 6;
 	} */
+
+	.rectangle-63 {
+		z-index: 7;
+	}
 
 	.layer-1 {
 		z-index: 8;
@@ -1014,6 +1020,12 @@
 		.decor {
 			left: 0;
 			width: 100%;
+		}
+
+		.button {
+			left: 4%;
+			bottom: 3%;
+			width: 12%;
 		}
 	}
 
