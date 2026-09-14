@@ -58,7 +58,7 @@
     onwheel={handleWheel}
 >
     <!-- Background MEDIA Text -->
-    <div class="pointer-events-none select-none absolute bottom-0 left-[20vw] -translate-x-1/6 translate-y-1/8 z-0 text-white text-[20vw] font-bold text-center leading-none whitespace-nowrap">
+    <div class="pointer-events-none select-none absolute bottom-2 left-[14vw] md:left-[30vw] lg:left-[20vw] -translate-x-1/6 translate-y-1/8 z-0 text-white text-[20vw] font-bold text-center leading-none whitespace-nowrap">
         <h1>
             MEDIA
         </h1>
@@ -69,12 +69,12 @@
         
         <!-- Moving Column Reel -->
         <div
-            class="absolute top-0 flex flex-col items-center gap-[18vh] transition-transform duration-[1500ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-            style="transform: translateY(-{currentIndex * 70}vh);"
+            class="absolute top-0 flex flex-col items-center gap-[8vh] md:gap-[18vh] translate-y-[calc(-60vh*var(--gallery-index))] md:translate-y-[calc(-70vh*var(--gallery-index))] transition-transform duration-1500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style:--gallery-index={currentIndex}
         >
             {#each images as item, i (item.src)}
                 <div
-                    class="w-[56vw] h-[52vh] flex-shrink-0 rounded-2xl overflow-hidden transition-all duration-[1500ms] ease-out"
+                    class="w-[56vw] h-[52vh] flex-shrink-0 rounded-2xl overflow-hidden transition-all duration-1500 ease-out"
                     style="
                         {i === currentIndex
                             ? 'opacity: 1; transform: translateX(0px);'
@@ -96,18 +96,18 @@
         </div>
 
     </div>
-    <div class="absolute right-[6vw] top-[48%] -translate-y-1/2 z-20 flex items-center gap-6 pointer-events-none select-none">
+    <div class="absolute right-[6vw] md:right-[1vw] top-[80%] md:top-[48%] -translate-y-1/2 z-20 flex items-center gap-6 pointer-events-none select-none">
     
     <div class="flex flex-col items-end text-right font-mono space-y-1.5 text-white">
-        <span class="w-full text-left text-sm tracking-wider text-white font-game-demo">
+        <span class="w-full text-left text-xs md:text-sm tracking-wider text-white font-game-demo">
             • {images.length} Images
         </span>
         <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent "></div>
         <div class=" flex flex-col gap-4">
-            <h2 class="text-base text-xs  font-game-demo tracking-wide leading-snug drop-shadow-md">
+            <h2 class=" text-xs md:text-sm  font-game-demo tracking-wide leading-snug drop-shadow-md">
                 {images[currentIndex]?.title ?? ''}
             </h2>
-            <h2 class="text-base text-xs  font-game-demo tracking-wide leading-snug drop-shadow-md">
+            <h2 class=" text-xs md:text-sm  font-game-demo tracking-wide text-white/50 leading-snug drop-shadow-md">
                 {images[currentIndex+1]?.title ?? ''}
             </h2>
         </div>
