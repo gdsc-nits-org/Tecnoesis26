@@ -470,6 +470,7 @@
 		z-index: 4;
 		backdrop-filter: blur(3px);
 		-webkit-backdrop-filter: blur(3px);
+		backdrop-filter: blur(3px);
 		pointer-events: none;
 		transition:
 			opacity 1.5s ease-in-out,
