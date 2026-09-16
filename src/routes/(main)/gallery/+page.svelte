@@ -15,12 +15,13 @@
         { src: '/images/image5.png', title: 'Mystery Sphere 5', date: '12.03.2026' },
         { src: '/images/image6.png', title: 'Mystery Sphere 6', date: '12.03.2026' },
     ] }: { images?: GalleryItem[] } = $props();
-
+    let touchStartY = $state(0);
+    const SWIPE_THRESHOLD = 30;
     let currentIndex = $state(0);
     let isAnimating = $state(false);
 
-    // Kept in sync with the 1500ms transition
-    const DURATION = 1500;
+    // Kept in sync with the 1000ms transition
+    const DURATION = 1000;
 
     function handleWheel(e: WheelEvent): void {
         if (isAnimating) return;
@@ -28,6 +29,28 @@
         if (e.deltaY > 30) {
             nextSlide();
         } else if (e.deltaY < -30) {
+            prevSlide();
+        }
+    }
+
+    // Capture starting touch position
+    function handleTouchStart(e: TouchEvent): void {
+        touchStartY = e.touches[0].clientY;
+    }
+
+    // Determine swipe direction on touch release
+    function handleTouchEnd(e: TouchEvent): void {
+        if (isAnimating) return;
+
+        const touchEndY = e.changedTouches[0].clientY;
+        const diffY = touchStartY - touchEndY;
+
+        // Swiping UP (scrolling down to next image)
+        if (diffY > SWIPE_THRESHOLD) {
+            nextSlide();
+        } 
+        // Swiping DOWN (scrolling up to previous image)
+        else if (diffY < -SWIPE_THRESHOLD) {
             prevSlide();
         }
     }
@@ -56,6 +79,8 @@
 <main
     class="flex justify-center items-center fixed inset-0 overflow-hidden bg-[url('/GalleryBgImg.png')] bg-cover bg-center bg-no-repeat select-none font-game-demo"
     onwheel={handleWheel}
+    ontouchstart={handleTouchStart}
+    ontouchend={handleTouchEnd}
 >
     <!-- Background MEDIA Text -->
     <div class="pointer-events-none select-none absolute bottom-2 left-[14vw] md:left-[30vw] lg:left-[20vw] -translate-x-1/6 translate-y-1/8 z-0 text-white text-[20vw] font-bold text-center leading-none whitespace-nowrap">
@@ -69,12 +94,12 @@
         
         <!-- Moving Column Reel -->
         <div
-            class="absolute top-0 flex flex-col items-center gap-[8vh] md:gap-[18vh] translate-y-[calc(-60vh*var(--gallery-index))] md:translate-y-[calc(-70vh*var(--gallery-index))] transition-transform duration-1500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            class="absolute top-0 flex flex-col items-center gap-[8vh] md:gap-[18vh] translate-y-[calc(-60vh*var(--gallery-index))] md:translate-y-[calc(-70vh*var(--gallery-index))] transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
             style:--gallery-index={currentIndex}
         >
             {#each images as item, i (item.src)}
                 <div
-                    class="w-[56vw] h-[52vh] flex-shrink-0 rounded-2xl overflow-hidden transition-all duration-1500 ease-out"
+                    class="w-[56vw] h-[52vh] flex-shrink-0 rounded-2xl overflow-hidden transition-all duration-1000 ease-out"
                     style="
                         {i === currentIndex
                             ? 'opacity: 1; transform: translateX(0px);'
