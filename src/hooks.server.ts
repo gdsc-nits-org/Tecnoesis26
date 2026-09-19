@@ -10,9 +10,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const isModuleParticipateRoute =
 		pathname.includes('/modules/') && pathname.includes('/participate');
 
-	if (pathname.startsWith('/') && pathname != '/') {
-		throw redirect(302, '/');
-	}
 	if (isAuthRoute || isDashboardRoute || isModuleParticipateRoute) {
 		const hasSession = await hasActiveSession(cookies);
 
