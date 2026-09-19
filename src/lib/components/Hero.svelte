@@ -1,9 +1,11 @@
 <script lang="ts">
 	
 	import Navbar from "$lib/components/Navbar.svelte";
+	import About from "$lib/components/About.svelte";
 
 	let logoX = $state(0);
 	let logoY = $state(0);
+	let showAbout = $state(false);
 
 	function handlePointerMove(event: PointerEvent) {
 		if (event.pointerType === 'touch') return;
@@ -18,17 +20,27 @@
 		logoX = 0;
 		logoY = 0;
 	}
+
+	function handleClick(event: MouseEvent) {
+		// Don't toggle if clicking on nav links, buttons, or interactive elements
+		const target = event.target as HTMLElement;
+		if (target.closest('a, button, .login-btn, .main-nav, nav')) return;
+		showAbout = !showAbout;
+	}
 </script>
 
 <div
 	class="landing-page"
+	class:about-active={showAbout}
 	role="presentation"
 	onpointermove={handlePointerMove}
 	onpointerleave={resetLogoPosition}
+	onclick={handleClick}
 >
 	<header class="topbar">
 		<div
 			class="brand"
+			class:hidden={showAbout}
 			aria-label="Tecnoesis home"
 			style={`--logo-x: ${logoX}px; --logo-y: ${logoY}px`}
 		>
@@ -64,24 +76,27 @@
 
 		<main class="hero-stage">
 		<Navbar />
-			<div class="copy-card">
+			<div class="copy-card" class:hidden={showAbout}>
 				<p>
 					Tecnoesis is the annual<br />
 					Techno-Managerial<br />
 					Event of NIT Silchar
 				</p>
 			</div> 
-			<div class="map-button"><span>3D MAP</span></div>
-			<div class="scroll-indicator">
+			<div class="map-button" class:hidden={showAbout}><span>3D MAP</span></div>
+			<div class="scroll-indicator" class:hidden={showAbout}>
 				<span class="arrow">⌄</span>
 				<span>scroll</span>
 			</div>
+
+			<!-- About Tecnoesis Section -->
+			<About visible={showAbout} />
 		</main>
 	</div>
 </div>
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Sulphur+Point:wght@300;400;700&display=swap');
 
 	:global(body) {
 		margin: 0;
@@ -102,6 +117,7 @@
 			linear-gradient(180deg, rgba(22, 9, 36, 0.12), rgba(76, 26, 115, 0.2)),
 			url('/background.jpg') center/cover no-repeat,
 			#3a1471;
+		cursor: pointer;
 	}
 
 	.landing-page::before {
@@ -134,8 +150,14 @@
 		left: 46%;
 		top: -3.8rem;
 		transform: translate3d(calc(-50% + var(--logo-x, 0px)), var(--logo-y, 0px), 0);
-		transition: transform 180ms ease-out;
+		transition: transform 180ms ease-out, opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 		z-index: 5;
+		opacity: 1;
+	}
+
+	.brand.hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.brand::before {
@@ -192,9 +214,6 @@
 
 	.big-letters {
 	display: flex;
-	/* position: absolute;
-	left: 16%;
-	top: 0; */
 	flex-direction: column-reverse;
 	align-items: center;
 	padding-top: 0;
@@ -231,6 +250,7 @@
 		text-orientation: mixed;
 	}
 
+	/* Hero elements fade out transitions */
 	.copy-card {
 		position: absolute;
 		top: 11.5rem;
@@ -238,10 +258,18 @@
 		margin: 0;
 		padding: 0;
 		max-width: 11rem;
+		opacity: 1;
+		transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.copy-card.hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.copy-card p {
 		margin: 0;
+		font-family: 'Sulphur Point', sans-serif;
 		color: rgba(255, 255, 255, 0.82);
 		font-size: 0.72rem;
 		line-height: 1.4;
@@ -279,6 +307,13 @@
 		z-index: 10;
 		padding: 0 1rem 0.15rem;
 		cursor: pointer;
+		opacity: 1;
+		transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.map-button.hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.map-button::before {
@@ -334,12 +369,21 @@
 		font-size: 0.8rem;
 		letter-spacing: 0.12em;
 		text-transform: lowercase;
+		opacity: 1;
+		transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.scroll-indicator.hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 
 	.arrow {
 		font-size: 2.2rem;
 		line-height: 1;
 	}
+
+
 
 	@media (max-width: 980px) {
 		.topbar {
@@ -362,6 +406,8 @@
 		.copy-card {
 			left: calc(100% + 0.25rem);
 		}
+
+
 	}
 
 	@media (max-width: 720px) {
@@ -405,5 +451,7 @@
 		.hero-stage {
 			min-height: 68vh;
 		}
+
+
 	}
 </style>
