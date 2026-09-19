@@ -49,7 +49,7 @@
 
 	<!-- Panel 2: New Content -->
 	<div class="panel panel-2" class:slide-in={showSecondPanel}>
-		<div class="about-content">
+		<div class="about-content reversed">
 			<div class="about-text second-text">
 				<h2 class="about-title">What Awaits You</h2>
 				<div class="about-description">
@@ -137,8 +137,8 @@
 		flex-direction: column;
 		justify-content: center;
 		padding: 2rem 3rem 2rem 1rem;
-		transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-			opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.5s cubic-bezier(0.4, 0, 1, 1);
 	}
 
 	.panel-1 {
@@ -147,17 +147,17 @@
 	}
 
 	.panel-1.slide-out {
-		transform: translateX(-100%);
-		opacity: 0;
+		transform: translateX(-50%);
+		opacity: 1;
 	}
 
 	.panel-2 {
-		transform: translateX(100%);
+		transform: translateX(50%);
 		opacity: 0;
 	}
 
 	.panel-2.slide-in {
-		transform: translateX(0);
+		transform: translateX(50%);
 		opacity: 1;
 	}
 
