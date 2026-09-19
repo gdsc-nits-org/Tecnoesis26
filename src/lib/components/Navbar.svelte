@@ -33,7 +33,7 @@
 		font-size: 1.1rem;
 		opacity: 0.95;
 	}
-	.nav2     a {
+	.nav2   {
 		color: rgba(255, 255, 255, 0.8);
 		display: inline-flex;
 		align-items: center;
