@@ -15,6 +15,16 @@
 	font-style: normal;
 	font-display: swap;
 }
+
+@font-face {
+	font-family: 'Delicatus';
+	src: url('/font/delicatus.medium.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
 @theme {
 	--font-paused: 'Game Paused', sans-serif;
+	--font-delicatus: 'Delicatus', sans-serif;
 }

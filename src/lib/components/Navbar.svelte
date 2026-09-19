@@ -2,8 +2,8 @@
 	const navItems = ['Home', 'Gallery', 'Modules', 'Spark', 'Teams'];
 </script>
 
-<nav class="flex flex-1 items-center justify-between gap-8" aria-label="Main navigation">
-	<div class="font-nav flex items-center gap-8 text-[1.1rem] font-semibold text-white/80 opacity-95">
+<nav class="flex min-w-0 flex-1 items-center justify-between gap-8" aria-label="Main navigation">
+	<div class="font-nav flex min-w-0 items-center gap-8 text-[1.1rem] font-semibold text-white/80 opacity-95">
 		{#each navItems as item}
 			<a
 				href="/"
