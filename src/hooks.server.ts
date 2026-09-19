@@ -6,13 +6,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const pathname = url.pathname;
 
 	const isAuthRoute = pathname === '/auth' || pathname.startsWith('/auth/');
-	const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+	const isDashboardRoute =
+		pathname === '/dashboard' || pathname.startsWith('/dashboard/');
 	const isModuleParticipateRoute =
 		pathname.includes('/modules/') && pathname.includes('/participate');
 
-	if (pathname.startsWith('/') && pathname != '/') {
-		throw redirect(302, '/');
-	}
 	if (isAuthRoute || isDashboardRoute || isModuleParticipateRoute) {
 		const hasSession = await hasActiveSession(cookies);
 
