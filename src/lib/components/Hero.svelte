@@ -5,7 +5,8 @@
 
 	let logoX = $state(0);
 	let logoY = $state(0);
-	let showAbout = $state(false);
+	let currentPage = $state(0); // 0=hero, 1=about panel1, 2=about panel2
+	let isTransitioning = $state(false);
 
 	function handlePointerMove(event: PointerEvent) {
 		if (event.pointerType === 'touch') return;
@@ -21,26 +22,54 @@
 		logoY = 0;
 	}
 
+	function goNext() {
+		if (isTransitioning || currentPage >= 2) return;
+		isTransitioning = true;
+		currentPage++;
+		setTimeout(() => isTransitioning = false, 1200);
+	}
+
+	function goPrev() {
+		if (isTransitioning || currentPage <= 0) return;
+		isTransitioning = true;
+		currentPage--;
+		setTimeout(() => isTransitioning = false, 1200);
+	}
+
 	function handleClick(event: MouseEvent) {
-		// Don't toggle if clicking on nav links, buttons, or interactive elements
 		const target = event.target as HTMLElement;
-		if (target.closest('a, button, .login-btn, .main-nav, nav')) return;
-		showAbout = !showAbout;
+		if (target.closest('a, button, .login-btn, .main-nav, nav, .social-links')) return;
+		goNext();
+	}
+
+	function handleWheel(event: WheelEvent) {
+		if (isTransitioning) return;
+		// Require a minimum delta to avoid micro-scrolls triggering transitions
+		if (Math.abs(event.deltaY) < 30) return;
+		event.preventDefault();
+		if (event.deltaY > 0 && currentPage < 2) {
+			goNext();
+		} else if (event.deltaY < 0 && currentPage > 0) {
+			goPrev();
+		}
 	}
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
 	class="landing-page"
-	class:about-active={showAbout}
+	class:about-active={currentPage >= 1}
 	role="presentation"
 	onpointermove={handlePointerMove}
 	onpointerleave={resetLogoPosition}
 	onclick={handleClick}
+	onwheel={handleWheel}
 >
 	<header class="topbar">
 		<div
 			class="brand"
-			class:hidden={showAbout}
+			class:hidden={currentPage >= 1}
 			aria-label="Tecnoesis home"
 			style={`--logo-x: ${logoX}px; --logo-y: ${logoY}px`}
 		>
@@ -76,21 +105,21 @@
 
 		<main class="hero-stage">
 		<Navbar />
-			<div class="copy-card" class:hidden={showAbout}>
+			<div class="copy-card" class:hidden={currentPage >= 1}>
 				<p>
 					Tecnoesis is the annual<br />
 					Techno-Managerial<br />
 					Event of NIT Silchar
 				</p>
 			</div> 
-			<div class="map-button" class:hidden={showAbout}><span>3D MAP</span></div>
-			<div class="scroll-indicator" class:hidden={showAbout}>
+			<div class="map-button" class:hidden={currentPage >= 1}><span>3D MAP</span></div>
+			<div class="scroll-indicator" class:hidden={currentPage >= 1}>
 				<span class="arrow">⌄</span>
 				<span>scroll</span>
 			</div>
 
 			<!-- About Tecnoesis Section -->
-			<About visible={showAbout} />
+			<About {currentPage} />
 		</main>
 	</div>
 </div>

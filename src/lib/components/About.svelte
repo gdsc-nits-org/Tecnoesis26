@@ -1,35 +1,13 @@
 <script lang="ts">
-	let { visible = false } = $props();
-	let showSecondPanel = $state(false);
-
-	function handleClick(event: MouseEvent) {
-		// Don't toggle if clicking social links
-		const target = event.target as HTMLElement;
-		if (target.closest('.social-links, a, button')) return;
-		showSecondPanel = !showSecondPanel;
-	}
-
-	function handleWheel(event: WheelEvent) {
-		if (event.deltaY > 0 && !showSecondPanel) {
-			showSecondPanel = true;
-			event.preventDefault();
-		} else if (event.deltaY < 0 && showSecondPanel) {
-			showSecondPanel = false;
-			event.preventDefault();
-		}
-	}
+	let { currentPage = 0 } = $props();
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <section
 	class="about-section"
-	class:visible
-	onclick={handleClick}
-	onwheel={handleWheel}
+	class:visible={currentPage >= 1}
 >
 	<!-- Panel 1: Original About Content -->
-	<div class="panel panel-1" class:slide-out={showSecondPanel}>
+	<div class="panel panel-1" class:slide-out={currentPage >= 2}>
 		<div class="about-content">
 			<div class="about-text">
 				<h2 class="about-title">About Tecnoesis</h2>
@@ -48,7 +26,7 @@
 	</div>
 
 	<!-- Panel 2: New Content -->
-	<div class="panel panel-2" class:slide-in={showSecondPanel}>
+	<div class="panel panel-2" class:slide-in={currentPage >= 2}>
 		<div class="about-content reversed">
 			<div class="about-text second-text">
 				<h2 class="about-title">What Awaits You</h2>
@@ -72,8 +50,8 @@
 
 	<!-- Slide indicators -->
 	<div class="slide-dots">
-		<span class="dot" class:active={!showSecondPanel}></span>
-		<span class="dot" class:active={showSecondPanel}></span>
+		<span class="dot" class:active={currentPage === 1}></span>
+		<span class="dot" class:active={currentPage === 2}></span>
 	</div>
 
 	<div class="social-links">
