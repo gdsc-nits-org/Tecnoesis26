@@ -1,3 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@font-face {
+  font-family: 'Delicatus';
+  src: url('/fonts/Delicatus.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GameDemo';
+  src: url('/fonts/Game Paused DEMO.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+@theme {
+  --font-delicatus: 'Delicatus', sans-serif;
+  --font-game-demo: 'GameDemo', sans-serif;
+}
