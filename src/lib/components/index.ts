@@ -4,3 +4,6 @@
  */
 export { default as GalleryButton } from './GalleryButton.svelte';
 export { default as MerchButton } from './MerchButton.svelte';
+export { default as AuthField } from './auth/AuthField.svelte';
+export { default as AuthIcon } from './auth/AuthIcon.svelte';
+export { default as AuthShell } from './auth/AuthShell.svelte';
