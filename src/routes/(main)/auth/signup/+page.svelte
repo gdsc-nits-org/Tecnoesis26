@@ -2,16 +2,18 @@
 	import { resolve } from '$app/paths';
 
 	let fullName = $state('');
-	let scholarId = $state('');
-	let phoneNumber = $state('');
-	let hostelNumber = $state('');
+	let email = $state('');
+	let phone = $state('');
+	let hostel = $state('');
+	let gender = $state('');
 
 	function handleUpdate() {
 		console.log({
 			fullName,
-			scholarId,
-			phoneNumber,
-			hostelNumber
+			email,
+			phone,
+			hostel,
+			gender
 		});
 	}
 </script>
@@ -36,6 +38,11 @@
 		h-screen
 		w-full
 		overflow-hidden
+
+		max-md:h-screen
+		max-md:overflow-y-auto
+		max-md:overflow-x-hidden
+
 		bg-[#25136f]
 		bg-[url('/profile-bg.png')]
 		bg-cover
@@ -209,10 +216,16 @@
 
 			md:px-8
 			md:pt-24
+
+			max-md:h-auto
+			max-md:min-h-screen
+			max-md:items-start
+			max-md:overflow-visible
+			max-md:pb-12
 		"
 	>
 		<!-- ================================================= -->
-		<!-- GLASS CARD                                        -->
+		<!-- PROFILE CARD                                      -->
 		<!-- ================================================= -->
 
 		<div
@@ -223,7 +236,6 @@
 				w-full
 				max-w-[1080px]
 				flex-col
-
 				overflow-hidden
 				rounded-[24px]
 				border
@@ -243,6 +255,11 @@
 				md:rounded-[28px]
 				md:px-[70px]
 				md:py-[42px]
+
+				max-md:h-auto
+				max-md:min-h-[calc(100vh-5rem)]
+				max-md:overflow-visible
+				max-md:rounded-[24px]
 			"
 		>
 			<!-- ================================================= -->
@@ -286,151 +303,40 @@
 			</h1>
 
 			<!-- ================================================= -->
-			<!-- CONTENT                                            -->
+			<!-- FORM                                               -->
 			<!-- ================================================= -->
 
-			<div
+			<form
+				onsubmit={(event) => {
+					event.preventDefault();
+					handleUpdate();
+				}}
 				class="
 					relative
 					z-10
 					mt-7
-					grid
-					min-h-0
+					flex
 					flex-1
-					grid-cols-1
-					items-center
+					flex-col
 
 					md:mt-5
-					md:grid-cols-[0.9fr_1.35fr]
-					md:gap-[75px]
 				"
 			>
 				<!-- ================================================= -->
-				<!-- LEFT : PROFILE                                    -->
+				<!-- FORM GRID                                         -->
 				<!-- ================================================= -->
 
 				<div
 					class="
-						flex
-						flex-col
-						items-center
-						justify-center
-						md:-translate-y-4
-					"
-				>
-					<!-- PROFILE CIRCLE -->
-
-					<div
-						class="
-							flex
-							h-[105px]
-							w-[105px]
-							shrink-0
-							items-center
-							justify-center
-							rounded-full
-							bg-white/[0.93]
-
-							sm:h-[120px]
-							sm:w-[120px]
-
-							md:h-[185px]
-							md:w-[185px]
-						"
-					>
-						<svg
-							class="
-								h-[58px]
-								w-[58px]
-								text-[#bdbdc3]
-
-								sm:h-[65px]
-								sm:w-[65px]
-
-								md:h-[98px]
-								md:w-[98px]
-							"
-							viewBox="0 0 100 100"
-							fill="none"
-							aria-hidden="true"
-						>
-							<!-- HEAD -->
-
-							<circle
-								cx="50"
-								cy="35"
-								r="13"
-								stroke="currentColor"
-								stroke-width="7"
-							/>
-
-							<!-- BODY -->
-
-							<path
-								d="M25 75C25 61 34 54 50 54C66 54 75 61 75 75"
-								stroke="currentColor"
-								stroke-width="7"
-								stroke-linecap="round"
-							/>
-						</svg>
-					</div>
-
-					<!-- UPDATE BUTTON -->
-
-					<button
-						type="button"
-						onclick={handleUpdate}
-						class="
-							mt-4
-							h-[42px]
-							w-full
-							max-w-[210px]
-							shrink-0
-							rounded-[8px]
-							border
-							border-fuchsia-300/60
-							bg-[#a22ef0]
-							px-4
-							text-[17px]
-							font-semibold
-							text-white
-
-							transition
-							duration-200
-							hover:bg-[#b33aff]
-							hover:shadow-[0_0_18px_rgba(168,85,247,0.25)]
-							active:scale-[0.99]
-
-							sm:mt-5
-							sm:h-[44px]
-							sm:max-w-[230px]
-							sm:text-[18px]
-
-							md:mt-7
-							md:h-[47px]
-							md:max-w-[270px]
-							md:text-[21px]
-						"
-					>
-						Update Profile
-					</button>
-				</div>
-
-				<!-- ================================================= -->
-				<!-- RIGHT : FORM                                      -->
-				<!-- ================================================= -->
-
-				<div
-					class="
-						flex
-						w-full
-						flex-col
-						justify-center
+						grid
+						grid-cols-1
 						gap-4
 
 						sm:gap-5
 
-						md:gap-5
+						md:grid-cols-2
+						md:gap-x-[36px]
+						md:gap-y-5
 					"
 				>
 					<!-- ================================================= -->
@@ -491,12 +397,12 @@
 					</div>
 
 					<!-- ================================================= -->
-					<!-- SCHOLAR ID                                         -->
+					<!-- EMAIL                                               -->
 					<!-- ================================================= -->
 
 					<div class="flex flex-col gap-1.5">
 						<label
-							for="scholarId"
+							for="email"
 							class="
 								pl-1
 								text-[15px]
@@ -509,15 +415,15 @@
 								md:text-[19px]
 							"
 						>
-							Scholar ID
+							Email
 						</label>
 
 						<input
-							id="scholarId"
-							type="text"
-							bind:value={scholarId}
-							placeholder="Your Scholar ID"
-							autocomplete="off"
+							id="email"
+							type="email"
+							bind:value={email}
+							placeholder="Institute Email"
+							autocomplete="email"
 							class="
 								h-[44px]
 								w-full
@@ -545,15 +451,29 @@
 								md:text-[18px]
 							"
 						/>
+
+						<span
+							class="
+								pl-1
+								text-[9px]
+								text-white/45
+
+								sm:text-[10px]
+
+								md:text-[11px]
+							"
+						>
+							Institute email only
+						</span>
 					</div>
 
 					<!-- ================================================= -->
-					<!-- PHONE NUMBER                                       -->
+					<!-- PHONE                                               -->
 					<!-- ================================================= -->
 
 					<div class="flex flex-col gap-1.5">
 						<label
-							for="phoneNumber"
+							for="phone"
 							class="
 								pl-1
 								text-[15px]
@@ -570,9 +490,9 @@
 						</label>
 
 						<input
-							id="phoneNumber"
+							id="phone"
 							type="tel"
-							bind:value={phoneNumber}
+							bind:value={phone}
 							placeholder="Your Phone Number"
 							autocomplete="tel"
 							class="
@@ -605,12 +525,12 @@
 					</div>
 
 					<!-- ================================================= -->
-					<!-- HOSTEL NUMBER                                      -->
+					<!-- HOSTEL                                              -->
 					<!-- ================================================= -->
 
 					<div class="flex flex-col gap-1.5">
 						<label
-							for="hostelNumber"
+							for="hostel"
 							class="
 								pl-1
 								text-[15px]
@@ -627,9 +547,9 @@
 						</label>
 
 						<input
-							id="hostelNumber"
+							id="hostel"
 							type="text"
-							bind:value={hostelNumber}
+							bind:value={hostel}
 							placeholder="Your Hostel Number"
 							autocomplete="off"
 							class="
@@ -660,39 +580,133 @@
 							"
 						/>
 					</div>
+
+					<!-- ================================================= -->
+					<!-- GENDER                                              -->
+					<!-- ================================================= -->
+
+					<div class="flex flex-col gap-1.5">
+						<label
+							for="gender"
+							class="
+								pl-1
+								text-[15px]
+								font-medium
+								leading-tight
+								text-white
+
+								sm:text-[17px]
+
+								md:text-[19px]
+							"
+						>
+							Gender
+						</label>
+
+						<select
+							id="gender"
+							bind:value={gender}
+							class="
+								h-[44px]
+								w-full
+								rounded-[6px]
+								border
+								border-[#9c2cff]
+								bg-[rgba(65,32,142,0.72)]
+								px-3
+								text-[14px]
+								font-medium
+								text-white
+								outline-none
+
+								transition
+
+								focus:border-[#c05aff]
+								focus:ring-2
+								focus:ring-fuchsia-400/15
+
+								sm:h-[48px]
+								sm:text-[16px]
+
+								md:h-[53px]
+								md:text-[18px]
+							"
+						>
+							<option value="" disabled class="bg-fuchsia-500">
+								Select Gender
+							</option>
+
+							<option value="Male" class="bg-[#351878]">
+								Male
+							</option>
+
+							<option value="Female" class="bg-[#351878]">
+								Female
+							</option>
+
+							<option value="Other" class="bg-[#351878]">
+								Other
+							</option>
+
+							<option value="Prefer not to say" class="bg-[#351878]">
+								Prefer not to say
+							</option>
+						</select>
+					</div>
 				</div>
-			</div>
+
+				<!-- ================================================= -->
+				<!-- COMPLETE BUTTON                                   -->
+				<!-- ================================================= -->
+
+				<div
+					class="
+						flex
+						justify-center
+
+						mt-8
+
+						md:mt-auto
+						md:pt-8
+					"
+				>
+					<button
+						type="submit"
+						class="
+							h-[44px]
+							w-full
+							max-w-[260px]
+							rounded-[7px]
+							border
+							border-fuchsia-300/50
+							bg-[#a22ef0]
+							px-4
+							text-[17px]
+							font-semibold
+							text-white
+
+							transition
+							duration-200
+
+							hover:bg-red-500
+							hover:shadow-[0_0_18px_rgba(168,85,247,0.25)]
+
+							active:scale-[0.99]
+
+							sm:h-[46px]
+							sm:max-w-[280px]
+							sm:text-[18px]
+
+							md:h-[42px]
+							md:max-w-[316px]
+							md:text-[20px]
+						"
+					>
+						Complete
+					</button>
+				</div>
+			</form>
 		</div>
 	</main>
 </div>
 
-<style>
-	@font-face {
-		font-family: 'Game Paused';
-		src: url('/fonts/GamePausedDEMO-Regular.otf') format('opentype');
-		font-weight: 400;
-		font-style: normal;
-		font-display: swap;
-	}
-
-	.game-paused {
-		font-family: 'Game Paused', monospace;
-	}
-
-	:global(html),
-	:global(body) {
-		margin: 0;
-		padding: 0;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-	}
-
-	:global(body) {
-		background: #25136f;
-	}
-
-	:global(*) {
-		box-sizing: border-box;
-	}
-</style>
