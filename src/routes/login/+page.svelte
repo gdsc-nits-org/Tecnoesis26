@@ -8,23 +8,18 @@
 	import AuthShell from '$lib/components/auth/AuthShell.svelte';
 
 	let { form } = $props();
-	let activeSubmission = $state<'credentials' | 'google' | null>(null);
+	let submitting = $state(false);
 	const queryError = $derived(page.url.searchParams.get('error'));
 	const error = $derived(form?.error ?? queryError);
 
 	const enhanceCredentials: SubmitFunction = () => {
-		activeSubmission = 'credentials';
+		submitting = true;
 		return async ({ update }) => {
-			await update();
-			activeSubmission = null;
-		};
-	};
-
-	const enhanceGoogle: SubmitFunction = () => {
-		activeSubmission = 'google';
-		return async ({ update }) => {
-			await update();
-			activeSubmission = null;
+			try {
+				await update({ reset: false });
+			} finally {
+				submitting = false;
+			}
 		};
 	};
 </script>
@@ -39,6 +34,12 @@
 	description="Log in to continue to the Tecnoesis universe."
 	mode="login"
 >
+	{#if page.url.searchParams.get('reset') === 'success'}
+		<div class="auth-notice" role="status">
+			<AuthIcon name="info" size={18} />
+			<span>Password updated. Log in with your username and new password.</span>
+		</div>
+	{/if}
 	{#if error}
 		<div class="auth-error" role="alert">
 			<AuthIcon name="info" size={18} />
@@ -46,12 +47,7 @@
 		</div>
 	{/if}
 
-	<form
-		method="POST"
-		class="auth-form"
-		use:enhance={enhanceCredentials}
-		aria-busy={activeSubmission === 'credentials'}
-	>
+	<form method="POST" class="auth-form" use:enhance={enhanceCredentials} aria-busy={submitting}>
 		<AuthField
 			label="Username"
 			name="username"
@@ -76,33 +72,15 @@
 			<a class="auth-text-link" href={resolve('/forgot-password')}>Forgot password?</a>
 		</div>
 
-		<button
-			type="submit"
-			formaction="?/default"
-			class="auth-button"
-			disabled={activeSubmission !== null}
-		>
-			<span>{activeSubmission === 'credentials' ? 'Entering...' : 'Log In'}</span>
-			{#if activeSubmission !== 'credentials'}<AuthIcon name="arrow-right" size={20} />{/if}
-		</button>
-	</form>
-
-	<div class="auth-divider"><span>or</span></div>
-
-	<form method="POST" use:enhance={enhanceGoogle} aria-busy={activeSubmission === 'google'}>
-		<button
-			type="submit"
-			formaction="?/google"
-			class="auth-secondary-button"
-			disabled={activeSubmission !== null}
-		>
-			<AuthIcon name="google" size={20} />
-			<span>{activeSubmission === 'google' ? 'Connecting...' : 'Continue with Google'}</span>
+		<button type="submit" class="auth-button" disabled={submitting}>
+			<span>{submitting ? 'Entering...' : 'Log In'}</span>
+			{#if !submitting}<AuthIcon name="arrow-right" size={20} />{/if}
 		</button>
 	</form>
 
 	<p class="auth-footer">
-		Don't have an account? <a class="auth-text-link" href={resolve('/signup')}>Sign up</a>
+		New here? <a class="auth-text-link" href={resolve('/signup')}>Sign up with Google</a> to create your
+		username and password.
 	</p>
 </AuthShell>
 

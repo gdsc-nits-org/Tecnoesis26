@@ -11,8 +11,11 @@
 	const enhanceProfile: SubmitFunction = () => {
 		submitting = true;
 		return async ({ update }) => {
-			await update();
-			submitting = false;
+			try {
+				await update({ reset: false });
+			} finally {
+				submitting = false;
+			}
 		};
 	};
 </script>
@@ -57,16 +60,19 @@
 				minlength={3}
 				maxlength={24}
 				pattern={'[a-z0-9_]{3,24}'}
+				hint="3–24 characters: lowercase letters (a–z), numbers (0–9), or underscores (_). Example: mainak123"
+				hintAsPopover
 				required
 			/>
 
 			<AuthField
-				label="Scholar ID"
-				name="scholar_id"
-				icon="id-card"
-				placeholder="Enter your Scholar ID"
-				value={form?.scholarId ?? ''}
-				autocomplete="off"
+				label="Full name"
+				name="full_name"
+				icon="user"
+				placeholder="Enter your name"
+				value={form?.fullName ?? data.fullName ?? ''}
+				autocomplete="name"
+				maxlength={100}
 				required
 			/>
 		</div>
@@ -79,6 +85,7 @@
 			placeholder="Create a password"
 			autocomplete="new-password"
 			minlength={8}
+			maxlength={128}
 			hint="8+ characters with uppercase, lowercase, and a number"
 			required
 		/>
@@ -91,6 +98,7 @@
 			placeholder="Enter your password again"
 			autocomplete="new-password"
 			minlength={8}
+			maxlength={128}
 			required
 		/>
 

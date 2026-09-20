@@ -17,12 +17,12 @@ create table if not exists public.profiles (
 -- Scholar ID is retained for existing accounts, but the new signup flow does not require it.
 alter table public.profiles alter column scholar_id drop not null;
 
--- Profiles must always use the exact NIT Silchar email domain.
+-- Accept any email domain ending in .nits.ac.in, without a department whitelist.
 alter table public.profiles
 drop constraint if exists profiles_institute_email_nits_check;
 alter table public.profiles
 add constraint profiles_institute_email_nits_check
-check (lower(btrim(institute_email)) ~ '^[^@[:space:]]+@nits[.]ac[.]in$');
+check (lower(btrim(institute_email)) ~ '^[^@[:space:]]+@[^@[:space:]]+[.]nits[.]ac[.]in$');
 
 -- Email addresses are case-insensitive for identity and uniqueness purposes.
 drop index if exists public.profiles_institute_email_idx;
@@ -78,7 +78,7 @@ revoke all on public.profiles from anon;
 
 -- Supabase Auth "Before User Created" hook.
 -- This prevents direct email/password signup and permits new accounts only when
--- they arrive through Google with an exact @nits.ac.in address.
+-- they arrive through Google with an email domain ending in .nits.ac.in.
 create or replace function public.hook_google_nits_signup_only(event jsonb)
 returns jsonb
 language plpgsql
@@ -101,11 +101,11 @@ begin
     );
   end if;
 
-  if signup_email !~ '^[^@[:space:]]+@nits[.]ac[.]in$' then
+  if signup_email !~ '^[^@[:space:]]+@[^@[:space:]]+[.]nits[.]ac[.]in$' then
     return jsonb_build_object(
       'error', jsonb_build_object(
         'http_code', 403,
-        'message', 'Use your @nits.ac.in Google account to sign up.'
+        'message', 'Use your institute Google email ending in .nits.ac.in to sign up.'
       )
     );
   end if;

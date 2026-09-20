@@ -426,6 +426,60 @@
 	letter-spacing: 0.01em;
 }
 
+.auth-field__heading {
+	position: relative;
+	display: flex;
+	min-height: 24px;
+	align-items: center;
+	gap: 6px;
+}
+
+.auth-field__info {
+	display: inline-flex;
+	width: 24px;
+	height: 24px;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: #c9a5ff;
+	cursor: pointer;
+}
+
+.auth-field__info:hover,
+.auth-field__info[aria-expanded='true'] {
+	background: rgba(167, 94, 255, 0.2);
+	color: #fff;
+}
+
+.auth-field__info:focus-visible {
+	outline: 2px solid #d48cff;
+	outline-offset: 2px;
+}
+
+.auth-field__popover {
+	position: absolute;
+	pointer-events: none;
+	z-index: 20;
+	top: calc(100% + 6px);
+	left: 0;
+	width: 100%;
+	margin: 0;
+	padding: 12px;
+	border: 1px solid #9152ee;
+	border-radius: 8px;
+	background: #21164a;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+	color: #f2ecff;
+	font-family: Arial, sans-serif;
+	font-size: 0.78rem;
+	line-height: 1.5;
+	letter-spacing: normal;
+	text-transform: none;
+}
+
 .auth-field__control {
 	position: relative;
 	display: flex;
@@ -484,6 +538,24 @@
 
 .auth-field__input--password {
 	padding-right: 52px;
+}
+
+/* Edge and Safari draw their own reveal/autofill control at the right edge of a
+   password field, directly underneath our .auth-field__reveal button. Two eye
+   icons stack up and clicks land on whichever the browser paints on top, which
+   reads as "the eye button does nothing". Hide the native ones so the custom
+   control is the only thing there. */
+.auth-field__input--password::-ms-reveal,
+.auth-field__input--password::-ms-clear {
+	display: none;
+}
+
+.auth-field__input--password::-webkit-credentials-auto-fill-button,
+.auth-field__input--password::-webkit-strong-password-auto-fill-button {
+	visibility: hidden;
+	pointer-events: none;
+	margin: 0;
+	width: 0;
 }
 
 .auth-field__input::placeholder {

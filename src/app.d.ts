@@ -6,7 +6,7 @@ import type { Session, User } from '@supabase/supabase-js';
 export type Profile = {
 	id: string;
 	username: string;
-	scholar_id: string;
+	scholar_id: string | null;
 	institute_email: string;
 	full_name: string | null;
 	phone_number: string | null;
