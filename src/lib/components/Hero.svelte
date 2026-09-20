@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
 
 	let logoX = $state(0);
@@ -22,68 +22,6 @@
 		logoX = 0;
 		logoY = 0;
 	}
-
-	const letters = ['T', 'E', 'C', 'N', 'O', 'E', 'S', 'I', 'S'];
-
-	const glitchFrames = [
-		'100110100',
-		'001010001',
-		'101001001',
-		'011010111',
-		'100101101',
-		'110110100',
-		'111111111'
-	].map((frame) => [...frame].map((c) => c === '1'));
-
-	const GLITCH_INTERVAL_MS = 70;
-	const GLITCH_DURATION_MS = 500;
-
-	let glitchStep = $state(-1);
-	let glitchTimer: ReturnType<typeof setInterval> | undefined;
-	let glitchTimeout: ReturnType<typeof setTimeout> | undefined;
-
-	function startGlitch(event: PointerEvent) {
-		if (event.pointerType === 'touch') return;
-		if (glitchTimer || glitchTimeout) return;
-
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			return;
-		}
-
-		// Start glitch
-		glitchStep = 0;
-
-		// Change frames while the effect is active
-		glitchTimer = setInterval(() => {
-			glitchStep = Math.floor(Math.random() * glitchFrames.length);
-		}, GLITCH_INTERVAL_MS);
-
-		// ALWAYS stop after fixed duration
-		glitchTimeout = setTimeout(() => {
-			stopGlitch();
-		}, GLITCH_DURATION_MS);
-	}
-
-	function stopGlitch() {
-		if (glitchTimer) {
-			clearInterval(glitchTimer);
-			glitchTimer = undefined;
-		}
-
-		if (glitchTimeout) {
-			clearTimeout(glitchTimeout);
-			glitchTimeout = undefined;
-		}
-
-		// Restore all letters
-		glitchStep = -1;
-	}
-
-	function isLetterVisible(index: number) {
-		return glitchStep === -1 || glitchFrames[glitchStep][index];
-	}
-
-	onDestroy(stopGlitch);
 
 	// ---- Gyroscope parallax for the logo (touch devices) ------------------------
 	// Same effect as the mouse parallax, but driven by tilting the phone.
@@ -273,24 +211,9 @@
 
 	<!-- On mobile the header is 1.75rem tall, so this makes <main> end exactly at the screen bottom -->
 	<div class="relative z-[2] flex min-h-[calc(100vh-110px)] max-md:min-h-[calc(100dvh_-_1.75rem)]">
-		<aside class="relative box-border w-[15vw] max-w-[15vw] shrink-0 px-4 pb-4 max-md:hidden">
-			<div
-				class="flex transform flex-col-reverse items-center pt-0 font-['Bruno_Ace'] text-[clamp(2.9rem,5.8vw,7rem)] leading-[0.88] font-bold tracking-[0] text-[rgba(255,255,255,0.82)] [text-shadow:0_0_16px_rgba(255,255,255,0.1)]"
-				role="presentation"
-				aria-label="Tecnoesis"
-				onpointerenter={startGlitch}
-				onpointerleave={stopGlitch}
-			>
-				{#each letters as letter, i (i)}
-					<span
-						class="-rotate-90 {letter === 'I' ? '-m-5' : ''}"
-						class:opacity-0={!isLetterVisible(i)}
-					>
-						{letter}
-					</span>
-				{/each}
-			</div>
-		</aside>
+		<aside
+			class="relative box-border w-[15vw] max-w-[15vw] shrink-0 px-4 pb-4 max-md:hidden"
+		></aside>
 
 		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
 			<Navbar />

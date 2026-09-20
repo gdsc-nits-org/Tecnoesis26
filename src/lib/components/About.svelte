@@ -28,15 +28,12 @@
     });
 </script>
 
-<section bind:this={section} class="about-section " style={`--about-progress: ${progress}`}>
-    <!-- Sticky Viewport Wrapper -->
-    <div class="sticky-viewport ">
+<section bind:this={section} class="about-section" style={`--about-progress: ${progress}`}>
+    <div class="sticky-viewport">
         
-        <!-- 3-Block Track Layout (Total Width: 150vw) -->
         <div class="about-track">
             
-            <!-- SUBSECTION 1: About Tecnoesis -->
-            <div class="sub-block text-block">
+            <div class="sub-block text-block panel-left">
                 <div class="about-text">
                     <h2 class="about-title">About Tecnoesis</h2>
                     <div class="about-description">
@@ -49,13 +46,11 @@
                 </div>
             </div>
 
-            <!-- SUBSECTION 2: The 3D GIF (Normal Flow Item in Center) -->
             <div class="sub-block gif-block">
                 <img src="/IMG_8774.GIF" alt="3D Sphere visualization" class="sphere-img" />
             </div>
 
-            <!-- SUBSECTION 3: What Awaits You -->
-            <div class="sub-block text-block">
+            <div class="sub-block text-block panel-right">
                 <div class="about-text">
                     <h2 class="about-title">What Awaits You</h2>
                     <div class="about-description">
@@ -74,7 +69,6 @@
 
         </div>
 
-        <!-- Slide Indicators -->
         <div class="slide-dots">
             <span class="dot" class:active={progress < 0.5}></span>
             <span class="dot" class:active={progress >= 0.5}></span>
@@ -117,7 +111,6 @@
         display: flex;
         height: 100vh;
         width: 150vw; /* 3 blocks * 50vw each = 150vw */
-        /* Shifts track left by 50vw as progress goes from 0 to 1 */
         transform: translateX(calc(var(--about-progress) * -50vw));
         will-change: transform;
     }
@@ -129,20 +122,33 @@
         height: 100%;
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 2rem;
         box-sizing: border-box;
+    }
+
+    /* Panel 1 Left Alignment: Clears left vertical navbar */
+    .panel-left {
+        justify-content: flex-start;
+        padding-left: clamp(180px, 16vw, 250px);
+        padding-right: 1rem;
+    }
+
+    /* Panel 2 Right Alignment: Aligns closer to middle sphere while shielding right social icons */
+    .panel-right {
+        justify-content: flex-start;
+        padding-left: clamp(20px, 3vw, 50px);
+        padding-right: clamp(70px, 6vw, 110px);
     }
 
     /* ───── Subsection 2: GIF Image ───── */
     .gif-block {
+        justify-content: center;
         position: relative;
         z-index: 10;
     }
 
     .sphere-img {
-        width: clamp(380px, 38vw, 750px);
-        height: clamp(380px, 38vw, 750px);
+        width: clamp(320px, 32vw, 600px);
+        height: clamp(320px, 32vw, 600px);
         object-fit: cover;
         border-radius: 50%;
         filter: drop-shadow(0 0 40px rgba(130, 80, 255, 0.35));
@@ -162,13 +168,13 @@
     /* ───── Shared Text Box Styles ───── */
     .about-text {
         width: 100%;
-        max-width: 580px;
+        max-width: clamp(450px, 35vw, 620px); /* Expanded width to eliminate vertical text compression */
         z-index: 15;
     }
 
     .about-title {
         font-family: 'Delicatus', sans-serif;
-        font-size: clamp(2.2rem, 3.8vw, 2.6rem);
+        font-size: clamp(2rem, 3.2vw, 2.5rem);
         font-weight: 700;
         color: white;
         margin: 0 0 1.5rem 0;
@@ -193,8 +199,8 @@
     .about-description p {
         margin: 0;
         font-family: 'Bruno Ace', sans-serif;
-        font-size: clamp(0.85rem, 1.3vw, 1.25rem);
-        line-height: 1.7;
+        font-size: clamp(0.85rem, 1.15vw, 1.15rem);
+        line-height: 1.65;
         color: rgba(255, 255, 255, 0.88);
         font-weight: 400;
         text-align: justify;
@@ -202,14 +208,14 @@
 
     .highlight-text {
         margin-top: 1.2rem !important;
-        font-size: clamp(0.85rem, 1.1vw, 1.05rem) !important;
+        font-size: clamp(0.85rem, 1vw, 1.05rem) !important;
         color: rgba(200, 170, 255, 0.95) !important;
         font-weight: 700 !important;
         text-align: center !important;
         letter-spacing: 0.06em;
     }
 
-    /* ───── Slide Dots ───── */
+    /* ───── Slide Indicators ───── */
     .slide-dots {
         position: absolute;
         bottom: 2rem;
@@ -237,12 +243,16 @@
     }
 
     @media (max-width: 980px) {
-        .sub-block {
-            padding: 1rem;
+        .panel-left {
+            padding-left: 150px;
+        }
+        .panel-right {
+            padding-left: 15px;
+            padding-right: 60px;
         }
         .sphere-img {
-            width: 300px;
-            height: 300px;
+            width: 280px;
+            height: 280px;
         }
     }
 </style>

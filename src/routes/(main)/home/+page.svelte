@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { Hero } from '$lib';
-	import { About, Sponsors } from '$lib/components';
+	import { About, SectionRail, Sponsors } from '$lib/components';
 </script>
 
+<SectionRail />
 <Hero />
 <About />
 <Sponsors />
