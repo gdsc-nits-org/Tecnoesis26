@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "title": "LaserTag",
+    "date": "10.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_4.webp"
+  },
+  {
+    "id": 2,
+    "title": "RoboDrift",
+    "date": "10.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_DSC08262-2.webp"
+  },
+  {
+    "id": 3,
+    "title": "Comedy-Night",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_DSC08277.jpg.webp"
+  },
+  {
+    "id": 4,
+    "title": "LaserTag",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_DSC08409-2.webp"
+  },
+  {
+    "id": 5,
+    "title": "VANGUARD-Arena",
+    "date": "12.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_DSC_0038.webp"
+  },
+  {
+    "id": 6,
+    "title": "Foto-Galleria",
+    "date": "12.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_Foto_galleria.webp"
+  },
+  {
+    "id": 7,
+    "title": "RoboSoccer",
+    "date": "12.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_IMG_0992-3.webp"
+  },
+  {
+    "id": 8,
+    "title": "Nexus Creativa",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_IMG_8987.webp"
+  },
+  {
+    "id": 9,
+    "title": "RoboSoccer",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_IMG_9038-Enhanced-NR.webp"
+  },
+  {
+    "id": 10,
+    "title": "Opening Ceremony",
+    "date": "09.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day0_1.webp"
+  },
+  {
+    "id": 11,
+    "title": "Opening Ceremony",
+    "date": "09.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day0_2.webp"
+  },
+  {
+    "id": 12,
+    "title": "Robowar",
+    "date": "10.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day1_robotron.webp"
+  },
+  {
+    "id": 13,
+    "title": "Algomaze",
+    "date": "10.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day1_robotron3.webp"
+  },
+  {
+    "id": 14,
+    "title": "RoboSoccer",
+    "date": "10.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day1_robotron4.webp"
+  },
+  {
+    "id": 15,
+    "title": "Conferenza",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day2_anubhav.webp"
+  },
+  {
+    "id": 16,
+    "title": "Conferenza",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day2_anubhav2.webp"
+  },
+  {
+    "id": 17,
+    "title": "VANGUARD-Arena",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day2_fifa.webp"
+  },
+  {
+    "id": 18,
+    "title": "School-Genius",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day2_schoolgen.webp"
+  },
+  {
+    "id": 19,
+    "title": "SparkNight",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day4_raftaar.webp"
+  },
+  {
+    "id": 20,
+    "title": "SparkNight",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day4_raftaar1.webp"
+  },
+  {
+    "id": 21,
+    "title": "SparkNight",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day4_raftaar3_jpg.webp"
+  },
+  {
+    "id": 22,
+    "title": "SparkNight",
+    "date": "13.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_day4_raftaar3_png.webp"
+  },
+  {
+    "id": 23,
+    "title": "DJ-Night",
+    "date": "12.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_djkriti.webp"
+  },
+  {
+    "id": 24,
+    "title": "Electromap",
+    "date": "11.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_electromap.webp"
+  },
+  {
+    "id": 25,
+    "title": "Foto-Galleria",
+    "date": "12.03.2026",
+    "src": "https://res.cloudinary.com/cfuyekdz/image/upload/mobile_foto_galleria_2.webp"
+  }
+]
