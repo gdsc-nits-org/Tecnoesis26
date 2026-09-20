@@ -151,21 +151,35 @@
 		}, 100);
 	}
 
-	// Mobile Real Bouncy Ball Physics (Natural parabolic arcs & elastic rebounds)
+	// Mobile & Desktop Real Bouncy Ball Physics (Natural parabolic arcs & elastic rebounds)
 	let mobileOrbX = $state(40);
 	let mobileOrbY = $state(40);
 	let mobileOrbVx = $state(2.6);
 	let mobileOrbVy = $state(1.5);
+	let desktopOrbX = $state(120);
+	let desktopOrbY = $state(80);
+	let desktopOrbVx = $state(3.2);
+	let desktopOrbVy = $state(2.0);
 	const gravity = 0.16;
 	const restitution = 0.98;
 	let bounceRaf: number | null = null;
 	let mainWrapperEl = $state<HTMLElement | null>(null);
+
+	// Mobile Hero Offsets
 	let mobileHeroEl = $state<HTMLElement | null>(null);
 	let mobileContainerEl = $state<HTMLElement | null>(null);
 	let heroOffsetX = $state(0);
 	let heroOffsetY = $state(0);
 	let heroWidth = $state(350);
 	let heroHeight = $state(280);
+
+	// Desktop Hero Offsets
+	let desktopHeroEl = $state<HTMLElement | null>(null);
+	let desktopContainerEl = $state<HTMLElement | null>(null);
+	let desktopHeroOffsetX = $state(0);
+	let desktopHeroOffsetY = $state(0);
+	let desktopHeroWidth = $state(1172);
+	let desktopHeroHeight = $state(300);
 
 	// Mobile Draggable Slider State
 	let mobileDragProgress = $state(0);
@@ -175,17 +189,18 @@
 
 	function startMobileBounce() {
 		if (typeof window === 'undefined') return;
-		const orbSize = 96; // w-24 / h-24 is 96px
+		const mobOrbSize = 96; // 96px on mobile
+		const deskOrbSize = 180; // 180px on desktop
 
 		const animate = () => {
 			if (stage === 1) {
 				const width = window.innerWidth;
 				const height = window.innerHeight;
 
-				const maxX = Math.max(0, width - orbSize);
-				const maxY = Math.max(0, height - orbSize);
+				// MOBILE BOUNCE PHYSICS
+				const mobMaxX = Math.max(0, width - mobOrbSize);
+				const mobMaxY = Math.max(0, height - mobOrbSize);
 
-				// Update dynamic relative hero offset for pixel-perfect crystal cutout alignment
 				if (mobileHeroEl && mobileContainerEl) {
 					const heroRect = mobileHeroEl.getBoundingClientRect();
 					const contRect = mobileContainerEl.getBoundingClientRect();
@@ -195,38 +210,66 @@
 					heroHeight = heroRect.height;
 				}
 
-				// Gravity pull
 				mobileOrbVy += gravity;
-
-				// Update positions
 				mobileOrbX += mobileOrbVx;
 				mobileOrbY += mobileOrbVy;
 
-				// Left wall bounce
 				if (mobileOrbX <= 0) {
 					mobileOrbX = 0;
 					mobileOrbVx = Math.abs(mobileOrbVx) * restitution;
 					if (Math.abs(mobileOrbVx) < 2.0) mobileOrbVx = 2.4;
-				}
-				// Right wall bounce
-				else if (mobileOrbX >= maxX) {
-					mobileOrbX = maxX;
+				} else if (mobileOrbX >= mobMaxX) {
+					mobileOrbX = mobMaxX;
 					mobileOrbVx = -Math.abs(mobileOrbVx) * restitution;
 					if (Math.abs(mobileOrbVx) < 2.0) mobileOrbVx = -2.4;
 				}
 
-				// Top ceiling bounce
 				if (mobileOrbY <= 0) {
 					mobileOrbY = 0;
 					mobileOrbVy = Math.abs(mobileOrbVy) * restitution;
-				}
-				// Bottom floor bounce
-				else if (mobileOrbY >= maxY) {
-					mobileOrbY = maxY;
+				} else if (mobileOrbY >= mobMaxY) {
+					mobileOrbY = mobMaxY;
 					mobileOrbVy = -Math.abs(mobileOrbVy) * restitution;
-					// Re-energize bottom bounce so it bounces high continuously
 					if (Math.abs(mobileOrbVy) < 6.5) {
 						mobileOrbVy = -(7.5 + Math.random() * 2.5);
+					}
+				}
+
+				// DESKTOP BOUNCE PHYSICS
+				const deskMaxX = Math.max(0, width - deskOrbSize);
+				const deskMaxY = Math.max(0, height - deskOrbSize);
+
+				if (desktopHeroEl && desktopContainerEl) {
+					const dHeroRect = desktopHeroEl.getBoundingClientRect();
+					const dContRect = desktopContainerEl.getBoundingClientRect();
+					desktopHeroOffsetX = dHeroRect.left - dContRect.left;
+					desktopHeroOffsetY = dHeroRect.top - dContRect.top;
+					desktopHeroWidth = dHeroRect.width;
+					desktopHeroHeight = dHeroRect.height;
+				}
+
+				desktopOrbVy += gravity;
+				desktopOrbX += desktopOrbVx;
+				desktopOrbY += desktopOrbVy;
+
+				if (desktopOrbX <= 0) {
+					desktopOrbX = 0;
+					desktopOrbVx = Math.abs(desktopOrbVx) * restitution;
+					if (Math.abs(desktopOrbVx) < 2.2) desktopOrbVx = 3.0;
+				} else if (desktopOrbX >= deskMaxX) {
+					desktopOrbX = deskMaxX;
+					desktopOrbVx = -Math.abs(desktopOrbVx) * restitution;
+					if (Math.abs(desktopOrbVx) < 2.2) desktopOrbVx = -3.0;
+				}
+
+				if (desktopOrbY <= 0) {
+					desktopOrbY = 0;
+					desktopOrbVy = Math.abs(desktopOrbVy) * restitution;
+				} else if (desktopOrbY >= deskMaxY) {
+					desktopOrbY = deskMaxY;
+					desktopOrbVy = -Math.abs(desktopOrbVy) * restitution;
+					if (Math.abs(desktopOrbVy) < 7.5) {
+						desktopOrbVy = -(9.0 + Math.random() * 3.0);
 					}
 				}
 			}
@@ -478,9 +521,9 @@
 							/>
 						</div>
 
-						<!-- Inverted Dark Negative-Space Cutout TECNOESIS Text (Deep obsidian #05010d with purple halo) -->
+						<!-- Luminous Glowing Neon TECNOESIS Text inside Crystal (NOT plain white) -->
 						<span
-							class="font-game-paused relative z-20 -mt-28 text-center text-[48px] leading-none tracking-normal text-[#05010d] uppercase drop-shadow-[0_0_3px_rgba(168,85,247,0.95)] select-none sm:-mt-32 sm:text-[58px]"
+							class="font-game-paused relative z-20 -mt-28 text-center text-[48px] leading-none tracking-normal uppercase select-none sm:-mt-32 sm:text-[58px] text-transparent bg-clip-text bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] drop-shadow-[0_0_12px_#00f5ff] drop-shadow-[0_0_24px_#ec4899] drop-shadow-[0_0_40px_#a855f7]"
 						>
 							TECNOESIS
 						</span>
@@ -589,13 +632,75 @@
 
 		<!-- DESKTOP STAGE 1 VIEW (>= md) -->
 		<div
+			bind:this={desktopContainerEl}
 			class="relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:flex"
 		>
+			<!-- Bouncing Chromatic Crystal Orb on Desktop (Natural Bouncy Ball with Luminous Glowing Neon Text Effect) -->
+			<div
+				class="pointer-events-none absolute top-0 left-0 z-30 h-36 w-36 overflow-hidden rounded-full border border-white/35 shadow-[0_0_35px_rgba(168,85,247,0.5)] backdrop-blur-md will-change-[left,top] lg:h-44 lg:w-44 xl:h-[180px] xl:w-[180px]"
+				style="left: {desktopOrbX}px; top: {desktopOrbY}px;"
+			>
+				<!-- Lighter Chromatic Amethyst Glass Base with animated drifting crystal mosaic -->
+				<div
+					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[url('/images/crystal-bg.png')] bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
+				></div>
+
+				<!-- Floating Micro-Particles Overlay -->
+				<div
+					class="animate-particle-shimmer pointer-events-none absolute inset-0 bg-[radial-gradient(#00f5ff_1.2px,transparent_1.2px),radial-gradient(#ff007f_1.2px,transparent_1.2px),radial-gradient(#ffd700_1.2px,transparent_1.2px)] bg-[size:14px_14px,18px_18px,22px_22px] opacity-90 mix-blend-screen"
+				></div>
+
+				<!-- Unified Crystal Facet Highlights -->
+				<svg
+					class="pointer-events-none absolute inset-0 h-full w-full opacity-60"
+					viewBox="0 0 100 100"
+					fill="none"
+				>
+					<polygon
+						points="50,6 88,32 68,74 50,92 18,72 12,30"
+						stroke="rgba(255,255,255,0.45)"
+						stroke-width="0.8"
+						fill="none"
+					/>
+					<polygon
+						points="50,6 68,50 88,32"
+						stroke="rgba(168,85,247,0.45)"
+						stroke-width="0.6"
+						fill="none"
+					/>
+					<polygon
+						points="50,6 32,50 12,30"
+						stroke="rgba(255,0,128,0.4)"
+						stroke-width="0.6"
+						fill="none"
+					/>
+				</svg>
+
+				<!-- Luminous Neon Glow TECNOESIS Text Layer inside the Crystal (Bright chromatic glow strictly inside) -->
+				<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
+					<div
+						class="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap"
+						style="left: {desktopHeroOffsetX - desktopOrbX}px; top: {desktopHeroOffsetY - desktopOrbY}px; width: {desktopHeroWidth}px; height: {desktopHeroHeight}px;"
+					>
+						<span
+							class="font-game-paused text-center text-[48px] leading-none tracking-normal uppercase select-none sm:text-[90px] md:text-[140px] lg:text-[195px] xl:text-[247.83px] text-transparent bg-clip-text bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] drop-shadow-[0_0_15px_#00f5ff] drop-shadow-[0_0_30px_#ec4899] drop-shadow-[0_0_50px_#a855f7]"
+						>
+							TECNOESIS
+						</span>
+					</div>
+				</div>
+
+				<!-- Specular Crystal Shine & Curvature Vignette -->
+				<div
+					class="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_32%,rgba(255,255,255,0.22)_0%,rgba(255,255,255,0.04)_40%,rgba(0,0,0,0.6)_100%)]"
+				></div>
+			</div>
+
 			<div></div>
 
 			<!-- Main Hero Center Section with Pixelated Crystal Reveal Lens (Figma spec: 1172px x 273px) -->
 			<div
-				bind:this={textContainerEl}
+				bind:this={desktopHeroEl}
 				class="relative flex w-full max-w-[1172px] items-center justify-center py-6 select-none"
 			>
 				<!-- Base Layer: Solid Giant Pixel Text TECNOESIS (Exact Figma: Game Paused DEMO, 247.83px, 400 regular, 100% line-height, 0% letter-spacing) -->
@@ -614,67 +719,6 @@
 						alt="Tecnoesis Emblem"
 						class="h-full w-full object-contain"
 					/>
-				</div>
-
-				<!-- PIXELATED CHROMATIC CRYSTAL REVEAL ORB (Unified dark crystal style with moving particles & subtle text visibility) -->
-				<div
-					class="pointer-events-none absolute top-1/2 z-20 h-24 w-24 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border border-white/15 shadow-none backdrop-blur-[2px] transition-[left] duration-75 ease-out sm:h-36 sm:w-36 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-[246px] xl:w-[246px]"
-					style="left: {orbXPercent}%;"
-				>
-					<!-- Dark Obsidian Chromatic Crystal Mosaic Base with animated drifting particles -->
-					<div
-						class="animate-crystal-drift absolute inset-0 bg-[#070210] bg-[url('/images/crystal-bg.png')] bg-[size:110px_110px] bg-repeat opacity-95"
-					></div>
-
-					<!-- Floating Micro-Particles Overlay -->
-					<div
-						class="animate-particle-shimmer pointer-events-none absolute inset-0 bg-[radial-gradient(#00f5ff_1px,transparent_1px),radial-gradient(#ff007f_1px,transparent_1px),radial-gradient(#ffd700_1px,transparent_1px)] bg-[size:14px_14px,18px_18px,22px_22px] opacity-80"
-					></div>
-
-					<!-- Unified Crystal Facet Highlights (No blue rim) -->
-					<svg
-						class="pointer-events-none absolute inset-0 h-full w-full opacity-45"
-						viewBox="0 0 100 100"
-						fill="none"
-					>
-						<polygon
-							points="50,6 88,32 68,74 50,92 18,72 12,30"
-							stroke="rgba(255,255,255,0.3)"
-							stroke-width="0.75"
-							fill="none"
-						/>
-						<polygon
-							points="50,6 68,50 88,32"
-							stroke="rgba(168,85,247,0.3)"
-							stroke-width="0.5"
-							fill="none"
-						/>
-						<polygon
-							points="50,6 32,50 12,30"
-							stroke="rgba(255,0,128,0.25)"
-							stroke-width="0.5"
-							fill="none"
-						/>
-					</svg>
-
-					<!-- Inverted Halftone / Negative-Space Cutout Text Layer inside the Crystal -->
-					<div
-						class="pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center justify-center whitespace-nowrap"
-						style="left: calc(50% - {orbXOffsetPx ||
-							((textContainerEl?.clientWidth || 1172) * orbXPercent) /
-								100}px); width: {textContainerEl?.clientWidth || 1172}px;"
-					>
-						<span
-							class="font-game-paused text-center text-[48px] leading-none tracking-normal text-[#05010d] uppercase drop-shadow-[0_0_2px_rgba(168,85,247,0.5)] select-none sm:text-[90px] md:text-[140px] lg:text-[195px] xl:text-[247.83px]"
-						>
-							TECNOESIS
-						</span>
-					</div>
-
-					<!-- Subtle Vignette for Lens Depth -->
-					<div
-						class="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.08)_0%,rgba(0,0,0,0.1)_40%,rgba(0,0,0,0.75)_100%)]"
-					></div>
 				</div>
 			</div>
 
@@ -830,7 +874,7 @@
 
 					<!-- Circular Button Wrapper with 4 Corner [ ] Brackets that move closer on hover/click -->
 					<a
-						href={resolve('/map' as unknown as Parameters<typeof resolve>[0])}
+						href={(resolve as (path: string) => string)('/map')}
 						role="button"
 						tabindex="0"
 						onclick={() => toggleActive('map')}
