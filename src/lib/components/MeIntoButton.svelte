@@ -465,48 +465,48 @@
 			bind:this={mobileContainerEl}
 			class="relative z-10 flex w-full flex-1 flex-col justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:hidden"
 		>
-			<!-- Bouncing Chromatic Crystal Orb (Natural Bouncy Ball with Exact Dark Inverted Halftone Negative-Space Reveal) -->
+			<!-- Bouncing Chromatic Crystal Orb (Identical Lighter Crystal Style, Color & Functionality as Desktop) -->
 			<div
-				class="pointer-events-none absolute top-0 left-0 z-30 h-24 w-24 overflow-hidden rounded-full border border-white/25 shadow-[0_0_15px_rgba(168,85,247,0.3)] will-change-[left,top]"
+				class="pointer-events-none absolute top-0 left-0 z-30 h-24 w-24 overflow-hidden rounded-full border border-white/35 shadow-[0_0_25px_rgba(168,85,247,0.45)] backdrop-blur-md will-change-[left,top]"
 				style="left: {mobileOrbX}px; top: {mobileOrbY}px;"
 			>
-				<!-- Dark Obsidian Chromatic Crystal Mosaic Base with animated drifting particles -->
+				<!-- Lighter Chromatic Amethyst Glass Base with animated drifting crystal mosaic -->
 				<div
-					class="animate-crystal-drift absolute inset-0 bg-[#070210] bg-[url('/images/crystal-bg.png')] bg-[size:100px_100px] bg-repeat opacity-95"
+					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[url('/images/crystal-bg.png')] bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
 				></div>
 
 				<!-- Floating Micro-Particles Overlay -->
 				<div
-					class="animate-particle-shimmer pointer-events-none absolute inset-0 bg-[radial-gradient(#00f5ff_1.2px,transparent_1.2px),radial-gradient(#ff007f_1.2px,transparent_1.2px),radial-gradient(#ffd700_1.2px,transparent_1.2px)] bg-[size:12px_12px,16px_16px,20px_20px] opacity-80"
+					class="animate-particle-shimmer pointer-events-none absolute inset-0 bg-[radial-gradient(#00f5ff_1.2px,transparent_1.2px),radial-gradient(#ff007f_1.2px,transparent_1.2px),radial-gradient(#ffd700_1.2px,transparent_1.2px)] bg-[size:14px_14px,18px_18px,22px_22px] opacity-90 mix-blend-screen"
 				></div>
 
 				<!-- Unified Crystal Facet Highlights -->
 				<svg
-					class="pointer-events-none absolute inset-0 h-full w-full opacity-45"
+					class="pointer-events-none absolute inset-0 h-full w-full opacity-60"
 					viewBox="0 0 100 100"
 					fill="none"
 				>
 					<polygon
 						points="50,6 88,32 68,74 50,92 18,72 12,30"
-						stroke="rgba(255,255,255,0.4)"
+						stroke="rgba(255,255,255,0.45)"
 						stroke-width="0.8"
 						fill="none"
 					/>
 					<polygon
 						points="50,6 68,50 88,32"
-						stroke="rgba(168,85,247,0.4)"
+						stroke="rgba(168,85,247,0.45)"
 						stroke-width="0.6"
 						fill="none"
 					/>
 					<polygon
 						points="50,6 32,50 12,30"
-						stroke="rgba(255,0,128,0.35)"
+						stroke="rgba(255,0,128,0.4)"
 						stroke-width="0.6"
 						fill="none"
 					/>
 				</svg>
 
-				<!-- Inverted Dark Halftone Negative-Space Cutout Layer (Exact match to Desktop Effect) -->
+				<!-- Inverted Dark Halftone Negative-Space / Glowing Neon Text Layer inside Crystal -->
 				<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
 					<div
 						class="pointer-events-none absolute flex flex-col items-center justify-center"
@@ -530,9 +530,9 @@
 					</div>
 				</div>
 
-				<!-- Subtle Vignette and Lens Curvature -->
+				<!-- Specular Crystal Shine & Curvature Vignette -->
 				<div
-					class="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.12)_0%,rgba(0,0,0,0.1)_40%,rgba(0,0,0,0.75)_100%)]"
+					class="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_32%,rgba(255,255,255,0.22)_0%,rgba(255,255,255,0.04)_40%,rgba(0,0,0,0.6)_100%)]"
 				></div>
 			</div>
 
