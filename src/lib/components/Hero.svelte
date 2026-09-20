@@ -247,7 +247,7 @@
 	- lg+     (1024px +)  : desktop layout, sizes grow smoothly on large screens
 -->
 <div
-	class="relative min-h-screen overflow-hidden bg-[#3a1471] bg-[url('/background.jpg')] bg-cover bg-center text-white max-md:min-h-[100dvh] max-md:bg-[length:auto_108%] max-md:bg-[position:43%_center]"
+	class="relative min-h-screen overflow-hidden text-white max-md:min-h-[100dvh]"
 	class:about-active={currentPage >= 1}
 	role="presentation"
 	onpointermove={handlePointerMove}
@@ -255,15 +255,6 @@
 	onclick={handleClick}
 	onwheel={handleWheel}
 >
-	<div
-		class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(22,9,36,0.12),rgba(76,26,115,0.2))]"
-		aria-hidden="true"
-	></div>
-	<div
-		class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_33%,rgba(223,164,255,0.18),transparent_25%)]"
-		aria-hidden="true"
-	></div>
-
 	<!--
 		Retro-futurism text: sits behind the logo and page content, moves with the page transition.
 		Desktop: one row, anchored to the bottom.
@@ -321,15 +312,6 @@
 				{/each}
 			</div>
 
-			<div
-				class="absolute top-1/2 left-[0.9rem] flex -translate-y-1/2 rotate-180 flex-row items-center gap-[1.6rem] text-[0.72rem] tracking-[0.14em] text-white/80 uppercase [text-orientation:mixed] [writing-mode:vertical-rl]"
-				aria-label="Page sections"
-			>
-				<span>Hero</span>
-				<span>About</span>
-				<span>Events</span>
-				<span>Sponsors</span>
-			</div>
 		</aside>
 
 		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
@@ -377,4 +359,3 @@
 		</main>
 	</div>
 </div>
-
