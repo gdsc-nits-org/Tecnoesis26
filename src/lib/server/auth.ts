@@ -6,7 +6,9 @@ export async function hasActiveSession(cookies: Cookies): Promise<boolean> {
 	return Boolean(user);
 }
 
-export async function requireAuth(cookies: Cookies): Promise<{ user: NonNullable<Awaited<ReturnType<typeof getSupabaseUser>>> }> {
+export async function requireAuth(
+	cookies: Cookies
+): Promise<{ user: NonNullable<Awaited<ReturnType<typeof getSupabaseUser>>> }> {
 	const user = await getSupabaseUser(cookies);
 
 	if (!user) {

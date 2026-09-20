@@ -7,7 +7,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const isAuthRoute = pathname === '/auth' || pathname.startsWith('/auth/');
 	const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
-	const isModuleParticipateRoute = pathname.includes('/modules/') && pathname.includes('/participate');
+	const isModuleParticipateRoute =
+		pathname.includes('/modules/') && pathname.includes('/participate');
 
 	if (isAuthRoute || isDashboardRoute || isModuleParticipateRoute) {
 		const hasSession = await hasActiveSession(cookies);

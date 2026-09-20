@@ -1,6 +1,6 @@
 <script>
-    import wave from '$lib/assets/wave.svg?raw';
-    let isPlaying = $state(true);
+	import wave from '$lib/assets/wave.svg?raw';
+	let isPlaying = $state(true);
 </script>
 
 <button
