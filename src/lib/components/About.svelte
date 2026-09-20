@@ -28,9 +28,9 @@
     });
 </script>
 
-<section bind:this={section} class="about-section" style={`--about-progress: ${progress}`}>
+<section bind:this={section} class="about-section " style={`--about-progress: ${progress}`}>
     <!-- Sticky Viewport Wrapper -->
-    <div class="sticky-viewport">
+    <div class="sticky-viewport ">
         
         <!-- 3-Block Track Layout (Total Width: 150vw) -->
         <div class="about-track">
