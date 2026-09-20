@@ -1,3 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@font-face {
+	font-family: 'Delicatus';
+	src: url('/fonts/Delicatus.ttf') format('truetype');
+	font-weight: 500; /* Medium */
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+  font-family: 'GameDemo';
+  src: url('/fonts/Game Paused DEMO.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'BankGothic';
+  src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
+@theme {
+  --font-delicatus: 'Delicatus', sans-serif;
+  --font-game-demo: 'GameDemo', sans-serif;
+  --font-bankgothic: 'BankGothic', sans-serif;
+  --keyframes-wave: wave;
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Sulphur+Point:wght@300;400;700&display=swap');
+
+@theme {
+	--font-display: 'Bruno Ace', sans-serif;
+	--font-nav: 'Sulphur Point', sans-serif;
+}
+
+@font-face {
+	font-family: 'Game Paused';
+	src: url('/font/gamepaused-demo.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Delicatus';
+	src: url('/font/delicatus.medium.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@theme {
+	--font-paused: 'Game Paused', sans-serif;
+	--font-delicatus: 'Delicatus', sans-serif;
+}
