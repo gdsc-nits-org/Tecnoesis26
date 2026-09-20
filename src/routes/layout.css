@@ -16,7 +16,20 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: 'BankGothic';
+  src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+  font-display: swap;
+}
 @theme {
   --font-delicatus: 'Delicatus', sans-serif;
   --font-game-demo: 'GameDemo', sans-serif;
+  --font-bankgothic: 'BankGothic', sans-serif;
+  --keyframes-wave: wave;
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 }
