@@ -1,20 +1,20 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 
-type User = {
-	id: string;
-	email?: string | null;
-	phone?: string | null;
-	role?: string | null;
-	[user: string]: unknown;
-};
+import type { Session, User } from '@supabase/supabase-js';
 
-type Session = {
-	access_token: string;
-	refresh_token: string;
-	user: AppUser | null;
-	expires_at?: number | null;
-	[sessionKey: string]: unknown;
+export type Profile = {
+	id: string;
+	username: string;
+	scholar_id: string;
+	institute_email: string;
+	full_name: string | null;
+	phone_number: string | null;
+	hostel_number: string | null;
+	image_url: string | null;
+	auth_provider: string;
+	created_at: string;
+	updated_at: string;
 };
 
 declare global {
@@ -24,15 +24,15 @@ declare global {
 		}
 
 		interface Locals {
-			user?: User | null;
-			session?: Session | null;
-			[key: string]: unknown;
+			user: User | null;
+			session: Session | null;
+			profile: Profile | null;
 		}
 
 		interface PageData {
-			user?: AppUser | null;
-			session?: AppSession | null;
-			[key: string]: unknown;
+			user?: User | null;
+			session?: Session | null;
+			profile?: Profile | null;
 		}
 
 		// interface PageState {}
