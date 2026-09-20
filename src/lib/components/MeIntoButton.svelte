@@ -151,7 +151,141 @@
 		}, 100);
 	}
 
+	// Mobile Real Bouncy Ball Physics (Natural parabolic arcs & elastic rebounds)
+	let mobileOrbX = $state(40);
+	let mobileOrbY = $state(40);
+	let mobileOrbVx = $state(2.6);
+	let mobileOrbVy = $state(1.5);
+	const gravity = 0.16;
+	const restitution = 0.98;
+	let bounceRaf: number | null = null;
+	let mainWrapperEl = $state<HTMLElement | null>(null);
+	let mobileHeroEl = $state<HTMLElement | null>(null);
+	let mobileContainerEl = $state<HTMLElement | null>(null);
+	let heroOffsetX = $state(0);
+	let heroOffsetY = $state(0);
+	let heroWidth = $state(350);
+	let heroHeight = $state(280);
+
+	// Mobile Draggable Slider State
+	let mobileDragProgress = $state(0);
+	let isMobileDragging = $state(false);
+	let mobileSliderTrackEl = $state<HTMLElement | null>(null);
+	let dragDrainTimer: number | null = null;
+
+	function startMobileBounce() {
+		if (typeof window === 'undefined') return;
+		const orbSize = 96; // w-24 / h-24 is 96px
+
+		const animate = () => {
+			if (stage === 1) {
+				const width = window.innerWidth;
+				const height = window.innerHeight;
+
+				const maxX = Math.max(0, width - orbSize);
+				const maxY = Math.max(0, height - orbSize);
+
+				// Update dynamic relative hero offset for pixel-perfect crystal cutout alignment
+				if (mobileHeroEl && mobileContainerEl) {
+					const heroRect = mobileHeroEl.getBoundingClientRect();
+					const contRect = mobileContainerEl.getBoundingClientRect();
+					heroOffsetX = heroRect.left - contRect.left;
+					heroOffsetY = heroRect.top - contRect.top;
+					heroWidth = heroRect.width;
+					heroHeight = heroRect.height;
+				}
+
+				// Gravity pull
+				mobileOrbVy += gravity;
+
+				// Update positions
+				mobileOrbX += mobileOrbVx;
+				mobileOrbY += mobileOrbVy;
+
+				// Left wall bounce
+				if (mobileOrbX <= 0) {
+					mobileOrbX = 0;
+					mobileOrbVx = Math.abs(mobileOrbVx) * restitution;
+					if (Math.abs(mobileOrbVx) < 2.0) mobileOrbVx = 2.4;
+				}
+				// Right wall bounce
+				else if (mobileOrbX >= maxX) {
+					mobileOrbX = maxX;
+					mobileOrbVx = -Math.abs(mobileOrbVx) * restitution;
+					if (Math.abs(mobileOrbVx) < 2.0) mobileOrbVx = -2.4;
+				}
+
+				// Top ceiling bounce
+				if (mobileOrbY <= 0) {
+					mobileOrbY = 0;
+					mobileOrbVy = Math.abs(mobileOrbVy) * restitution;
+				}
+				// Bottom floor bounce
+				else if (mobileOrbY >= maxY) {
+					mobileOrbY = maxY;
+					mobileOrbVy = -Math.abs(mobileOrbVy) * restitution;
+					// Re-energize bottom bounce so it bounces high continuously
+					if (Math.abs(mobileOrbVy) < 6.5) {
+						mobileOrbVy = -(7.5 + Math.random() * 2.5);
+					}
+				}
+			}
+			bounceRaf = requestAnimationFrame(animate);
+		};
+		bounceRaf = requestAnimationFrame(animate);
+	}
+
+	function handleMobileDragStart(e: PointerEvent | TouchEvent) {
+		if (stage !== 1) return;
+		isMobileDragging = true;
+		if (dragDrainTimer) {
+			cancelAnimationFrame(dragDrainTimer);
+			dragDrainTimer = null;
+		}
+		handleMobileDragMove(e);
+	}
+
+	function handleMobileDragMove(e: PointerEvent | TouchEvent) {
+		if (!isMobileDragging || !mobileSliderTrackEl || stage !== 1) return;
+		const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+		const rect = mobileSliderTrackEl.getBoundingClientRect();
+		const thumbSize = 32; // h-8 is 32px
+		const availableWidth = rect.width - thumbSize - 8;
+		if (availableWidth <= 0) return;
+
+		const currentX = clientX - rect.left - thumbSize / 2 - 4;
+		const clampedProgress = Math.max(0, Math.min(100, (currentX / availableWidth) * 100));
+		mobileDragProgress = clampedProgress;
+
+		// ONLY trigger when dragged fully to the end (>= 98%)
+		if (clampedProgress >= 98) {
+			mobileDragProgress = 100;
+			isMobileDragging = false;
+			triggerStage2();
+		}
+	}
+
+	function handleMobileDragEnd() {
+		if (!isMobileDragging) return;
+		isMobileDragging = false;
+		// If released before 98%, spring all the way back to 0
+		if (mobileDragProgress < 98 && stage === 1) {
+			const drain = () => {
+				if (isMobileDragging || stage !== 1) return;
+				mobileDragProgress = Math.max(0, mobileDragProgress - 4.5);
+				if (mobileDragProgress > 0) {
+					dragDrainTimer = requestAnimationFrame(drain);
+				} else {
+					mobileDragProgress = 0;
+					dragDrainTimer = null;
+				}
+			};
+			dragDrainTimer = requestAnimationFrame(drain);
+		}
+	}
+
 	onMount(() => {
+		startMobileBounce();
 		if (textContainerEl) {
 			const rect = textContainerEl.getBoundingClientRect();
 			orbXOffsetPx = (rect.width * orbXPercent) / 100;
@@ -159,6 +293,8 @@
 		return () => {
 			if (fillTimer) cancelAnimationFrame(fillTimer);
 			if (drainTimer) cancelAnimationFrame(drainTimer);
+			if (bounceRaf) cancelAnimationFrame(bounceRaf);
+			if (dragDrainTimer) cancelAnimationFrame(dragDrainTimer);
 		};
 	});
 </script>
@@ -173,8 +309,9 @@
 </svelte:head>
 
 <!-- Main Container using OUR_BG.png across all pages -->
-<!-- Full page tap/mouse hold listeners for Stage 1 -->
+<!-- Full page tap/mouse hold listeners for Stage 1 (Desktop) -->
 <div
+	bind:this={mainWrapperEl}
 	role="region"
 	aria-label="Tecnoesis Landing Page"
 	onpointerdown={startHold}
@@ -187,13 +324,13 @@
 	onpointermove={handlePointerMove}
 	class="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[url('/images/OUR_BG.png')] bg-cover bg-center bg-no-repeat select-none {stage ===
 	1
-		? 'cursor-none'
+		? 'md:cursor-none'
 		: ''}"
 >
-	<!-- CUSTOM SCI-FI CURSOR (Active in Stage 1 when not directly on text) -->
+	<!-- CUSTOM SCI-FI CURSOR (Active in Stage 1 when not directly on text on desktop) -->
 	{#if stage === 1 && isPointerInside && !isHoveringText}
 		<div
-			class="pointer-events-none fixed z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center transition-opacity duration-150"
+			class="pointer-events-none fixed z-50 hidden -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center transition-opacity duration-150 md:flex"
 			style="left: {cursorX}px; top: {cursorY}px;"
 		>
 			<!-- Circular Cybernetic Reticle -->
@@ -278,10 +415,181 @@
 		class="pointer-events-none absolute top-1/3 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-600/15 blur-3xl"
 	></div>
 
-	<!-- STAGE 1: Initial Landing Screen with TECNOESIS in Game Paused DEMO + Pixelated Colorful Dark Crystal Reveal Orb + Clean Proportional Logo -->
+	<!-- STAGE 1: Initial Landing Screen -->
 	{#if stage === 1}
+		<!-- MOBILE STAGE 1 VIEW (< md) -->
 		<div
-			class="relative z-10 flex w-full flex-1 flex-col items-center justify-between px-4 py-8 transition-all duration-700 ease-out"
+			bind:this={mobileContainerEl}
+			class="relative z-10 flex w-full flex-1 flex-col justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:hidden"
+		>
+			<!-- Bouncing Chromatic Crystal Orb (Natural Bouncy Ball with Exact Dark Inverted Halftone Negative-Space Reveal) -->
+			<div
+				class="pointer-events-none absolute top-0 left-0 z-30 h-24 w-24 overflow-hidden rounded-full border border-white/25 shadow-[0_0_15px_rgba(168,85,247,0.3)] will-change-[left,top]"
+				style="left: {mobileOrbX}px; top: {mobileOrbY}px;"
+			>
+				<!-- Dark Obsidian Chromatic Crystal Mosaic Base with animated drifting particles -->
+				<div
+					class="animate-crystal-drift absolute inset-0 bg-[#070210] bg-[url('/images/crystal-bg.png')] bg-[size:100px_100px] bg-repeat opacity-95"
+				></div>
+
+				<!-- Floating Micro-Particles Overlay -->
+				<div
+					class="animate-particle-shimmer pointer-events-none absolute inset-0 bg-[radial-gradient(#00f5ff_1.2px,transparent_1.2px),radial-gradient(#ff007f_1.2px,transparent_1.2px),radial-gradient(#ffd700_1.2px,transparent_1.2px)] bg-[size:12px_12px,16px_16px,20px_20px] opacity-80"
+				></div>
+
+				<!-- Unified Crystal Facet Highlights -->
+				<svg
+					class="pointer-events-none absolute inset-0 h-full w-full opacity-45"
+					viewBox="0 0 100 100"
+					fill="none"
+				>
+					<polygon
+						points="50,6 88,32 68,74 50,92 18,72 12,30"
+						stroke="rgba(255,255,255,0.4)"
+						stroke-width="0.8"
+						fill="none"
+					/>
+					<polygon
+						points="50,6 68,50 88,32"
+						stroke="rgba(168,85,247,0.4)"
+						stroke-width="0.6"
+						fill="none"
+					/>
+					<polygon
+						points="50,6 32,50 12,30"
+						stroke="rgba(255,0,128,0.35)"
+						stroke-width="0.6"
+						fill="none"
+					/>
+				</svg>
+
+				<!-- Inverted Dark Halftone Negative-Space Cutout Layer (Exact match to Desktop Effect) -->
+				<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
+					<div
+						class="pointer-events-none absolute flex flex-col items-center justify-center"
+						style="left: {heroOffsetX - mobileOrbX}px; top: {heroOffsetY - mobileOrbY}px; width: {heroWidth}px; height: {heroHeight}px;"
+					>
+						<!-- Logo Silhouette inside Crystal -->
+						<div class="relative z-0 h-56 w-56 opacity-25 sm:h-64 sm:w-64">
+							<img
+								src="/images/tecnoesis-logo.png"
+								alt=""
+								class="h-full w-full object-contain brightness-0 invert"
+							/>
+						</div>
+
+						<!-- Inverted Dark Negative-Space Cutout TECNOESIS Text (Deep obsidian #05010d with purple halo) -->
+						<span
+							class="font-game-paused relative z-20 -mt-28 text-center text-[48px] leading-none tracking-normal text-[#05010d] uppercase drop-shadow-[0_0_3px_rgba(168,85,247,0.95)] select-none sm:-mt-32 sm:text-[58px]"
+						>
+							TECNOESIS
+						</span>
+					</div>
+				</div>
+
+				<!-- Subtle Vignette and Lens Curvature -->
+				<div
+					class="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_35%_35%,rgba(255,255,255,0.12)_0%,rgba(0,0,0,0.1)_40%,rgba(0,0,0,0.75)_100%)]"
+				></div>
+			</div>
+
+			<!-- Top space placeholder -->
+			<div class="h-4"></div>
+
+			<!-- Center Hero Section: Exact Figma positioning with Logo Emblem + Overlaid TECNOESIS Pixel Text -->
+			<div
+				bind:this={mobileHeroEl}
+				class="relative my-auto flex w-full flex-col items-center justify-center"
+			>
+				<!-- Metallic Emblem Logo -->
+				<div class="relative z-0 h-56 w-56 sm:h-64 sm:w-64">
+					<img
+						src="/images/tecnoesis-logo.png"
+						alt="Tecnoesis Emblem"
+						class="h-full w-full object-contain drop-shadow-[0_0_20px_rgba(255,255,255,0.25)]"
+					/>
+				</div>
+
+				<!-- Solid Pixel Font TECNOESIS Text overlaid horizontally centered across emblem (shifted higher) -->
+				<h1
+					class="font-game-paused relative z-20 -mt-28 text-center text-[48px] leading-none tracking-normal text-white uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] select-none sm:-mt-32 sm:text-[58px]"
+				>
+					TECNOESIS
+				</h1>
+			</div>
+
+			<!-- Bottom Section: "DRAG TO \n EXPLORE THE FUTURE" + Draggable Slider + Bottom-Right Sound Button -->
+			<div class="relative z-30 flex w-full flex-col items-center pb-2">
+				<!-- 2-Line Text in Pixel Font -->
+				<div
+					class="font-game-paused mb-2.5 text-center text-[12px] leading-tight tracking-[0.08em] text-white uppercase drop-shadow-[0_0_6px_rgba(255,255,255,0.6)] select-none sm:text-[14px]"
+				>
+					<div>DRAG TO</div>
+					<div>EXPLORE THE FUTURE</div>
+				</div>
+
+				<!-- Draggable Slider Pill Track (Strict 100% end-to-end requirement with automatic springback) -->
+				<div
+					bind:this={mobileSliderTrackEl}
+					role="slider"
+					aria-label="Drag to explore the future"
+					aria-valuenow={Math.round(mobileDragProgress)}
+					aria-valuemin="0"
+					aria-valuemax="100"
+					tabindex="0"
+					onpointerdown={handleMobileDragStart}
+					onpointermove={handleMobileDragMove}
+					onpointerup={handleMobileDragEnd}
+					onpointercancel={handleMobileDragEnd}
+					ontouchstart={handleMobileDragStart}
+					ontouchmove={handleMobileDragMove}
+					ontouchend={handleMobileDragEnd}
+					ontouchcancel={handleMobileDragEnd}
+					class="relative flex h-11 w-full max-w-[290px] cursor-pointer items-center overflow-hidden rounded-full border-[2.5px] border-white bg-black/20 p-1 backdrop-blur-sm select-none touch-none shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+				>
+					<!-- Active Drag Progress Fill Glow -->
+					{#if mobileDragProgress > 0}
+						<div
+							class="absolute top-1 bottom-1 left-1 rounded-full bg-gradient-to-r from-purple-500/40 via-fuchsia-400/50 to-white/60"
+							style="width: calc({mobileDragProgress}%);"
+						></div>
+					{/if}
+
+					<!-- Draggable Solid Pure White Circle Thumb (Exact match to Figma) -->
+					<div
+						class="absolute top-1 bottom-1 flex h-8 w-8 cursor-grab items-center justify-center rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] active:cursor-grabbing select-none touch-none"
+						style="left: calc({mobileDragProgress}% * (1 - 36px / 100%) + 2px);"
+					></div>
+				</div>
+
+				<!-- Sound Toggle Pill Button positioned at Bottom Right -->
+				<div class="flex w-full max-w-[310px] justify-end pt-3 pr-1">
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							isAudioOn = !isAudioOn;
+						}}
+						onpointerdown={(e) => e.stopPropagation()}
+						class="flex cursor-pointer items-center justify-center rounded-full bg-white px-3.5 py-1.5 shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-transform duration-150 active:scale-95"
+						aria-label="Toggle Sound"
+					>
+						<svg class="h-3.5 w-6" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M1 6 C3 1, 5 1, 6.8 6 C8.6 11, 10.4 11, 12.2 6 C14 1, 15.8 1, 17.6 6 C19.4 11, 21.2 11, 23 6 C24 3, 25 3, 25.5 6"
+								stroke="black"
+								stroke-width="1.8"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- DESKTOP STAGE 1 VIEW (>= md) -->
+		<div
+			class="relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:flex"
 		>
 			<div></div>
 
@@ -370,7 +678,7 @@
 				</div>
 			</div>
 
-			<!-- Bottom Interactive Bar for Stage 1 (Customize button removed) -->
+			<!-- Bottom Interactive Bar for Stage 1 -->
 			<div class="relative z-20 flex w-full items-center justify-between px-4 sm:px-12">
 				<!-- Left: Sound Toggle Pill -->
 				<div class="flex w-24 justify-start sm:w-32">
@@ -434,8 +742,22 @@
 
 	<!-- STAGE 2: Intermediate Transition Scene (Grid Horizon + Sound Info Subtitle) -->
 	{#if stage === 2}
+		<!-- MOBILE STAGE 2 VIEW (< md) -->
 		<div
-			class="animate-fadeIn relative z-10 flex w-full flex-1 flex-col items-center justify-between px-4 py-8 transition-all duration-700 ease-out"
+			class="animate-fadeIn relative z-10 flex w-full flex-1 flex-col items-center justify-center px-4 py-8 select-none md:hidden"
+		>
+			<!-- Center Horizon Photon Beam / Light Point -->
+			<div class="relative flex flex-col items-center justify-center">
+				<div
+					class="h-40 w-0.5 animate-pulse bg-gradient-to-t from-white via-purple-300 to-transparent shadow-[0_0_20px_rgba(255,255,255,0.9)]"
+				></div>
+				<div class="h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_30px_rgba(255,255,255,1)]"></div>
+			</div>
+		</div>
+
+		<!-- DESKTOP STAGE 2 VIEW (>= md) -->
+		<div
+			class="animate-fadeIn relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:flex"
 		>
 			<div></div>
 
@@ -508,7 +830,7 @@
 
 					<!-- Circular Button Wrapper with 4 Corner [ ] Brackets that move closer on hover/click -->
 					<a
-						href={resolve('/map')}
+						href={resolve('/map' as unknown as Parameters<typeof resolve>[0])}
 						role="button"
 						tabindex="0"
 						onclick={() => toggleActive('map')}
@@ -887,21 +1209,5 @@
 
 	.animate-particle-shimmer {
 		animation: particleShimmer 3.5s ease-in-out infinite alternate;
-	}
-
-	@keyframes crystalTextAura {
-		0%,
-		100% {
-			filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.95))
-				drop-shadow(0 0 22px rgba(147, 51, 234, 0.9)) drop-shadow(0 0 38px rgba(107, 33, 168, 0.8));
-		}
-		50% {
-			filter: drop-shadow(0 0 12px rgba(216, 180, 254, 1))
-				drop-shadow(0 0 28px rgba(168, 85, 247, 0.98)) drop-shadow(0 0 50px rgba(126, 34, 206, 0.9));
-		}
-	}
-
-	.animate-crystal-text-aura {
-		animation: crystalTextAura 3.5s ease-in-out infinite alternate;
 	}
 </style>
