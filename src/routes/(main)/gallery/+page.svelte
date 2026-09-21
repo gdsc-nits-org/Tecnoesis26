@@ -1,20 +1,22 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { GalleryButton } from '$lib/components';
 
     interface GalleryItem {
+        id?: number | string;
         src: string;
         title: string;
         date: string;
     }
 
-    let { images = [
-        { src: '/images/image1.png', title: 'Mystery Sphere 1', date: '10.03.2026' },
-        { src: '/images/image2.png', title: 'Mystery Sphere 2', date: '11.03.2026' },
-        { src: '/images/image3.png', title: 'Mystery Sphere 3', date: '12.03.2026' },
-        { src: '/images/image4.png', title: 'Mystery Sphere 4', date: '12.03.2026' },
-        { src: '/images/image5.png', title: 'Mystery Sphere 5', date: '12.03.2026' },
-        { src: '/images/image6.png', title: 'Mystery Sphere 6', date: '12.03.2026' },
-    ] }: { images?: GalleryItem[] } = $props();
+    type DeviceTier = 'mobile' | 'tablet' | 'desktop' | '4k';
+
+    let { images: customImages }: { images?: GalleryItem[] } = $props();
+
+    let images = $state<GalleryItem[]>(customImages ?? []);
+    let currentTier = $state<DeviceTier>('desktop');
+    let isLoading = $state(true);
+
     let touchStartY = $state(0);
     const SWIPE_THRESHOLD = 30;
     let currentIndex = $state(0);
@@ -22,6 +24,63 @@
 
     // Kept in sync with the 1000ms transition
     const DURATION = 1000;
+
+    function getDeviceTier(): DeviceTier {
+        const w = window.innerWidth;
+        if (w <= 768) return 'mobile';
+        if (w <= 1024) return 'tablet';
+        if (w <= 2560) return 'desktop';
+        return '4k';
+    }
+
+    async function loadGalleryData() {
+        if (customImages && customImages.length > 0) {
+            images = customImages;
+            isLoading = false;
+            return;
+        }
+
+        const tier = getDeviceTier();
+        currentTier = tier;
+
+        try {
+            let dataModule;
+            switch (tier) {
+                case 'mobile':
+                    dataModule = await import('$lib/data/gallery/mobile.json');
+                    break;
+                case 'tablet':
+                    dataModule = await import('$lib/data/gallery/tablet.json');
+                    break;
+                case '4k':
+                    dataModule = await import('$lib/data/gallery/4k.json');
+                    break;
+                case 'desktop':
+                default:
+                    dataModule = await import('$lib/data/gallery/desktop.json');
+                    break;
+            }
+            images = dataModule.default;
+        } catch (error) {
+            console.error(`Failed to load gallery data for tier: ${tier}`, error);
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    onMount(() => {
+        loadGalleryData();
+
+        const handleResize = () => {
+            const newTier = getDeviceTier();
+            if (newTier !== currentTier) {
+                loadGalleryData();
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    });
 
 	function handleWheel(e: WheelEvent): void {
 		if (isAnimating) return;
