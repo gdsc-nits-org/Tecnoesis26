@@ -29,25 +29,6 @@
 	<div class="auth-shell__backdrop" aria-hidden="true"></div>
 	<div class="auth-shell__stars" aria-hidden="true"></div>
 
-	<header class="auth-shell__topbar">
-		<a class="auth-shell__brand" href={resolve('/home')} aria-label="Tecnoesis 2026 home">
-			<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
-		</a>
-
-		<nav class="auth-shell__nav" aria-label="Primary navigation">
-			<a href={resolve('/home')}>Home</a>
-			<a href={resolve('/gallery')}>Gallery</a>
-			<a href={resolve('/modules')}>Modules</a>
-			<a href={resolve('/spark')}>Spark</a>
-			<a href={resolve('/team')}>Team</a>
-		</nav>
-
-		<p class="auth-shell__switch">
-			<span>{prompt.text}</span>
-			<a href={prompt.href}>{prompt.action}</a>
-		</p>
-	</header>
-
 	<main class="auth-shell__main" aria-labelledby={headingId}>
 		<section class="auth-shell__emblem" aria-label="About Tecnoesis">
 			<div class="auth-shell__emblem-glow" aria-hidden="true"></div>

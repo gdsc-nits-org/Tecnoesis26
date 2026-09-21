@@ -2,6 +2,7 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
+	import { Navbar } from '$lib';
 
 	let { children } = $props();
 </script>
@@ -40,4 +41,9 @@
 	<meta name="twitter:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
 	<meta name="twitter:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
 </svelte:head>
-{@render children()}
+{#if page.url.pathname !== '/'}
+	<Navbar />
+{/if}
+<div class="min-h-screen bg-[#09062d]">
+	{@render children()}
+</div>

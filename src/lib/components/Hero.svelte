@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Navbar from '$lib/components/Navbar.svelte';
 
 	let logoX = $state(0);
 	let logoY = $state(0);
@@ -216,8 +215,6 @@
 		></aside>
 
 		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
-			<Navbar />
-
 			<!-- Intro text: 16.8px, 3 lines, left edge at ~20% on mobile -->
 			<div
 				class="absolute top-[calc(38%-6vh)] left-[7%] z-10 m-0 transition-opacity duration-500 max-[900px]:top-[34%] max-[900px]:left-[7%] max-[900px]:text-[clamp(0.85rem,1.5vw,1.2rem)] max-md:top-auto max-md:bottom-[27.3dvh] max-md:left-1/2 max-md:w-[90vw] max-md:max-w-none max-md:-translate-x-1/2"

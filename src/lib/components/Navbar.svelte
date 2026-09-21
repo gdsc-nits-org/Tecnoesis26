@@ -1,111 +1,314 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 
 	let menuOpen = $state(false);
 </script>
 
-<header class="bg-transparent max-[700px]:relative max-[700px]:z-20">
-	<nav
-		class:menu-open={menuOpen}
-		class="relative z-999 flex items-center overflow-visible font-game-demo text-[#3b3b3b] min-[701px]:min-h-[90px] min-[701px]:pr-[clamp(24px,5vw,72px)] min-[701px]:pl-[clamp(24px,17vw,200px)] max-[700px]:min-h-[46px] max-[700px]:flex-wrap max-[700px]:rounded-none max-[700px]:border-0 max-[700px]:bg-[rgba(5,5,5,0.22)] max-[700px]:[background-image:none] max-[700px]:p-0 max-[700px]:backdrop-blur-[3px] max-[700px]:[&.menu-open]:border-b max-[700px]:[&.menu-open]:border-white max-[700px]:[&.menu-open]:bg-black"
-		aria-label="Main navigation"
+<header class="site-header">
+	<a class="site-header__brand" href="/home" aria-label="Tecnoesis 2026 home">
+		<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
+	</a>
+
+	<button
+		class="site-header__menu-button"
+		type="button"
+		aria-label="Toggle navigation"
+		aria-expanded={menuOpen}
+		onclick={() => (menuOpen = !menuOpen)}
 	>
-		<button
-			class="hidden cursor-pointer border-0 bg-transparent max-[700px]:relative max-[700px]:grid max-[700px]:h-[46px] max-[700px]:w-[61px] max-[700px]:content-center max-[700px]:gap-1 max-[700px]:border-r max-[700px]:border-r-[rgba(255,255,255,0.25)] max-[700px]:px-[15px] max-[700px]:py-2"
-			type="button"
-			aria-label="Toggle navigation"
-			aria-expanded={menuOpen}
-			onclick={() => (menuOpen = !menuOpen)}
-		>
-			<span
-				class="block h-0.5 w-5 bg-white transition-[transform,opacity] duration-150"
-				class:translate-y-[6px]={menuOpen}
-				class:rotate-45={menuOpen}
-			></span><span
-				class="block h-0.5 w-5 bg-white transition-[transform,opacity] duration-150"
-				class:opacity-0={menuOpen}
-			></span><span
-				class="block h-0.5 w-5 bg-white transition-[transform,opacity] duration-150"
-				class:-translate-y-[6px]={menuOpen}
-				class:-rotate-45={menuOpen}
-			></span>
-		</button>
+		<span></span><span></span><span></span>
+	</button>
 
-		<div
-			class:menu-open={menuOpen}
-			class="flex flex-1 items-center justify-start gap-[clamp(20px,3vw,35px)] max-[700px]:pointer-events-none max-[700px]:invisible max-[700px]:fixed max-[700px]:inset-x-0 max-[700px]:top-[46px] max-[700px]:z-30 max-[700px]:flex max-[700px]:h-[calc(100dvh-46px)] max-[700px]:w-screen max-[700px]:flex-col max-[700px]:items-start max-[700px]:justify-start max-[700px]:gap-[17px] max-[700px]:bg-black max-[700px]:p-[84px_32px_40px] max-[700px]:opacity-0 max-[700px]:transition-[clip-path,opacity,visibility] max-[700px]:duration-[560ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:[clip-path:inset(0_100%_0_0)] max-[700px]:[&.menu-open]:pointer-events-auto max-[700px]:[&.menu-open]:visible max-[700px]:[&.menu-open]:opacity-100 max-[700px]:[&.menu-open]:[clip-path:inset(0_0_0_0)] max-[700px]:[&.menu-open_a]:[transform:translateX(0)] max-[700px]:[&.menu-open_a]:opacity-100 max-[700px]:[&.menu-open_a.active]:w-[min(280px,73vw)] max-[700px]:[&.menu-open_a.active]:bg-[#29248c] max-[700px]:[&.menu-open_a.active]:[clip-path:polygon(0_0,100%_0,100%_68%,90%_100%,0_100%)] max-[700px]:[&.menu-open_a:nth-child(1)]:[transition-delay:120ms] max-[700px]:[&.menu-open_a:nth-child(2)]:[transition-delay:180ms] max-[700px]:[&.menu-open_a:nth-child(3)]:[transition-delay:240ms] max-[700px]:[&.menu-open_a:nth-child(4)]:[transition-delay:300ms] max-[700px]:[&.menu-open_a:nth-child(5)]:[transition-delay:360ms] [&>a.active::after]:[transform:scaleX(1)] [&>a::after]:absolute [&>a::after]:right-0 [&>a::after]:bottom-[-6px] [&>a::after]:left-0 [&>a::after]:h-0.5 [&>a::after]:origin-center [&>a::after]:[transform:scaleX(0)] [&>a::after]:bg-white [&>a::after]:transition-transform [&>a::after]:duration-[180ms] [&>a::after]:content-[''] max-[700px]:[&>a::after]:hidden [&>a:focus-visible::after]:[transform:scaleX(1)] [&>a:hover::after]:[transform:scaleX(1)] max-[700px]:[&>a:nth-child(1)>span]:h-[5px] max-[700px]:[&>a:nth-child(1)>span]:w-[5px] max-[700px]:[&>a:nth-child(3)>span]:h-[5px] max-[700px]:[&>a:nth-child(3)>span]:w-[5px] max-[700px]:[&>a:nth-child(4)>span]:h-[7px] max-[700px]:[&>a:nth-child(4)>span]:w-[7px] max-[700px]:[&>a:nth-child(5)>span]:h-[5px] max-[700px]:[&>a:nth-child(5)>span]:w-[5px]"
-		>
-			<a
-				class:active={page.url.pathname === '/'}
-				class:menu-open={menuOpen}
-				class="group relative inline-flex items-center gap-[3px] text-[15px] leading-none font-[530] whitespace-nowrap text-white no-underline transition-colors max-[700px]:min-h-[52px] max-[700px]:w-max max-[700px]:[transform:translateX(-24px)] max-[700px]:gap-2.5 max-[700px]:px-3 max-[700px]:text-[25px] max-[700px]:uppercase max-[700px]:opacity-0 max-[700px]:transition-[opacity,transform] max-[700px]:duration-[300ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:hover:text-[#8ed8ff] max-[700px]:focus-visible:text-[#8ed8ff] max-[700px]:[&.active]:text-[#8ed8ff] max-[700px]:[&.active]:w-[min(280px,73vw)] max-[700px]:[&.active]:bg-[#29248c] max-[700px]:[&.active]:[clip-path:polygon(0_0,100%_0,100%_68%,90%_100%,0_100%)] max-[700px]:[&.menu-open]:[transform:translateX(0)] max-[700px]:[&.menu-open]:opacity-100"
-				href="/"
-				onclick={() => (menuOpen = false)}
-				><span
-					class="h-[5px] w-[5px] shrink-0 bg-current font-['Arial'] text-[12px] leading-none group-[.active]:bg-[#8ed8ff] min-[701px]:hidden"
-					aria-hidden="true"
-				></span>Home</a
-			>
-			<a
-				class:active={page.url.pathname.startsWith('/gallery')}
-				class:menu-open={menuOpen}
-				class="group relative inline-flex items-center gap-[3px] text-[15px] leading-none font-[530] whitespace-nowrap text-white no-underline transition-colors max-[700px]:min-h-[52px] max-[700px]:w-max max-[700px]:[transform:translateX(-24px)] max-[700px]:gap-2.5 max-[700px]:px-3 max-[700px]:text-[25px] max-[700px]:uppercase max-[700px]:opacity-0 max-[700px]:transition-[opacity,transform] max-[700px]:duration-[300ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:hover:text-[#8ed8ff] max-[700px]:focus-visible:text-[#8ed8ff] max-[700px]:[&.active]:text-[#8ed8ff] max-[700px]:[&.active]:w-[min(280px,73vw)] max-[700px]:[&.active]:bg-[#29248c] max-[700px]:[&.active]:[clip-path:polygon(0_0,100%_0,100%_68%,90%_100%,0_100%)] max-[700px]:[&.menu-open]:[transform:translateX(0)] max-[700px]:[&.menu-open]:opacity-100"
-				href="/gallery"
-				onclick={() => (menuOpen = false)}
-				><span
-					class="h-0 w-0 shrink-0 border-x-[3px] border-b-[5px] border-x-transparent border-b-current bg-transparent font-['Arial'] text-[12px] leading-none group-[.active]:border-b-[#8ed8ff] min-[701px]:hidden"
-					aria-hidden="true"
-				></span>Gallery</a
-			>
-			<a
-				class:active={page.url.pathname.startsWith('/modules')}
-				class="group relative inline-flex items-center gap-[3px] text-[15px] leading-none font-[530] whitespace-nowrap text-white no-underline transition-colors max-[700px]:min-h-[52px] max-[700px]:w-max max-[700px]:[transform:translateX(-24px)] max-[700px]:gap-2.5 max-[700px]:px-3 max-[700px]:text-[25px] max-[700px]:uppercase max-[700px]:opacity-0 max-[700px]:transition-[opacity,transform] max-[700px]:duration-[300ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:hover:text-[#8ed8ff] max-[700px]:focus-visible:text-[#8ed8ff] max-[700px]:[&.active]:text-[#8ed8ff]"
-				href="/modules"
-				onclick={() => (menuOpen = false)}
-				><span
-					class="h-[5px] w-[5px] shrink-0 rounded-full bg-current font-['Arial'] text-[12px] leading-none group-[.active]:bg-[#8ed8ff] min-[701px]:hidden"
-					aria-hidden="true"
-				></span>Modules</a
-			>
-			<a
-				class:active={page.url.pathname.startsWith('/spark')}
-				class="group relative inline-flex items-center gap-[3px] text-[15px] leading-none font-[530] whitespace-nowrap text-white no-underline transition-colors max-[700px]:min-h-[52px] max-[700px]:w-max max-[700px]:[transform:translateX(-24px)] max-[700px]:gap-2.5 max-[700px]:px-3 max-[700px]:text-[25px] max-[700px]:uppercase max-[700px]:opacity-0 max-[700px]:transition-[opacity,transform] max-[700px]:duration-[300ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:hover:text-[#8ed8ff] max-[700px]:focus-visible:text-[#8ed8ff] max-[700px]:[&.active]:text-[#8ed8ff]"
-				href="/spark"
-				onclick={() => (menuOpen = false)}
-				><span
-					class="h-2 w-2 shrink-0 bg-current font-['Arial'] text-[12px] leading-none [clip-path:polygon(50%_0,62%_38%,100%_50%,62%_62%,50%_100%,38%_62%,0_50%,38%_38%)] group-[.active]:bg-[#8ed8ff] min-[701px]:hidden"
-					aria-hidden="true"
-				></span>Spark</a
-			>
-			<a
-				class:active={page.url.pathname.startsWith('/team')}
-				class="group relative inline-flex items-center gap-[3px] text-[15px] leading-none font-[530] whitespace-nowrap text-white no-underline transition-colors max-[700px]:min-h-[52px] max-[700px]:w-max max-[700px]:[transform:translateX(-24px)] max-[700px]:gap-2.5 max-[700px]:px-3 max-[700px]:text-[25px] max-[700px]:uppercase max-[700px]:opacity-0 max-[700px]:transition-[opacity,transform] max-[700px]:duration-[300ms] max-[700px]:ease-[cubic-bezier(0.22,1,0.36,1)] max-[700px]:hover:text-[#8ed8ff] max-[700px]:focus-visible:text-[#8ed8ff] max-[700px]:[&.active]:text-[#8ed8ff]"
-				href="/team"
-				onclick={() => (menuOpen = false)}
-				><span
-					class="h-[7px] w-[7px] shrink-0 bg-current font-['Arial'] text-[12px] leading-none [clip-path:polygon(50%_0,100%_50%,50%_100%,0_50%)] group-[.active]:bg-[#8ed8ff] min-[701px]:hidden"
-					aria-hidden="true"
-				></span>Team<i class="not-italic max-[700px]:hidden"></i></a
-			>
-		</div>
-
-		<!-- Mobile only: Register button (unchanged) -->
-		<div
-			class="hidden max-[700px]:mt-0 max-[700px]:mr-0 max-[700px]:mb-0 max-[700px]:ml-auto max-[700px]:flex max-[700px]:h-[46px] max-[700px]:basis-[clamp(88px,25.5vw,122px)] max-[700px]:self-center max-[700px]:overflow-hidden max-[700px]:rounded-none"
-		>
-			<button
-				class="h-full w-full cursor-pointer border-0 bg-[rgba(110,110,110,0.72)] font-game-demo text-[13px] text-white uppercase transition-colors duration-200 [clip-path:polygon(0_0,100%_0,100%_100%,14%_100%,0_72%)] hover:bg-[#c4b5fd] hover:text-[#29248c] focus-visible:bg-[#c4b5fd] focus-visible:text-[#29248c] max-[700px]:bg-[#29248c] max-[700px]:text-[10px] max-[700px]:hover:bg-[#a78bfa] max-[700px]:focus-visible:bg-[#a78bfa]"
-				type="button"
-				onclick={() => goto('/auth/signup')}>Register</button
-			>
-		</div>
-
-		<!-- Desktop only: plain "Login" text link on the right -->
-		<a
-			class="relative hidden font-game-demo text-[15
-			px] leading-none whitespace-nowrap text-white no-underline min-[701px]:inline-flex after:absolute after:inset-x-0 after:-bottom-[6px] after:h-0.5 after:origin-center after:bg-white after:transition-transform after:duration-[180ms] after:content-[''] after:[transform:scaleX(0)] hover:after:[transform:scaleX(1)] focus-visible:after:[transform:scaleX(1)]"
-			href="/auth/login">Login</a
-		>
+	<nav class:site-header__nav--open={menuOpen} class="site-header__nav" aria-label="Primary navigation">
+		<a class:active={page.url.pathname === '/'} href="/" onclick={() => (menuOpen = false)}><span class="marker marker-square"></span>Home</a>
+		<a class:active={page.url.pathname.startsWith('/gallery')} href="/gallery" onclick={() => (menuOpen = false)}><span class="marker marker-triangle"></span>Gallery</a>
+		<a class:active={page.url.pathname.startsWith('/modules')} href="/modules" onclick={() => (menuOpen = false)}><span class="marker marker-dot"></span>Modules</a>
+		<a class:active={page.url.pathname.startsWith('/spark')} href="/spark" onclick={() => (menuOpen = false)}><span class="marker marker-star"></span>Spark</a>
+		<a class:active={page.url.pathname.startsWith('/team')} href="/team" onclick={() => (menuOpen = false)}><span class="marker marker-diamond"></span>Team</a>
 	</nav>
+
+	<a class="site-header__login" href="/login">Log in</a>
+	<a class="site-header__register" href="/signup">Register</a>
 </header>
+
+<style>
+	.site-header {
+		position: fixed;
+		z-index: 50;
+		top: 0;
+		left: 50%;
+		display: grid;
+		width: min(100%, 1600px);
+		min-height: 100px;
+		padding: 15px clamp(28px, 4vw, 68px);
+		grid-template-columns: 230px 1fr 300px;
+		align-items: start;
+		color: #f7f2ff;
+		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
+		transform: translateX(-50%);
+	}
+
+	.site-header__brand {
+		display: inline-flex;
+		width: 190px;
+		height: 70px;
+		align-items: center;
+		filter: drop-shadow(0 0 8px rgba(177, 107, 255, 0.22));
+	}
+
+	.site-header__brand img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.site-header__nav {
+		display: flex;
+		justify-content: center;
+		gap: clamp(28px, 4vw, 65px);
+		padding-top: 25px;
+	}
+
+	.site-header__menu-button {
+		display: none;
+		border: 0;
+		background: transparent;
+		color: #fff;
+		cursor: pointer;
+	}
+
+	.site-header__menu-button span {
+		display: block;
+		height: 2px;
+		width: 20px;
+		background: currentColor;
+		transition: transform 150ms ease, opacity 150ms ease;
+	}
+
+	.site-header__register {
+		display: none;
+	}
+
+	.site-header__nav a,
+	.site-header__login {
+		position: relative;
+		color: #f7f2ff;
+		font-size: 0.9rem;
+		line-height: 1;
+		text-decoration: none;
+		text-shadow: 0 0 12px rgba(198, 155, 255, 0.34);
+	}
+
+	.site-header__nav a::after,
+	.site-header__login::after {
+		position: absolute;
+		right: 0;
+		bottom: -11px;
+		left: 0;
+		height: 2px;
+		background: linear-gradient(90deg, transparent, #d58aff, transparent);
+		box-shadow: 0 0 10px #a855f7;
+		content: '';
+		opacity: 0;
+		transform: scaleX(0.25);
+		transition: 180ms ease;
+	}
+
+	.site-header__nav a:hover::after,
+	.site-header__nav a:focus-visible::after,
+	.site-header__nav a.active::after,
+	.site-header__login:hover::after,
+	.site-header__login:focus-visible::after {
+		opacity: 1;
+		transform: scaleX(1);
+	}
+
+	.site-header__login {
+		justify-self: end;
+		padding-top: 24px;
+	}
+
+	@media (max-width: 1100px) {
+		.site-header {
+			grid-template-columns: 190px 1fr 245px;
+			padding-inline: 25px;
+		}
+
+		.site-header__brand {
+			width: 165px;
+		}
+
+		.site-header__nav {
+			gap: 25px;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.site-header {
+			min-height: 46px;
+			padding: 0;
+			grid-template-columns: 61px 1fr 122px;
+			align-items: center;
+			background: rgba(5, 5, 5, 0.22);
+			backdrop-filter: blur(3px);
+		}
+
+		.site-header__brand {
+			display: none;
+		}
+
+		.site-header__nav {
+			position: absolute;
+			top: 46px;
+			right: 0;
+			left: 0;
+			display: flex;
+			visibility: hidden;
+			height: calc(100dvh - 46px);
+			align-items: flex-start;
+			justify-content: flex-start;
+			gap: 17px;
+			padding: 84px 32px 40px;
+			background: #000;
+			opacity: 0;
+			clip-path: inset(0 100% 0 0);
+			transform: none;
+			transition: clip-path 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 560ms ease, visibility 560ms ease;
+			pointer-events: none;
+		}
+
+		.site-header__nav--open {
+			visibility: visible;
+			opacity: 1;
+			clip-path: inset(0 0 0 0);
+			pointer-events: auto;
+		}
+
+		.site-header__nav a {
+			width: max-content;
+			min-height: 52px;
+			display: inline-flex;
+			align-items: center;
+			gap: 10px;
+			padding: 12px;
+			font-size: 25px;
+			text-transform: uppercase;
+			opacity: 0;
+			transform: translateX(-24px);
+			transition: opacity 300ms ease, transform 300ms ease;
+		}
+
+		.site-header__nav--open a {
+			opacity: 1;
+			transform: translateX(0);
+		}
+
+		.site-header__nav a::after {
+			display: none;
+		}
+
+		.site-header__nav a.active {
+			width: min(280px, 73vw);
+			background: #29248c;
+			clip-path: polygon(0 0, 100% 0, 100% 68%, 90% 100%, 0 100%);
+			color: #8ed8ff;
+		}
+
+		.marker {
+		display: block;
+			flex: 0 0 auto;
+			background: currentColor;
+		}
+
+		.marker-square,
+		.marker-dot,
+		.marker-diamond {
+			height: 5px;
+			width: 5px;
+		}
+
+		.marker-dot {
+			border-radius: 999px;
+		}
+
+		.marker-triangle {
+			height: 0;
+			width: 0;
+			border-right: 3px solid transparent;
+			border-bottom: 5px solid currentColor;
+			border-left: 3px solid transparent;
+			background: transparent;
+		}
+
+		.marker-star {
+			height: 8px;
+			width: 8px;
+			clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+		}
+
+		.marker-diamond {
+			height: 7px;
+			width: 7px;
+			clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+		}
+
+		.site-header__menu-button {
+			display: flex;
+			grid-column: 1;
+			grid-row: 1;
+			justify-self: stretch;
+			width: 61px;
+			height: 46px;
+			padding: 8px 15px;
+			flex-direction: column;
+			justify-content: center;
+			gap: 5px;
+			border-right: 1px solid rgba(255, 255, 255, 0.25);
+		}
+
+		.site-header__menu-button[aria-expanded='true'] span:first-child {
+			transform: translateY(7px) rotate(45deg);
+		}
+
+		.site-header__menu-button[aria-expanded='true'] span:nth-child(2) {
+			opacity: 0;
+		}
+
+		.site-header__menu-button[aria-expanded='true'] span:last-child {
+			transform: translateY(-7px) rotate(-45deg);
+		}
+
+		.site-header__login {
+			display: none;
+		}
+
+		.site-header__register {
+			display: flex;
+			grid-column: 3;
+			grid-row: 1;
+			height: 46px;
+			align-items: center;
+			justify-content: center;
+			background: #29248c;
+			clip-path: polygon(0 0, 100% 0, 100% 100%, 14% 100%, 0 72%);
+			color: #fff;
+			font-size: 10px;
+			text-transform: uppercase;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.site-header {
+			grid-template-columns: 61px 1fr 88px;
+		}
+
+		.site-header__menu-button {
+			width: 61px;
+		}
+
+		.site-header__register {
+			height: 46px;
+			font-size: 0.68rem;
+		}
+	}
+</style>
