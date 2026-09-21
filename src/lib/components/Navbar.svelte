@@ -1,11 +1,25 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
+	import type { Profile } from '../../app';
 
 	let menuOpen = $state(false);
+
+	// Supplied by the root +layout.server.ts, so every page knows who is signed in.
+	const profile = $derived(page.data.profile as Profile | null | undefined);
+
+	// Prefer the name they chose; fall back to the email local part so the navbar
+	// never shows an empty chip for a profile saved without a name.
+	const displayName = $derived.by(() => {
+		if (!profile) return '';
+		const name = profile.full_name?.trim();
+		if (name) return name.split(/\s+/)[0];
+		return profile.institute_email.split('@')[0];
+	});
 </script>
 
 <header class="site-header">
-	<a class="site-header__brand" href="/home" aria-label="Tecnoesis 2026 home">
+	<a class="site-header__brand" href={resolve('/home')} aria-label="Tecnoesis 2026 home">
 		<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
 	</a>
 
@@ -19,16 +33,58 @@
 		<span></span><span></span><span></span>
 	</button>
 
-	<nav class:site-header__nav--open={menuOpen} class="site-header__nav" aria-label="Primary navigation">
-		<a class:active={page.url.pathname === '/'} href="/" onclick={() => (menuOpen = false)}><span class="marker marker-square"></span>Home</a>
-		<a class:active={page.url.pathname.startsWith('/gallery')} href="/gallery" onclick={() => (menuOpen = false)}><span class="marker marker-triangle"></span>Gallery</a>
-		<a class:active={page.url.pathname.startsWith('/modules')} href="/modules" onclick={() => (menuOpen = false)}><span class="marker marker-dot"></span>Modules</a>
-		<a class:active={page.url.pathname.startsWith('/spark')} href="/spark" onclick={() => (menuOpen = false)}><span class="marker marker-star"></span>Spark</a>
-		<a class:active={page.url.pathname.startsWith('/team')} href="/team" onclick={() => (menuOpen = false)}><span class="marker marker-diamond"></span>Team</a>
+	<nav
+		class:site-header__nav--open={menuOpen}
+		class="site-header__nav"
+		aria-label="Primary navigation"
+	>
+		<a
+			class:active={page.url.pathname === '/home'}
+			href={resolve('/home')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-square"></span>Home</a
+		>
+		<a
+			class:active={page.url.pathname.startsWith('/gallery')}
+			href={resolve('/gallery')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-triangle"></span>Gallery</a
+		>
+		<a
+			class:active={page.url.pathname.startsWith('/modules')}
+			href={resolve('/modules')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-dot"></span>Modules</a
+		>
+		<a
+			class:active={page.url.pathname.startsWith('/spark')}
+			href={resolve('/spark')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-star"></span>Spark</a
+		>
+		<a
+			class:active={page.url.pathname.startsWith('/team')}
+			href={resolve('/team')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-diamond"></span>Team</a
+		>
 	</nav>
 
-	<a class="site-header__login" href="/login">Log in</a>
-	<a class="site-header__register" href="/signup">Register</a>
+	{#if profile}
+		<div class="site-header__account">
+			<a
+				class="site-header__user"
+				href={resolve('/profile')}
+				title={profile.full_name ?? displayName}
+			>
+				<span class="site-header__avatar" aria-hidden="true"
+					>{displayName.charAt(0).toUpperCase()}</span
+				>
+				<span class="site-header__username">{displayName}</span>
+			</a>
+			<form method="POST" action="/logout">
+				<button class="site-header__logout" type="submit">Log out</button>
+			</form>
+		</div>
+	{:else}
+		<a class="site-header__login" href={resolve('/login')}>Log in</a>
+		<a class="site-header__register" href={resolve('/signup')}>Register</a>
+	{/if}
 </header>
 
 <style>
@@ -82,7 +138,9 @@
 		height: 2px;
 		width: 20px;
 		background: currentColor;
-		transition: transform 150ms ease, opacity 150ms ease;
+		transition:
+			transform 150ms ease,
+			opacity 150ms ease;
 	}
 
 	.site-header__register {
@@ -128,6 +186,72 @@
 		padding-top: 24px;
 	}
 
+	.site-header__account {
+		display: flex;
+		justify-self: end;
+		align-items: center;
+		gap: 14px;
+		padding-top: 18px;
+	}
+
+	.site-header__user {
+		display: inline-flex;
+		max-width: 190px;
+		align-items: center;
+		gap: 9px;
+		color: #f7f2ff;
+		font-size: 0.86rem;
+		text-decoration: none;
+		text-shadow: 0 0 12px rgba(198, 155, 255, 0.34);
+	}
+
+	.site-header__avatar {
+		display: grid;
+		width: 30px;
+		height: 30px;
+		flex: 0 0 auto;
+		place-items: center;
+		border: 1px solid rgba(214, 160, 255, 0.5);
+		border-radius: 999px;
+		background: rgba(103, 51, 187, 0.45);
+		font-size: 0.82rem;
+		line-height: 1;
+	}
+
+	.site-header__username {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.site-header__user:hover .site-header__username,
+	.site-header__user:focus-visible .site-header__username {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
+	.site-header__logout {
+		border: 1px solid rgba(214, 160, 255, 0.4);
+		white-space: nowrap;
+		padding: 7px 13px;
+		background: transparent;
+		color: #e9dcff;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		transition:
+			background 160ms ease,
+			border-color 160ms ease;
+	}
+
+	.site-header__logout:hover,
+	.site-header__logout:focus-visible {
+		border-color: rgba(233, 190, 255, 0.85);
+		background: rgba(120, 58, 205, 0.34);
+	}
+
 	@media (max-width: 1100px) {
 		.site-header {
 			grid-template-columns: 190px 1fr 245px;
@@ -163,17 +287,25 @@
 			right: 0;
 			left: 0;
 			display: flex;
+			/* Without an explicit column direction these inherit the desktop row and
+			   only the first two links land on screen. */
+			flex-direction: column;
 			visibility: hidden;
 			height: calc(100dvh - 46px);
 			align-items: flex-start;
 			justify-content: flex-start;
 			gap: 17px;
+			overflow-y: auto;
 			padding: 84px 32px 40px;
+			overscroll-behavior: contain;
 			background: #000;
 			opacity: 0;
 			clip-path: inset(0 100% 0 0);
 			transform: none;
-			transition: clip-path 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 560ms ease, visibility 560ms ease;
+			transition:
+				clip-path 560ms cubic-bezier(0.22, 1, 0.36, 1),
+				opacity 560ms ease,
+				visibility 560ms ease;
 			pointer-events: none;
 		}
 
@@ -195,7 +327,9 @@
 			text-transform: uppercase;
 			opacity: 0;
 			transform: translateX(-24px);
-			transition: opacity 300ms ease, transform 300ms ease;
+			transition:
+				opacity 300ms ease,
+				transform 300ms ease;
 		}
 
 		.site-header__nav--open a {
@@ -215,7 +349,7 @@
 		}
 
 		.marker {
-		display: block;
+			display: block;
 			flex: 0 0 auto;
 			background: currentColor;
 		}
@@ -280,6 +414,27 @@
 
 		.site-header__login {
 			display: none;
+		}
+
+		/* Only the avatar survives on phones; the name and Log out move into the
+		   slide-out menu so the 46px bar never overflows. */
+		.site-header__account {
+			grid-column: 3;
+			grid-row: 1;
+			height: 46px;
+			justify-content: flex-end;
+			padding-top: 0;
+			padding-right: 12px;
+			gap: 10px;
+		}
+
+		.site-header__username {
+			display: none;
+		}
+
+		.site-header__logout {
+			padding: 6px 10px;
+			font-size: 0.6rem;
 		}
 
 		.site-header__register {

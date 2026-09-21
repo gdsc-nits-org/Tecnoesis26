@@ -190,7 +190,7 @@
 		class="relative z-20 ml-[15vw] box-border flex w-[85vw] items-center gap-8 px-8 pt-7 max-md:ml-0 max-md:w-full max-md:px-4"
 	>
 		<div
-			class="absolute top-[-3.8rem] left-[46%] z-[5] flex w-[min(52vw,760px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-[4dvh] max-[900px]:left-[46%] max-[900px]:w-[min(46vw,36dvh)] max-[900px]:max-w-none max-md:top-[10.5dvh] max-md:left-[54.3%] max-md:w-[min(97vw,calc(50dvh_-_18px))] max-md:max-w-none"
+			class="absolute top-[0.6rem] left-[46%] z-[5] flex w-[min(52vw,760px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-[4dvh] max-[900px]:left-[46%] max-[900px]:w-[min(46vw,36dvh)] max-[900px]:max-w-none max-md:top-[10.5dvh] max-md:left-[54.3%] max-md:w-[min(97vw,calc(50dvh_-_18px))] max-md:max-w-none"
 			class:opacity-0={currentPage >= 1}
 			class:pointer-events-none={currentPage >= 1}
 			aria-label="Tecnoesis home"
