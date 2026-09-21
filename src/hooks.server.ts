@@ -36,7 +36,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (
 		auth.user &&
 		auth.profile &&
-		(pathname === '/login' || pathname === '/signup' || pathname.startsWith('/auth'))
+		['/login', '/signup', '/auth', '/auth/login', '/auth/signup'].includes(pathname)
 	) {
 		throw redirect(303, '/home');
 	}

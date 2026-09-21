@@ -1,80 +1,110 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import type { SubmitFunction } from '@sveltejs/kit';
+	import AuthField from '$lib/components/auth/AuthField.svelte';
+	import AuthIcon from '$lib/components/auth/AuthIcon.svelte';
+	import AuthShell from '$lib/components/auth/AuthShell.svelte';
+
 	let { data, form } = $props();
-	let showPassword = $state(false);
-	let showConfirm = $state(false);
 	let submitting = $state(false);
+
+	const enhanceProfile: SubmitFunction = () => {
+		submitting = true;
+		return async ({ update }) => {
+			try {
+				await update({ reset: false });
+			} finally {
+				submitting = false;
+			}
+		};
+	};
 </script>
 
-<svelte:head><title>Complete registration | Tecnoesis</title></svelte:head>
+<svelte:head>
+	<title>Complete registration | Tecnoesis 2026</title>
+	<meta name="description" content="Complete your Tecnoesis 2026 participant profile." />
+</svelte:head>
 
-<main class="mx-auto max-w-xl px-6 py-14">
-	<p class="text-sm font-semibold tracking-[0.25em] text-cyan-600 uppercase">One last step</p>
-	<h1 class="mt-3 text-4xl font-bold tracking-tight text-slate-950">Complete your profile</h1>
-	<p class="mt-2 text-slate-600">
-		Your Google account verifies your institute identity. Choose the credentials you will use at
-		Tecnoesis.
-	</p>
-	{#if form?.error}<p class="mt-6 rounded-md bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
-			{form.error}
-		</p>{/if}
-	<form method="POST" class="mt-8 space-y-5" onsubmit={() => (submitting = true)}>
-		<label class="block text-sm font-medium text-slate-700"
-			>Google account<input
-				value={data.email}
-				readonly
-				class="mt-2 w-full rounded-md border-slate-200 bg-slate-100 px-3 py-2.5 text-slate-500"
-			/></label
-		>
-		<label class="block text-sm font-medium text-slate-700"
-			>Username<input
+<AuthShell
+	title="Complete Your Profile"
+	description="One last transmission before you enter the Tecnoesis universe."
+	mode="signup"
+	compact
+>
+	{#if form?.error}
+		<div class="auth-error" role="alert">
+			<AuthIcon name="info" size={18} />
+			<span>{form.error}</span>
+		</div>
+	{/if}
+
+	<form method="POST" class="auth-form" use:enhance={enhanceProfile} aria-busy={submitting}>
+		<AuthField
+			label="Institute Google account"
+			name="institute_email"
+			type="email"
+			icon="mail"
+			value={data.email ?? ''}
+			autocomplete="email"
+			readonly
+		/>
+
+		<div class="auth-field-row">
+			<AuthField
+				label="Username"
 				name="username"
-				required
-				minlength="3"
-				maxlength="24"
+				icon="user"
+				placeholder="Choose a username"
 				value={form?.username ?? ''}
-				class="mt-2 w-full rounded-md border-slate-300 px-3 py-2.5"
-			/></label
-		>
-		<label class="block text-sm font-medium text-slate-700"
-			>Scholar ID<input
-				name="scholar_id"
+				autocomplete="username"
+				minlength={3}
+				maxlength={24}
+				pattern={'[a-z0-9_]{3,24}'}
+				hint="3–24 characters: lowercase letters (a–z), numbers (0–9), or underscores (_). Example: mainak123"
+				hintAsPopover
 				required
-				value={form?.scholarId ?? ''}
-				class="mt-2 w-full rounded-md border-slate-300 px-3 py-2.5"
-			/></label
-		>
-		<label class="block text-sm font-medium text-slate-700"
-			>Password<span class="relative mt-2 block"
-				><input
-					name="password"
-					required
-					type={showPassword ? 'text' : 'password'}
-					class="w-full rounded-md border-slate-300 px-3 py-2.5 pr-20"
-				/><button
-					type="button"
-					class="absolute top-2.5 right-3 text-sm text-slate-500"
-					onclick={() => (showPassword = !showPassword)}>{showPassword ? 'Hide' : 'Show'}</button
-				></span
-			></label
-		>
-		<label class="block text-sm font-medium text-slate-700"
-			>Confirm password<span class="relative mt-2 block"
-				><input
-					name="confirm_password"
-					required
-					type={showConfirm ? 'text' : 'password'}
-					class="w-full rounded-md border-slate-300 px-3 py-2.5 pr-20"
-				/><button
-					type="button"
-					class="absolute top-2.5 right-3 text-sm text-slate-500"
-					onclick={() => (showConfirm = !showConfirm)}>{showConfirm ? 'Hide' : 'Show'}</button
-				></span
-			></label
-		>
-		<button
-			disabled={submitting}
-			class="w-full rounded-md bg-slate-950 px-4 py-3 font-semibold text-white hover:bg-slate-800"
-			>{submitting ? 'Creating profile...' : 'Complete registration'}</button
-		>
+			/>
+
+			<AuthField
+				label="Full name"
+				name="full_name"
+				icon="user"
+				placeholder="Enter your name"
+				value={form?.fullName ?? data.fullName ?? ''}
+				autocomplete="name"
+				maxlength={100}
+				required
+			/>
+		</div>
+
+		<AuthField
+			label="Password"
+			name="password"
+			type="password"
+			icon="lock"
+			placeholder="Create a password"
+			autocomplete="new-password"
+			minlength={8}
+			maxlength={128}
+			hint="8+ characters with uppercase, lowercase, and a number"
+			required
+		/>
+
+		<AuthField
+			label="Confirm password"
+			name="confirm_password"
+			type="password"
+			icon="lock"
+			placeholder="Enter your password again"
+			autocomplete="new-password"
+			minlength={8}
+			maxlength={128}
+			required
+		/>
+
+		<button type="submit" class="auth-button" disabled={submitting}>
+			<span>{submitting ? 'Creating profile...' : 'Complete Registration'}</span>
+			{#if !submitting}<AuthIcon name="arrow-right" size={20} />{/if}
+		</button>
 	</form>
-</main>
+</AuthShell>
