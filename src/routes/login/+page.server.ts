@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { getSupabaseAdminClient, getSupabaseServerClient } from '$lib/supabase';
-import { isAllowedInstituteEmail } from '$lib/server/auth';
+import { getSupabaseServerClient } from '$lib/supabase';
+import { getAllowedEmailDomain, isAllowedInstituteEmail } from '$lib/server/auth';
 import { safeAuthNext } from '$lib/server/auth-validation';
 
 export const load: PageServerLoad = ({ locals }) => {
@@ -12,35 +12,31 @@ export const load: PageServerLoad = ({ locals }) => {
 export const actions: Actions = {
 	default: async ({ request, cookies, url }) => {
 		const form = await request.formData();
-		const username = String(form.get('username') ?? '')
+		const email = String(form.get('email') ?? '')
 			.trim()
 			.toLowerCase();
 		const password = String(form.get('password') ?? '');
-		if (!username || !password)
-			return fail(400, { error: 'Enter your username and password.', username });
+		if (!email || !password)
+			return fail(400, { error: 'Enter your institute email and password.', email });
+		// Reject non-institute addresses before spending a Supabase auth attempt on them.
+		if (!isAllowedInstituteEmail(email) || email.length > 254)
+			return fail(400, {
+				error: `Use your institute email ending in .${getAllowedEmailDomain()}.`,
+				email
+			});
 
 		try {
-			const admin = getSupabaseAdminClient();
-			const { data: profile, error: profileError } = await admin
-				.from('profiles')
-				.select('institute_email')
-				.eq('username', username)
-				.maybeSingle();
-			if (profileError || !profile || !isAllowedInstituteEmail(profile.institute_email))
-				return fail(400, { error: 'Invalid username or password.', username });
-
 			const supabase = getSupabaseServerClient(cookies);
-			const { data, error } = await supabase.auth.signInWithPassword({
-				email: profile.institute_email,
-				password
-			});
-			if (error) return fail(400, { error: 'Invalid username or password.', username });
+			const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+			// One generic message for unknown accounts and wrong passwords alike, so the
+			// form never reveals which institute addresses have registered.
+			if (error) return fail(400, { error: 'Invalid email or password.', email });
 			if (!data.user?.email_confirmed_at || !isAllowedInstituteEmail(data.user.email)) {
 				await supabase.auth.signOut({ scope: 'local' });
-				return fail(400, { error: 'Invalid username or password.', username });
+				return fail(400, { error: 'Invalid email or password.', email });
 			}
 		} catch {
-			return fail(503, { error: 'Authentication is temporarily unavailable.', username });
+			return fail(503, { error: 'Authentication is temporarily unavailable.', email });
 		}
 
 		throw redirect(303, safeAuthNext(url.searchParams.get('next')));

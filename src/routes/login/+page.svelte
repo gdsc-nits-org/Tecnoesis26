@@ -37,7 +37,7 @@
 	{#if page.url.searchParams.get('reset') === 'success'}
 		<div class="auth-notice" role="status">
 			<AuthIcon name="info" size={18} />
-			<span>Password updated. Log in with your username and new password.</span>
+			<span>Password updated. Log in with your institute email and new password.</span>
 		</div>
 	{/if}
 	{#if error}
@@ -49,12 +49,14 @@
 
 	<form method="POST" class="auth-form" use:enhance={enhanceCredentials} aria-busy={submitting}>
 		<AuthField
-			label="Username"
-			name="username"
-			icon="user"
-			placeholder="Enter your username"
-			value={form?.username ?? ''}
-			autocomplete="username"
+			label="Institute email"
+			name="email"
+			type="email"
+			icon="mail"
+			placeholder="Enter your institute email"
+			value={form?.email ?? ''}
+			autocomplete="email"
+			maxlength={254}
 			required
 		/>
 
@@ -80,7 +82,7 @@
 
 	<p class="auth-footer">
 		New here? <a class="auth-text-link" href={resolve('/signup')}>Sign up with Google</a> to create your
-		username and password.
+		profile and password.
 	</p>
 </AuthShell>
 

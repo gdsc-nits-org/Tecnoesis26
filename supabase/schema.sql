@@ -2,20 +2,40 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  username text not null unique check (username ~ '^[a-z0-9_]{3,24}$'),
+  -- Legacy: accounts predating email login have one. Never collected now.
+  username text unique,
   scholar_id text unique,
   institute_email text not null unique,
   full_name text,
   phone_number text,
   hostel_number text,
+  gender text,
   image_url text,
   auth_provider text not null default 'google' check (auth_provider = 'google'),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
--- Scholar ID is retained for existing accounts, but the new signup flow does not require it.
+-- Scholar ID is collected at signup again, but stays nullable because accounts
+-- created under the earlier flow have none. The app enforces it for new profiles.
 alter table public.profiles alter column scholar_id drop not null;
+alter table public.profiles alter column username drop not null;
+
+-- Signup fields: 10-digit phone, a known gender value, and a scholar ID format.
+alter table public.profiles drop constraint if exists profiles_gender_check;
+alter table public.profiles
+add constraint profiles_gender_check
+check (gender is null or gender in ('male', 'female', 'other', 'prefer_not_to_say'));
+
+alter table public.profiles drop constraint if exists profiles_phone_number_check;
+alter table public.profiles
+add constraint profiles_phone_number_check
+check (phone_number is null or phone_number ~ '^[0-9]{10}$');
+
+alter table public.profiles drop constraint if exists profiles_scholar_id_check;
+alter table public.profiles
+add constraint profiles_scholar_id_check
+check (scholar_id is null or scholar_id ~ '^[A-Za-z0-9/-]{4,20}$');
 
 -- Accept any email domain ending in .nits.ac.in, without a department whitelist.
 alter table public.profiles

@@ -558,6 +558,35 @@
 	width: 0;
 }
 
+.auth-field__select {
+	appearance: none;
+	padding-right: 44px;
+	cursor: pointer;
+}
+
+/* The native dropdown list is OS-rendered, so it ignores the dark card styling.
+   Colour the options explicitly or they render as dark-on-dark in some browsers. */
+.auth-field__select option {
+	background: #1b1560;
+	color: #f3ecff;
+}
+
+.auth-field__select:invalid,
+.auth-field__select option[value=''] {
+	color: rgba(190, 158, 237, 0.68);
+}
+
+.auth-field__chevron {
+	position: absolute;
+	right: 20px;
+	width: 9px;
+	height: 9px;
+	border-right: 2px solid #cbb4ff;
+	border-bottom: 2px solid #cbb4ff;
+	pointer-events: none;
+	transform: translateY(-3px) rotate(45deg);
+}
+
 .auth-field__input::placeholder {
 	color: rgba(190, 158, 237, 0.68);
 	opacity: 1;

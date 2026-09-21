@@ -5,12 +5,14 @@ import type { Session, User } from '@supabase/supabase-js';
 
 export type Profile = {
 	id: string;
-	username: string;
+	/** Legacy: kept for accounts created before email login. No longer collected. */
+	username: string | null;
 	scholar_id: string | null;
 	institute_email: string;
 	full_name: string | null;
 	phone_number: string | null;
 	hostel_number: string | null;
+	gender: string | null;
 	image_url: string | null;
 	auth_provider: string;
 	created_at: string;

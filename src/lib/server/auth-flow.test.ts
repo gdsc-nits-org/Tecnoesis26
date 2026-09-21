@@ -256,40 +256,51 @@ describe('auth callbacks and login', () => {
 		await handle({ event: event('/auth/callback?code=valid&next=/reset-password'), resolve });
 		expect(resolve).toHaveBeenCalledOnce();
 	});
-	it('normalizes usernames and authenticates through Supabase', async () => {
+	it('normalizes the email and authenticates through Supabase', async () => {
 		await expect(
 			loginActions.default(
-				event('/login?next=https://evil.com', { username: ' Student ', password: 'Student123' })
+				event('/login?next=https://evil.com', {
+					email: `  ${user.email!.toUpperCase()} `,
+					password: 'Student123'
+				})
 			)
 		).rejects.toMatchObject({ location: '/home' });
-		expect(mocks.query.eq).toHaveBeenCalledWith('username', 'student');
 		expect(mocks.auth.signInWithPassword).toHaveBeenCalledWith({
 			email: user.email,
 			password: 'Student123'
 		});
 	});
-	it('returns the same error for unknown usernames and wrong passwords', async () => {
-		mocks.query.maybeSingle.mockResolvedValueOnce({ data: null, error: null });
-		const unknown = await loginActions.default(
-			event('/login', { username: 'missing', password: 'Student123' })
+	it('rejects non-institute emails before calling Supabase', async () => {
+		mocks.auth.signInWithPassword.mockClear();
+		const outside = await loginActions.default(
+			event('/login', { email: 'someone@gmail.com', password: 'Student123' })
 		);
+		expect(outside).toMatchObject({ status: 400 });
+		expect(mocks.auth.signInWithPassword).not.toHaveBeenCalled();
+	});
+	it('returns the same error for unknown accounts and wrong passwords', async () => {
 		mocks.auth.signInWithPassword.mockResolvedValue({ error: { code: 'invalid_credentials' } });
 		const wrong = await loginActions.default(
-			event('/login', { username: 'student', password: 'Wrong123' })
+			event('/login', { email: user.email!, password: 'Wrong123' })
 		);
-		expect(unknown).toMatchObject({
-			status: 400,
-			data: { error: 'Invalid username or password.' }
-		});
-		expect(wrong).toMatchObject({ status: 400, data: { error: 'Invalid username or password.' } });
+		expect(wrong).toMatchObject({ status: 400, data: { error: 'Invalid email or password.' } });
+	});
+	it('never asks for a username', async () => {
+		const missing = await loginActions.default(
+			event('/login', { username: 'student', password: 'Student123' })
+		);
+		expect(missing).toMatchObject({ status: 400 });
 	});
 });
 
 describe('Google profile completion', () => {
 	beforeEach(() => mocks.query.maybeSingle.mockResolvedValue({ data: null, error: null }));
 	const details = {
-		username: 'student',
 		full_name: 'Edited Name',
+		phone_number: '9876543210',
+		hostel_number: 'Kapili',
+		gender: 'male',
+		scholar_id: '2112050',
 		password: 'Student123',
 		confirm_password: 'Student123'
 	};
@@ -306,19 +317,22 @@ describe('Google profile completion', () => {
 		).rejects.toMatchObject({ location: '/home' });
 		expect(mocks.query.insert).toHaveBeenCalledWith({
 			id: user.id,
-			username: 'student',
 			full_name: 'Edited Name',
 			institute_email: user.email,
+			phone_number: '9876543210',
+			hostel_number: 'Kapili',
+			gender: 'male',
+			scholar_id: '2112050',
 			auth_provider: 'google'
 		});
 		expect(mocks.auth.updateUser).toHaveBeenCalledWith({ password: 'Student123' });
 	});
-	it('returns a recoverable duplicate username error without returning passwords', async () => {
+	it('returns a recoverable duplicate scholar ID error without returning passwords', async () => {
 		mocks.query.insert.mockResolvedValue({ error: { code: '23505' } });
 		const result = await signupActions.default(event('/signup/complete', details));
 		expect(result).toMatchObject({
 			status: 400,
-			data: { username: 'student', fullName: 'Edited Name' }
+			data: { scholarId: '2112050', fullName: 'Edited Name' }
 		});
 		expect(JSON.stringify(result)).not.toContain('Student123');
 	});

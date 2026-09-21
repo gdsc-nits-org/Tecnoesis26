@@ -4,6 +4,7 @@
 	import AuthField from '$lib/components/auth/AuthField.svelte';
 	import AuthIcon from '$lib/components/auth/AuthIcon.svelte';
 	import AuthShell from '$lib/components/auth/AuthShell.svelte';
+	import { GENDER_OPTIONS } from '$lib/auth-options';
 
 	let { data, form } = $props();
 	let submitting = $state(false);
@@ -40,6 +41,18 @@
 
 	<form method="POST" class="auth-form" use:enhance={enhanceProfile} aria-busy={submitting}>
 		<AuthField
+			label="Full name"
+			name="full_name"
+			icon="user"
+			placeholder="Enter your name"
+			value={form?.fullName ?? data.fullName ?? ''}
+			autocomplete="name"
+			maxlength={100}
+			hint="Filled in from your Google account - edit it if it is not quite right."
+			required
+		/>
+
+		<AuthField
 			label="Institute Google account"
 			name="institute_email"
 			type="email"
@@ -51,28 +64,49 @@
 
 		<div class="auth-field-row">
 			<AuthField
-				label="Username"
-				name="username"
+				label="Phone number"
+				name="phone_number"
+				type="tel"
 				icon="user"
-				placeholder="Choose a username"
-				value={form?.username ?? ''}
-				autocomplete="username"
-				minlength={3}
-				maxlength={24}
-				pattern={'[a-z0-9_]{3,24}'}
-				hint="3–24 characters: lowercase letters (a–z), numbers (0–9), or underscores (_). Example: mainak123"
+				placeholder="10-digit number"
+				value={form?.phoneNumber ?? ''}
+				autocomplete="tel"
+				inputmode="numeric"
+				maxlength={15}
+				hint="Exactly 10 digits. A +91 prefix is fine, we will trim it."
 				hintAsPopover
 				required
 			/>
 
 			<AuthField
-				label="Full name"
-				name="full_name"
+				label="Scholar ID"
+				name="scholar_id"
+				icon="id-card"
+				placeholder="Enter your scholar ID"
+				value={form?.scholarId ?? ''}
+				maxlength={20}
+				required
+			/>
+		</div>
+
+		<div class="auth-field-row">
+			<AuthField
+				label="Hostel"
+				name="hostel_number"
+				icon="lock"
+				placeholder="Hostel name or number"
+				value={form?.hostelNumber ?? ''}
+				maxlength={40}
+				required
+			/>
+
+			<AuthField
+				label="Gender"
+				name="gender"
 				icon="user"
-				placeholder="Enter your name"
-				value={form?.fullName ?? data.fullName ?? ''}
-				autocomplete="name"
-				maxlength={100}
+				placeholder="Select gender"
+				value={form?.gender ?? ''}
+				options={GENDER_OPTIONS}
 				required
 			/>
 		</div>
