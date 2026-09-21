@@ -6,25 +6,16 @@
 
 	// Define TypeScript type for sizes
 	type Size = 'S' | 'M' | 'L' | 'XL' | 'XXL';
-	type Style = 'white' | 'blue' | 'black';
+	type Style = 'Tecno' | 'Spark' ;
 
 	// State for size selection and quantity counter
 	let selectedSize: Size = $state('M');
-	let quantity: number = $state(1);
-	let selectedStyle: Style = $state('blue');
+	let selectedStyle: Style = $state('Tecno');
+    let selectedStyles: Style[] = $state([]);
 
 	const sizes: Size[] = ['S', 'M', 'L', 'XL', 'XXL'];
-	const styles: Style[] = ['white', 'blue', 'black'];
+	const styles: Style[] = ['Tecno', 'Spark'];
 
-	function increment(): void {
-		quantity += 1;
-	}
-
-	function decrement(): void {
-		if (quantity > 1) {
-			quantity -= 1;
-		}
-	}
 
 	function handleSizeSelect(size: Size): void {
 		selectedSize = size;
@@ -33,6 +24,20 @@
 	function handleStyleSelect(style: Style): void {
 		selectedStyle = style;
 	}
+
+    function handleCheckboxChange(style: Style, event: Event): void {
+        const target = event.target as HTMLInputElement;
+        
+        if (target.checked) {
+        // Add style if checked
+        if (!selectedStyles.includes(style)) {
+            selectedStyles.push(style);
+        }
+        } else {
+        // Remove style if unchecked
+        selectedStyles = selectedStyles.filter(s => s !== style);
+        }
+    }
 </script>
 <main
     class="fixed inset-0 overflow-y-auto bg-[url('/GalleryBgImg.png')] bg-cover bg-center bg-no-repeat select-none font-game-demo md:flex md:items-center md:justify-center md:overflow-hidden"
@@ -119,58 +124,50 @@
             <div class="m-2 flex h-auto items-center justify-center">
                 <img src={Partiton} alt="Partition Icon" class="max-w-full">
             </div>
-            <h2 class="mb-3 mt-7 text-xl md:text-base lg:text-xl">QUANTITY</h2>
-            <div class="group relative mx-auto h-8 w-32 text-[#21134d]">
-                <span
-                    class="absolute inset-0 bg-[#fffaff] shadow-[0_0_10px_rgba(255,255,255,0.24)] [clip-path:polygon(8%_0%,42%_0%,46%_12%,54%_12%,58%_0%,92%_0%,100%_50%,92%_100%,58%_100%,54%_88%,46%_88%,42%_100%,8%_100%,0%_50%)]"
-                ></span>
-                <span
-                    class="absolute inset-[2px] flex items-center justify-between bg-[#9f8edd] px-3 transition-colors duration-200 [clip-path:polygon(8%_0%,42%_0%,46%_12%,54%_12%,58%_0%,92%_0%,100%_50%,92%_100%,58%_100%,54%_88%,46%_88%,42%_100%,8%_100%,0%_50%)]"
-                >
-                <button
-                    type="button"
-                    aria-label="Decrease quantity"
-                    onclick={decrement}
-                    disabled={quantity === 1}
-                    class="flex h-6 w-6 items-center justify-center text-lg font-bold leading-none transition-colors hover:text-[#4e3f8e] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    &minus;
-                    </button>
-                    <span class="min-w-5 text-center text-sm font-bold" aria-live="polite">{quantity}</span>
-                    <button
-                        type="button"
-                        aria-label="Increase quantity"
-                        onclick={increment}
-                        class="flex h-6 w-6 items-center justify-center text-lg font-bold leading-none transition-colors "
-                    >
-                        +
-                    </button>
-                </span>
-            </div>
             <div class="hidden md:block">
-            <h2 class="mb-3 mt-8 text-xl md:text-base lg:text-xl">STYLE</h2>
-            <div class="flex items-center justify-center gap-6 md:gap-5 lg:gap-6">
-                {#each styles as style}
-                    <button
-                        type="button"
-                        aria-label={`Select ${style} style`}
-                        aria-pressed={selectedStyle === style}
-                        onclick={() => handleStyleSelect(style)}
-                        class="group relative h-30 w-30 transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 md:h-12 md:w-12 lg:h-15 lg:w-15"
-                    >
-                        <span
-                            class="absolute inset-0 bg-[#f4f0ff] [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]"
-                        ></span>
-                        <span
-                            class={`absolute inset-[2px] flex items-center justify-center [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)] ${
-                                selectedStyle === style ? 'bg-[#3155bd]' : 'bg-[#24164f]'
-                            }`}
+                <h2 class="mb-3 mt-8 text-xl md:text-base lg:text-xl">STYLE</h2>
+                <div class="flex items-center justify-center gap-6 md:gap-5 lg:gap-6">
+                    {#each styles as style}
+                        <button
+                            type="button"
+                            aria-label={`Select ${style} style`}
+                            aria-pressed={selectedStyle === style}
+                            onclick={() => handleStyleSelect(style)}
+                            class="group relative h-30 w-30 transition-transform duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 md:h-12 md:w-12 lg:h-15 lg:w-15"
                         >
-    
-                        </span>
-                    </button>
-                {/each}
+                            <span
+                                class="absolute inset-0 bg-[#f4f0ff] [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]"
+                            ></span>
+                            <span
+                                class={`absolute inset-[2px] flex items-center justify-center [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)] ${
+                                    selectedStyle === style ? 'bg-[#3155bd]' : 'bg-[#24164f]'
+                                }`}
+                            >
+        
+                            </span>
+                        </button>
+                    {/each}
+                </div>
             </div>
+            <div class="m-2 flex h-auto items-center justify-center">
+                <img src={Partiton} alt="Partition Icon" class="max-w-full">
+            </div>
+            <div class="">
+                <h2 class="mb-3 mt-8 text-xl md:text-base lg:text-xl">WHICH ONE DO YOU WANT?</h2>
+                <div class="flex justify-center gap-6">
+                    {#each styles as style}
+                        <label class="flex cursor-pointer items-center gap-2 text-sm uppercase">
+                            <input
+                                type="checkbox"
+                                value={style}
+                                checked={selectedStyles.includes(style)}
+                                onchange={(e) => handleCheckboxChange(style, e)}
+                                class="h-4 w-4 accent-[#3155bd] focus:outline-none focus:ring-2 focus:ring-white/80"
+                            />
+                            <span>{style}</span>
+                        </label>
+                    {/each}
+                </div>
             </div>
         </div>
     </div>

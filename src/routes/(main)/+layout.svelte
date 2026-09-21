@@ -40,4 +40,38 @@
 	<meta name="twitter:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
 	<meta name="twitter:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
 </svelte:head>
-{@render children()}
+<div class="relative min-h-screen bg-[url('/background.jpg')] bg-cover bg-center bg-fixed">
+	<div
+		class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(22,9,36,0.12),rgba(76,26,115,0.2))]"
+		aria-hidden="true"
+	></div>
+	<div
+		class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_33%,rgba(223,164,255,0.18),transparent_25%)]"
+		aria-hidden="true"
+	></div>
+	{#if page.url.pathname === '/home'}
+		<nav
+			class="fixed top-1/2 left-[0.9rem] z-20 flex -translate-y-1/2 rotate-180 flex-row items-center gap-[1.6rem] text-[0.72rem] tracking-[0.14em] text-white/80 uppercase [text-orientation:mixed] [writing-mode:vertical-rl] max-md:hidden"
+			aria-label="Page sections"
+		>
+			<span>Hero</span>
+			<span>About</span>
+			<span>Events</span>
+			<span>Sponsors</span>
+		</nav>
+	{/if}
+	<div class="fixed w-[80%] lg:w-10 right-8 bottom-10 z-20 flex -translate-y-1/2 lg:flex-col flex-row gap-4 justify-center items-center">
+		<a class="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15" href="https://instagram.com/tecnoesis" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+			<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+		</a>
+		<a class="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15" href="https://linkedin.com/company/tecnoesis" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+			<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+		</a>
+		<a class="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15" href="https://facebook.com/tecnoesis" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+			<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+		</a>
+	</div>
+	<div class="relative z-[1]">
+		{@render children()}
+	</div>
+</div>
