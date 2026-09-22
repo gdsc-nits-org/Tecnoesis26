@@ -68,75 +68,77 @@
 	<!-- Phones: a compact centred row that sits in its own strip at the bottom.
 	     The old w-[80%] bar stretched across the screen and covered the last
 	     section. Large screens keep the vertical rail on the right. -->
-	<div
-		class="fixed right-3 bottom-3 z-20 flex w-auto flex-row items-center justify-center gap-2 rounded-full border border-white/12 bg-black/40 px-2.5 py-1.5 backdrop-blur-md lg:right-8 lg:bottom-10 lg:w-10 lg:-translate-y-1/2 lg:flex-col lg:gap-4 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none"
-	>
-		<a
-			class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-			href="https://instagram.com/tecnoesis"
-			target="_blank"
-			rel="noopener noreferrer"
-			aria-label="Instagram"
+	{#if page.url.pathname !== '/gallery'}
+		<div
+			class="fixed right-3 bottom-3 z-20 flex w-auto flex-row items-center justify-center gap-2 rounded-full border border-white/12 bg-black/40 px-2.5 py-1.5 backdrop-blur-md lg:right-8 lg:bottom-10 lg:w-10 lg:-translate-y-1/2 lg:flex-col lg:gap-4 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none"
 		>
-			<svg
-				class="h-5 w-5"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><circle
-					cx="12"
-					cy="12"
-					r="5"
-				/><circle cx="17.5" cy="6.5" r="1.5" /></svg
+			<a
+				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
+				href="https://instagram.com/tecnoesis"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Instagram"
 			>
-		</a>
-		<a
-			class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-			href="https://linkedin.com/company/tecnoesis"
-			target="_blank"
-			rel="noopener noreferrer"
-			aria-label="LinkedIn"
-		>
-			<svg
-				class="h-5 w-5"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect
-					x="2"
-					y="9"
-					width="4"
-					height="12"
-				/><circle cx="4" cy="4" r="2" /></svg
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><rect x="2" y="2" width="20" height="20" rx="5" ry="5" /><circle
+						cx="12"
+						cy="12"
+						r="5"
+					/><circle cx="17.5" cy="6.5" r="1.5" /></svg
+				>
+			</a>
+			<a
+				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
+				href="https://linkedin.com/company/tecnoesis"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="LinkedIn"
 			>
-		</a>
-		<a
-			class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-			href="https://facebook.com/tecnoesis"
-			target="_blank"
-			rel="noopener noreferrer"
-			aria-label="Facebook"
-		>
-			<svg
-				class="h-5 w-5"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect
+						x="2"
+						y="9"
+						width="4"
+						height="12"
+					/><circle cx="4" cy="4" r="2" /></svg
+				>
+			</a>
+			<a
+				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
+				href="https://facebook.com/tecnoesis"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Facebook"
 			>
-		</a>
-	</div>
-	<!-- Bottom padding keeps the last section scrollable clear of the fixed social strip. -->
-	<div class="relative z-[1] pb-16 lg:pb-0">
+				<svg
+					class="h-5 w-5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg
+				>
+			</a>
+		</div>
+	{/if}
+	<!-- The gallery has its own in-flow social links, without a floating strip. -->
+	<div class={page.url.pathname === '/gallery' ? 'relative z-[1]' : 'relative z-[1] pb-16 lg:pb-0'}>
 		{@render children()}
 	</div>
 </div>
