@@ -20,39 +20,103 @@
 	const selectedPhoto = $derived(selectedIndex >= 0 ? viewerPhotos[selectedIndex] : null);
 	const number = (value: number) => String(value).padStart(2, '0');
 
+	
+	let slideDirection = $state<'next' | 'prev'>('next');
+
+	let previousPhoto = $state<typeof selectedPhoto>(null);
+
+	let isSliding = $state(false);
+
+	function movePhoto(direction: 1 | -1) {
+		if (isSliding || viewerPhotos.length <= 1 || !selectedPhoto) {
+			return;
+		}
+
+		const nextIndex =
+			(selectedIndex + direction + viewerPhotos.length) %
+			viewerPhotos.length;
+
+		const nextPhoto = viewerPhotos[nextIndex];
+
+		if (!nextPhoto || nextPhoto.id === selectedId) {
+			return;
+		}
+
+		// Store the currently visible photo for the exit animation
+		previousPhoto = selectedPhoto;
+
+		// Set the animation direction
+		slideDirection = direction === 1 ? 'next' : 'prev';
+
+		// Lock navigation during animation
+		isSliding = true;
+
+		// Display the new photo
+		selectedId = nextPhoto.id;
+	}
+
+	function handleSlideEnd() {
+		// Remove the outgoing photo after the animation
+		previousPhoto = null;
+
+		// Allow navigation again
+		isSliding = false;
+	}
+
 	async function openPhoto(id: number) {
+		// Reset any unfinished animation when opening a photo
+		previousPhoto = null;
+		isSliding = false;
+
 		selectedId = id;
+
 		await tick();
+
 		viewer.showModal();
 	}
 
 	function closeViewer() {
 		viewer.close();
-		selectedId = null;
-	}
 
-	function movePhoto(direction: number) {
-		if (!selectedPhoto) return;
-		selectedId =
-			viewerPhotos[(selectedIndex + direction + viewerPhotos.length) % viewerPhotos.length].id;
+		selectedId = null;
+		previousPhoto = null;
+		isSliding = false;
 	}
 
 	function handleKeys(event: KeyboardEvent) {
-		if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+		if (event.key === 'ArrowRight') {
 			event.preventDefault();
-			movePhoto(event.key === 'ArrowRight' ? 1 : -1);
+			movePhoto(1);
+		} else if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			movePhoto(-1);
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			closeViewer();
 		}
 	}
 
 	function handleTouchEnd(event: TouchEvent) {
-		if (!touchStart) return;
+		if (!touchStart || isSliding) {
+			return;
+		}
+
 		const touch = event.changedTouches[0];
+
+		if (!touch) {
+			touchStart = null;
+			return;
+		}
+
 		const dx = touch.clientX - touchStart.x;
 		const dy = touch.clientY - touchStart.y;
-		if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) movePhoto(dx < 0 ? 1 : -1);
+
+		if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+			movePhoto(dx < 0 ? 1 : -1);
+		}
+
 		touchStart = null;
 	}
-
 	$effect(() => {
 		if (selectedId === null) return;
 		const previousOverflow = document.body.style.overflow;
@@ -224,11 +288,16 @@
 	</div>
 </main>
 
+
 <dialog
 	bind:this={viewer}
 	class="photo-viewer"
 	aria-label="Photo viewer"
-	onclose={() => (selectedId = null)}
+	onclose={() => {
+		selectedId = null;
+		previousPhoto = null;
+		isSliding = false;
+	}}
 	onkeydown={handleKeys}
 	onclick={(event) => {
 		if (event.target === viewer) closeViewer();
@@ -236,58 +305,126 @@
 >
 	{#if selectedPhoto}
 		<div class="viewer-shell">
+			<!-- Dynamic blurred background -->
+			<div
+				class="viewer-backdrop"
+				style={`background-image: url("${selectedPhoto.src}");`}
+				aria-hidden="true"
+			></div>
+
+			<!-- Dark gradient overlay -->
+			<div class="viewer-overlay" aria-hidden="true"></div>
+
+			<!-- Top bar -->
 			<div class="viewer-topbar">
-				<span class="eyebrow">The Tecnoesis archive</span><button
-					class="viewer-icon-button"
+				<span class="eyebrow">The Tecnoesis archive</span>
+
+				<button
+					class="viewer-close"
 					type="button"
 					aria-label="Close photo viewer"
 					onclick={closeViewer}
-					><svg
-						width="24"
-						height="24"
+				>
+					<svg
+						width="21"
+						height="21"
 						viewBox="0 0 24 24"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.5"
-						aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg
-					></button
-				>
+						aria-hidden="true"
+					>
+						<path d="M6 6l12 12M18 6L6 18" />
+					</svg>
+				</button>
 			</div>
+
+			<!-- Single photo stage -->
 			<div
-				class="viewer-stage"
+				class="viewer-stage single-photo-stage"
 				role="group"
-				aria-label="Full photograph. Swipe left or right to navigate."
-				ontouchstart={(event) => {
-					touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-				}}
-				ontouchend={handleTouchEnd}
-				ontouchcancel={() => (touchStart = null)}
+				aria-roledescription="carousel"
+				aria-label="Photo carousel"
+				tabindex="0"
 			>
-				<GalleryPhoto photo={selectedPhoto} eager contained />
+				<!-- Previous photo: exits diagonally -->
+				{#if previousPhoto}
+					<div
+						class="single-photo-slide outgoing"
+						class:slide-out-next={slideDirection === 'next'}
+						class:slide-out-prev={slideDirection === 'prev'}
+						onanimationend={handleSlideEnd}
+					>
+						<GalleryPhoto
+							photo={previousPhoto}
+							eager
+							contained
+						/>
+					</div>
+				{/if}
+
+				<!-- Current photo: enters diagonally -->
+				{#if selectedPhoto}
+					<div
+						class="single-photo-slide incoming"
+						class:slide-in-next={isSliding && slideDirection === 'next'}
+						class:slide-in-prev={isSliding && slideDirection === 'prev'}
+					>
+						<GalleryPhoto
+							photo={selectedPhoto}
+							eager
+							contained
+						/>
+					</div>
+				{/if}
 			</div>
+
+			<!-- Bottom information -->
 			<div class="viewer-bottom">
 				<div class="viewer-caption" aria-live="polite">
-					<p>{selectedPhoto.category} <span>·</span> {formatGalleryDate(selectedPhoto.date)}</p>
+					<p>
+						{selectedPhoto.category}
+						<span>·</span>
+						{formatGalleryDate(selectedPhoto.date)}
+					</p>
+
 					<h2>{selectedPhoto.title}</h2>
 				</div>
+
+				<!-- Navigation controls -->
 				<div class="viewer-controls">
 					<button
 						class="viewer-icon-button"
 						type="button"
 						aria-label="Previous photo"
-						onclick={() => movePhoto(-1)}>{@render arrow('left')}</button
-					><span class="viewer-count" data-testid="viewer-count" aria-live="polite"
-						>{number(selectedIndex + 1)} <span>/ {number(viewerPhotos.length)}</span></span
-					><button
+						disabled={isSliding}
+						onclick={() => movePhoto(-1)}
+					>
+						{@render arrow('left')}
+					</button>
+
+					<span class="viewer-count" aria-live="polite">
+						{number(selectedIndex + 1)}
+						<span>/ {number(viewerPhotos.length)}</span>
+					</span>
+
+					<button
 						class="viewer-icon-button"
 						type="button"
 						aria-label="Next photo"
-						onclick={() => movePhoto(1)}>{@render arrow()}</button
+						disabled={isSliding}
+						onclick={() => movePhoto(1)}
 					>
+						{@render arrow()}
+					</button>
 				</div>
 			</div>
+
+			<!-- Keyboard help -->
 			<p class="viewer-help">
-				Swipe or use the arrow keys to explore <span>·</span> Escape to close
+				Swipe or use the arrow keys to explore
+				<span>·</span>
+				Escape to close
 			</p>
 		</div>
 	{/if}
@@ -875,25 +1012,6 @@
 		outline: 2px solid #debaff;
 		outline-offset: 6px;
 	}
-	.photo-viewer {
-		position: fixed;
-		inset: 0;
-		width: min(1480px, calc(100vw - 64px));
-		max-width: none;
-		height: min(980px, calc(100dvh - 48px));
-		max-height: none;
-		margin: auto;
-		padding: 0;
-		overflow: hidden;
-		border: 1px solid #70578455;
-		border-radius: 9px;
-		background: #120e1a;
-		color: #f2edf6;
-	}
-	.photo-viewer::backdrop {
-		background: #07050bdc;
-		backdrop-filter: blur(14px);
-	}
 	.viewer-shell {
 		display: grid;
 		grid-template-rows: auto minmax(0, 1fr) auto auto;
@@ -982,6 +1100,503 @@
 	.viewer-help span {
 		margin: 0 7px;
 	}
+	
+	.photo-viewer {
+		position: fixed;
+		inset: 0;
+
+		width: 100vw;
+		height: 100dvh;
+
+		max-width: none;
+		max-height: none;
+
+		margin: 0;
+		padding: 0;
+
+		border: none;
+		background: transparent;
+
+		overflow: hidden;
+		color: white;
+	}
+
+	.photo-viewer::backdrop {
+		background: #080808;
+	}
+
+	/* Main viewer container */
+
+	.viewer-shell {
+		position: relative;
+
+		display: flex;
+		flex-direction: column;
+
+		width: 100%;
+		height: 100%;
+
+		min-height: 0;
+
+		isolation: isolate;
+		overflow: hidden;
+	}
+
+
+	.viewer-backdrop {
+		position: absolute;
+		inset: -48px;
+
+		z-index: -3;
+
+		background-position: center;
+		background-size: cover;
+		background-repeat: no-repeat;
+
+		filter: blur(30px);
+		transform: scale(1.12);
+
+		opacity: 0.65;
+
+		transition:
+			background-image 250ms ease,
+			opacity 250ms ease;
+	}
+
+	.viewer-overlay {
+		position: absolute;
+		inset: 0;
+
+		z-index: -2;
+
+		background:
+			linear-gradient(
+				180deg,
+				rgba(5, 5, 5, 0.88) 0%,
+				rgba(5, 5, 5, 0.18) 27%,
+				rgba(5, 5, 5, 0.12) 55%,
+				rgba(5, 5, 5, 0.92) 100%
+			);
+
+		pointer-events: none;
+	}
+
+
+	.viewer-topbar {
+		position: relative;
+		z-index: 10;
+
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		width: 100%;
+
+		padding: clamp(1.1rem, 3vw, 2rem)
+			clamp(1.1rem, 4vw, 3.5rem);
+	}
+
+	.eyebrow {
+		font-size: 0.65rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		line-height: 1.4;
+		text-transform: uppercase;
+
+		color: rgba(255, 255, 255, 0.64);
+	}
+
+	/* Close button */
+
+	.viewer-close {
+		display: grid;
+		place-items: center;
+
+		width: 2.75rem;
+		height: 2.75rem;
+
+		padding: 0;
+
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		border-radius: 999px;
+
+		background: rgba(0, 0, 0, 0.2);
+		color: white;
+
+		cursor: pointer;
+
+		backdrop-filter: blur(14px);
+
+		transition:
+			background 180ms ease,
+			border-color 180ms ease,
+			transform 180ms ease;
+	}
+
+	.viewer-close:hover {
+		background: rgba(255, 255, 255, 0.14);
+		border-color: rgba(255, 255, 255, 0.65);
+
+		transform: rotate(90deg);
+	}
+
+	.viewer-close:focus-visible,
+	.viewer-icon-button:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 4px;
+	}
+
+
+	.viewer-stage {
+		position: relative;
+		flex: 1;
+
+		min-height: 0;
+		min-width: 0;
+	}
+
+	.single-photo-stage {
+		display: grid;
+		place-items: center;
+
+		width: 100%;
+		height: 100%;
+
+		padding: clamp(1rem, 3vw, 3rem);
+	}
+
+	.single-photo-slide {
+		position: absolute;
+		inset: 0;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 100%;
+		height: 100%;
+
+		padding: clamp(1rem, 3vw, 3rem);
+
+		will-change: transform, opacity;
+
+		backface-visibility: hidden;
+		transform-origin: center center;
+
+		pointer-events: none;
+	}
+
+
+
+	.single-photo-slide :global(img) {
+		display: block;
+
+		width: auto;
+		height: auto;
+
+		max-width: min(86vw, 1200px);
+		max-height: min(65vh, 720px);
+
+		object-fit: contain;
+
+		border-radius: 0.45rem;
+
+		box-shadow:
+			0 25px 80px rgba(0, 0, 0, 0.4),
+			0 8px 24px rgba(0, 0, 0, 0.25);
+	}
+
+	/* Keep the incoming photo above the outgoing photo */
+
+	.single-photo-slide.incoming {
+		z-index: 2;
+	}
+
+	.single-photo-slide.outgoing {
+		z-index: 1;
+	}
+
+
+
+	.slide-out-next {
+		animation: photo-out-next 520ms
+			cubic-bezier(0.76, 0, 0.24, 1)
+			forwards;
+	}
+
+	.slide-in-next {
+		animation: photo-in-next 520ms
+			cubic-bezier(0.76, 0, 0.24, 1)
+			forwards;
+	}
+
+	@keyframes photo-out-next {
+		0% {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+
+		100% {
+			opacity: 0;
+			transform: translate3d(-115%, -115%, 0) rotate(-30deg);
+		}
+	}
+
+	@keyframes photo-in-next {
+		0% {
+			opacity: 0;
+			transform: translate3d(115%, 115%, 0) rotate(30deg);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+	}
+
+
+	.slide-out-prev {
+		animation: photo-out-prev 520ms
+			cubic-bezier(0.76, 0, 0.24, 1)
+			forwards;
+	}
+
+	.slide-in-prev {
+		animation: photo-in-prev 520ms
+			cubic-bezier(0.76, 0, 0.24, 1)
+			forwards;
+	}
+
+	@keyframes photo-out-prev {
+		0% {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+
+		100% {
+			opacity: 0;
+			transform: translate3d(115%, 115%, 0) rotate(30deg);
+		}
+	}
+
+	@keyframes photo-in-prev {
+		0% {
+			opacity: 0;
+			transform: translate3d(-115%, -115%, 0) rotate(-30deg);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+	}
+
+
+	.viewer-bottom {
+		position: relative;
+		z-index: 10;
+
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 2rem;
+
+		width: 100%;
+
+		padding: clamp(1rem, 3vw, 2rem)
+			clamp(1.1rem, 4vw, 3.5rem);
+	}
+
+	.viewer-caption {
+		min-width: 0;
+	}
+
+	.viewer-caption p {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+
+		margin: 0 0 0.45rem;
+
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		line-height: 1.5;
+		text-transform: uppercase;
+
+		color: rgba(255, 255, 255, 0.58);
+	}
+
+	.viewer-caption h2 {
+		max-width: min(55vw, 600px);
+
+		margin: 0;
+
+		font-size: clamp(1.1rem, 2.2vw, 1.8rem);
+		font-weight: 500;
+		line-height: 1.15;
+		letter-spacing: -0.04em;
+
+		color: white;
+	}
+
+
+	.viewer-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+
+		flex-shrink: 0;
+	}
+
+	.viewer-icon-button {
+		display: grid;
+		place-items: center;
+
+		width: 2.8rem;
+		height: 2.8rem;
+
+		padding: 0;
+
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		border-radius: 999px;
+
+		background: rgba(0, 0, 0, 0.2);
+		color: white;
+
+		cursor: pointer;
+
+		backdrop-filter: blur(14px);
+
+		transition:
+			background 180ms ease,
+			border-color 180ms ease,
+			opacity 180ms ease,
+			transform 180ms ease;
+	}
+
+	.viewer-icon-button:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.14);
+		border-color: rgba(255, 255, 255, 0.65);
+		transform: translateY(-2px);
+	}
+
+	.viewer-icon-button:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.viewer-count {
+		display: flex;
+		align-items: baseline;
+		gap: 0.25rem;
+
+		min-width: 4rem;
+
+		justify-content: center;
+
+		font-size: 0.8rem;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.05em;
+	}
+
+	.viewer-count span {
+		color: rgba(255, 255, 255, 0.42);
+	}
+
+
+	.viewer-help {
+		position: relative;
+		z-index: 10;
+
+		margin: 0;
+
+		padding: 0
+			clamp(1.1rem, 4vw, 3.5rem)
+			clamp(1rem, 2vw, 1.5rem);
+
+		font-size: 0.65rem;
+		letter-spacing: 0.08em;
+		text-align: center;
+
+		color: rgba(255, 255, 255, 0.4);
+	}
+
+	.viewer-help span {
+		margin: 0 0.5rem;
+	}
+
+
+	@media (max-width: 640px) {
+		.viewer-topbar {
+			padding: 1rem;
+		}
+
+		.viewer-close {
+			width: 2.45rem;
+			height: 2.45rem;
+		}
+
+		.single-photo-stage {
+			padding: 0.75rem;
+		}
+
+		.single-photo-slide {
+			padding: 0.75rem;
+		}
+
+		.single-photo-slide :global(img) {
+			max-width: 94vw;
+			max-height: 58vh;
+
+			border-radius: 0.3rem;
+		}
+
+		.viewer-bottom {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 1.1rem;
+
+			padding: 1rem;
+		}
+
+		.viewer-caption h2 {
+			max-width: 100%;
+			font-size: 1.25rem;
+		}
+
+		.viewer-controls {
+			justify-content: center;
+		}
+
+		.viewer-icon-button {
+			width: 2.6rem;
+			height: 2.6rem;
+		}
+
+		.viewer-help {
+			padding: 0 1rem 1rem;
+
+			font-size: 0.58rem;
+		}
+	}
+
+	
+	@media (prefers-reduced-motion: reduce) {
+		.slide-out-next,
+		.slide-in-next,
+		.slide-out-prev,
+		.slide-in-prev {
+			animation-duration: 1ms;
+		}
+
+		.viewer-close,
+		.viewer-icon-button {
+			transition: none;
+		}
+	}
+
 	@media (min-width: 1800px) {
 		.gallery-wrap {
 			width: min(1920px, calc(100% - 200px));
