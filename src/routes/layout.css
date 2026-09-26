@@ -54,8 +54,24 @@
 }
 
 @font-face {
+  font-family: 'Valorax';
+  src: url('/fonts/valorax.otf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
 	font-family: 'Delicatus';
 	src: url('/font/delicatus.medium.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Orbitron';
+	src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;
@@ -64,6 +80,8 @@
 @theme {
 	--font-paused: 'Game Paused', sans-serif;
 	--font-delicatus: 'Delicatus', sans-serif;
+	--font-valorax: 'Valorax', sans-serif;
+	--font-orbitron: 'Orbitron', sans-serif;
 }
 
 @theme inline {
