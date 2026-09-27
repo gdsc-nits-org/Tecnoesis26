@@ -463,7 +463,7 @@
 		<!-- MOBILE STAGE 1 VIEW (< md) -->
 		<div
 			bind:this={mobileContainerEl}
-			class="relative z-10 flex w-full flex-1 flex-col justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:hidden"
+			class="relative z-10 flex w-full flex-1 flex-col justify-between px-4 py-8 transition-all duration-700 ease-out select-none md:hidden"
 		>
 			<!-- Bouncing Chromatic Crystal Orb (Identical Lighter Crystal Style, Color & Functionality as Desktop) -->
 			<div
@@ -472,7 +472,7 @@
 			>
 				<!-- Lighter Chromatic Amethyst Glass Base with animated drifting crystal mosaic -->
 				<div
-					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[url('/images/crystal-bg.png')] bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
+					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br bg-[url('/images/crystal-bg.png')] from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
 				></div>
 
 				<!-- Floating Micro-Particles Overlay -->
@@ -510,7 +510,8 @@
 				<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
 					<div
 						class="pointer-events-none absolute flex flex-col items-center justify-center"
-						style="left: {heroOffsetX - mobileOrbX}px; top: {heroOffsetY - mobileOrbY}px; width: {heroWidth}px; height: {heroHeight}px;"
+						style="left: {heroOffsetX - mobileOrbX}px; top: {heroOffsetY -
+							mobileOrbY}px; width: {heroWidth}px; height: {heroHeight}px;"
 					>
 						<!-- Logo Silhouette inside Crystal -->
 						<div class="relative z-0 h-56 w-56 opacity-25 sm:h-64 sm:w-64">
@@ -523,7 +524,7 @@
 
 						<!-- Luminous Glowing Neon TECNOESIS Text inside Crystal (NOT plain white) -->
 						<span
-							class="font-game-paused relative z-20 -mt-28 text-center text-[48px] leading-none tracking-normal uppercase select-none sm:-mt-32 sm:text-[58px] text-transparent bg-clip-text bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] drop-shadow-[0_0_12px_#00f5ff] drop-shadow-[0_0_24px_#ec4899] drop-shadow-[0_0_40px_#a855f7]"
+							class="font-game-paused relative z-20 -mt-28 bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] bg-clip-text text-center text-[48px] leading-none tracking-normal text-transparent uppercase drop-shadow-[0_0_12px_#00f5ff] drop-shadow-[0_0_24px_#ec4899] drop-shadow-[0_0_40px_#a855f7] select-none sm:-mt-32 sm:text-[58px]"
 						>
 							TECNOESIS
 						</span>
@@ -588,7 +589,7 @@
 					ontouchmove={handleMobileDragMove}
 					ontouchend={handleMobileDragEnd}
 					ontouchcancel={handleMobileDragEnd}
-					class="relative flex h-11 w-full max-w-[290px] cursor-pointer items-center overflow-hidden rounded-full border-[2.5px] border-white bg-black/20 p-1 backdrop-blur-sm select-none touch-none shadow-[0_0_12px_rgba(255,255,255,0.2)]"
+					class="relative flex h-11 w-full max-w-[290px] cursor-pointer touch-none items-center overflow-hidden rounded-full border-[2.5px] border-white bg-black/20 p-1 shadow-[0_0_12px_rgba(255,255,255,0.2)] backdrop-blur-sm select-none"
 				>
 					<!-- Active Drag Progress Fill Glow -->
 					{#if mobileDragProgress > 0}
@@ -600,7 +601,7 @@
 
 					<!-- Draggable Solid Pure White Circle Thumb (Exact match to Figma) -->
 					<div
-						class="absolute top-1 bottom-1 flex h-8 w-8 cursor-grab items-center justify-center rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] active:cursor-grabbing select-none touch-none"
+						class="absolute top-1 bottom-1 flex h-8 w-8 cursor-grab touch-none items-center justify-center rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] select-none active:cursor-grabbing"
 						style="left: calc({mobileDragProgress}% * (1 - 36px / 100%) + 2px);"
 					></div>
 				</div>
@@ -616,7 +617,12 @@
 						class="flex cursor-pointer items-center justify-center rounded-full bg-white px-3.5 py-1.5 shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-transform duration-150 active:scale-95"
 						aria-label="Toggle Sound"
 					>
-						<svg class="h-3.5 w-6" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<svg
+							class="h-3.5 w-6"
+							viewBox="0 0 26 12"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
 							<path
 								d="M1 6 C3 1, 5 1, 6.8 6 C8.6 11, 10.4 11, 12.2 6 C14 1, 15.8 1, 17.6 6 C19.4 11, 21.2 11, 23 6 C24 3, 25 3, 25.5 6"
 								stroke="black"
@@ -633,7 +639,7 @@
 		<!-- DESKTOP STAGE 1 VIEW (>= md) -->
 		<div
 			bind:this={desktopContainerEl}
-			class="relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:flex"
+			class="relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 transition-all duration-700 ease-out select-none md:flex"
 		>
 			<!-- Bouncing Chromatic Crystal Orb on Desktop (Natural Bouncy Ball with Luminous Glowing Neon Text Effect) -->
 			<div
@@ -642,7 +648,7 @@
 			>
 				<!-- Lighter Chromatic Amethyst Glass Base with animated drifting crystal mosaic -->
 				<div
-					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[url('/images/crystal-bg.png')] bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
+					class="animate-crystal-drift absolute inset-0 bg-gradient-to-br bg-[url('/images/crystal-bg.png')] from-[#3b156a]/70 via-[#240d42]/60 to-[#0e041c]/75 bg-[size:95px_95px] bg-repeat opacity-90 mix-blend-color-dodge"
 				></div>
 
 				<!-- Floating Micro-Particles Overlay -->
@@ -680,10 +686,11 @@
 				<div class="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
 					<div
 						class="pointer-events-none absolute flex flex-col items-center justify-center whitespace-nowrap"
-						style="left: {desktopHeroOffsetX - desktopOrbX}px; top: {desktopHeroOffsetY - desktopOrbY}px; width: {desktopHeroWidth}px; height: {desktopHeroHeight}px;"
+						style="left: {desktopHeroOffsetX - desktopOrbX}px; top: {desktopHeroOffsetY -
+							desktopOrbY}px; width: {desktopHeroWidth}px; height: {desktopHeroHeight}px;"
 					>
 						<span
-							class="font-game-paused text-center text-[48px] leading-none tracking-normal uppercase select-none sm:text-[90px] md:text-[140px] lg:text-[195px] xl:text-[247.83px] text-transparent bg-clip-text bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] drop-shadow-[0_0_15px_#00f5ff] drop-shadow-[0_0_30px_#ec4899] drop-shadow-[0_0_50px_#a855f7]"
+							class="font-game-paused bg-gradient-to-r from-[#00f5ff] via-[#ff00a0] to-[#c084fc] bg-clip-text text-center text-[48px] leading-none tracking-normal text-transparent uppercase drop-shadow-[0_0_15px_#00f5ff] drop-shadow-[0_0_30px_#ec4899] drop-shadow-[0_0_50px_#a855f7] select-none sm:text-[90px] md:text-[140px] lg:text-[195px] xl:text-[247.83px]"
 						>
 							TECNOESIS
 						</span>
@@ -801,7 +808,7 @@
 
 		<!-- DESKTOP STAGE 2 VIEW (>= md) -->
 		<div
-			class="animate-fadeIn relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 select-none transition-all duration-700 ease-out md:flex"
+			class="animate-fadeIn relative z-10 hidden w-full flex-1 flex-col items-center justify-between px-4 py-8 transition-all duration-700 ease-out select-none md:flex"
 		>
 			<div></div>
 

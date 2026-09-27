@@ -59,9 +59,9 @@
 			onclick={() => (menuOpen = false)}><span class="marker marker-star"></span>Spark</a
 		>
 		<a
-			class:active={page.url.pathname.startsWith('/team')}
-			href={resolve('/team')}
-			onclick={() => (menuOpen = false)}><span class="marker marker-diamond"></span>Team</a
+			class:active={page.url.pathname.startsWith('/merch')}
+			href={resolve('/merch')}
+			onclick={() => (menuOpen = false)}><span class="marker marker-diamond"></span>Merch</a
 		>
 	</nav>
 

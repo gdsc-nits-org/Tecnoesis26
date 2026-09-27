@@ -280,4 +280,4 @@ void main() {
 	});
 </script>
 
-<div bind:this={mountRef} class="w-full h-full {className}"></div>
+<div bind:this={mountRef} class="h-full w-full {className}"></div>

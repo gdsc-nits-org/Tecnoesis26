@@ -25,10 +25,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 	);
 	const isProtected =
 		!isPublic &&
-		(
-			// pathname === '/home' ||
-			// pathname.startsWith('/home/') ||
-			pathname === '/profile' ||
+		// pathname === '/home' ||
+		// pathname.startsWith('/home/') ||
+		(pathname === '/profile' ||
 			pathname.startsWith('/profile/') ||
 			pathname.startsWith('/dashboard') ||
 			(pathname.includes('/modules/') && pathname.includes('/participate')));

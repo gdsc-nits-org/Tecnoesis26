@@ -20,24 +20,14 @@ Title: Tshirt
 		[key: string]: any;
 	};
 
-	let {
-		fallback,
-		error,
-		children,
-		ref = $bindable(),
-		...props
-	}: Props = $props();
+	let { fallback, error, children, ref = $bindable(), ...props }: Props = $props();
 
 	const gltf = useGltf('/models/tshirt.gltf', {
 		dracoLoader: useDraco()
 	});
 </script>
 
-<T.Group
-	bind:ref
-	dispose={false}
-	{...props}
->
+<T.Group bind:ref dispose={false} {...props}>
 	{#await gltf}
 		{@render fallback?.()}
 	{:then gltf}

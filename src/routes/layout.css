@@ -10,33 +10,37 @@
 	font-display: swap;
 }
 @font-face {
-  font-family: 'GameDemo';
-  src: url('/fonts/Game Paused DEMO.ttf') format('truetype');
-  font-weight: 500; /* Medium */
-  font-style: normal;
-  font-display: swap;
+	font-family: 'GameDemo';
+	src: url('/fonts/Game Paused DEMO.ttf') format('truetype');
+	font-weight: 500; /* Medium */
+	font-style: normal;
+	font-display: swap;
 }
 @font-face {
-  font-family: 'BankGothic';
-  src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
-  font-weight: 500; /* Medium */
-  font-style: normal;
-  font-display: swap;
+	font-family: 'BankGothic';
+	src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
+	font-weight: 500; /* Medium */
+	font-style: normal;
+	font-display: swap;
 }
 @theme {
-  --font-delicatus: 'Delicatus', sans-serif;
-  --font-game-demo: 'GameDemo', sans-serif;
-  --font-bankgothic: 'BankGothic', sans-serif;
-  --keyframes-wave: wave;
-  @keyframes wave {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+	--font-delicatus: 'Delicatus', sans-serif;
+	--font-game-demo: 'GameDemo', sans-serif;
+	--font-bankgothic: 'BankGothic', sans-serif;
+	--keyframes-wave: wave;
+	@keyframes wave {
+		0% {
+			transform: translateX(0);
+		}
+		100% {
+			transform: translateX(-50%);
+		}
+	}
 }
 @import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&family=Sulphur+Point:wght@300;400;700&display=swap');
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/geist';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -54,11 +58,11 @@
 }
 
 @font-face {
-  font-family: 'Valorax';
-  src: url('/fonts/valorax.otf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+	font-family: 'Valorax';
+	src: url('/fonts/valorax.otf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
@@ -197,13 +201,13 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+	* {
+		@apply border-border outline-ring/50;
 	}
-  body {
-    @apply bg-background text-foreground;
+	body {
+		@apply bg-background text-foreground;
 	}
-  html {
-    @apply font-sans;
+	html {
+		@apply font-sans;
 	}
 }

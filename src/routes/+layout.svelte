@@ -29,7 +29,10 @@
 	/>
 	<meta property="og:url" content={page.url.href} />
 	<meta property="og:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
-	<meta property="og:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
+	<meta
+		property="og:image:alt"
+		content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar"
+	/>
 	<meta property="og:locale" content="en_IN" />
 
 	<meta name="twitter:card" content="summary_large_image" />
@@ -39,7 +42,10 @@
 		content="Tecnoesis is the annual techno-managerial event of NIT Silchar, bringing tech enthusiasts fascinating events, workshops, competitions, and interactions worth a lifetime."
 	/>
 	<meta name="twitter:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
-	<meta name="twitter:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
+	<meta
+		name="twitter:image:alt"
+		content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar"
+	/>
 </svelte:head>
 {#if page.url.pathname !== '/'}
 	<Navbar />

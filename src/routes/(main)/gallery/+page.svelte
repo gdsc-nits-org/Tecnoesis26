@@ -20,7 +20,6 @@
 	const selectedPhoto = $derived(selectedIndex >= 0 ? viewerPhotos[selectedIndex] : null);
 	const number = (value: number) => String(value).padStart(2, '0');
 
-	
 	let slideDirection = $state<'next' | 'prev'>('next');
 
 	let previousPhoto = $state<typeof selectedPhoto>(null);
@@ -32,9 +31,7 @@
 			return;
 		}
 
-		const nextIndex =
-			(selectedIndex + direction + viewerPhotos.length) %
-			viewerPhotos.length;
+		const nextIndex = (selectedIndex + direction + viewerPhotos.length) % viewerPhotos.length;
 
 		const nextPhoto = viewerPhotos[nextIndex];
 
@@ -288,7 +285,6 @@
 	</div>
 </main>
 
-
 <dialog
 	bind:this={viewer}
 	class="photo-viewer"
@@ -355,11 +351,7 @@
 						class:slide-out-prev={slideDirection === 'prev'}
 						onanimationend={handleSlideEnd}
 					>
-						<GalleryPhoto
-							photo={previousPhoto}
-							eager
-							contained
-						/>
+						<GalleryPhoto photo={previousPhoto} eager contained />
 					</div>
 				{/if}
 
@@ -370,11 +362,7 @@
 						class:slide-in-next={isSliding && slideDirection === 'next'}
 						class:slide-in-prev={isSliding && slideDirection === 'prev'}
 					>
-						<GalleryPhoto
-							photo={selectedPhoto}
-							eager
-							contained
-						/>
+						<GalleryPhoto photo={selectedPhoto} eager contained />
 					</div>
 				{/if}
 			</div>
@@ -431,16 +419,15 @@
 </dialog>
 
 <style>
-	:global(body:has(.gallery-page) .site-header) {
-		background: rgba(9, 6, 45, 0.82);
+	:global(body .site-header) {
 		backdrop-filter: blur(16px);
 	}
 	.gallery-page {
-		--paper: #f4efff;
-		--muted: rgba(214, 200, 246, 0.6);
-		--accent: #d58aff;
-		--accent-deep: #a855f7;
-		--edge: rgba(170, 116, 255, 0.26);
+		--paper: #f7f2ff;
+		--muted: rgba(220, 210, 244, 0.62);
+		--accent: #d8a0ff;
+		--accent-deep: #9f5cff;
+		--edge: rgba(190, 145, 255, 0.3);
 		/* The angular corner cut used across the site (auth card, nav register). */
 		--notch: polygon(
 			0 9px,
@@ -454,12 +441,11 @@
 		);
 		min-height: 100svh;
 		color: var(--paper);
-		/* Translucent, so the fixed site artwork behind the (main) layout shows
-		   through instead of being covered by a flat panel. */
+		/* Keep the home page's background artwork and ambient overlays visible. */
 		background:
-			radial-gradient(ellipse at 76% 6%, rgba(134, 65, 255, 0.24), transparent 42%),
-			linear-gradient(180deg, rgba(9, 6, 45, 0.86), rgba(7, 5, 38, 0.95));
-		font-family: 'Bruno Ace', sans-serif;
+			linear-gradient(180deg, rgba(22, 9, 36, 0.1), rgba(76, 26, 115, 0.2)),
+			radial-gradient(circle at 50% 33%, rgba(223, 164, 255, 0.1), transparent 25%);
+		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
 	}
 	.gallery-wrap {
 		width: min(1440px, calc(100% - 144px));
@@ -499,7 +485,7 @@
 	}
 	h1 {
 		margin: 30px 0 23px;
-		font-family: 'GameDemo', 'Bruno Ace', sans-serif;
+		font-family: 'Game Paused', 'GameDemo', sans-serif;
 		font-size: clamp(46px, 5.6vw, 88px);
 		font-weight: 500;
 		line-height: 1.02;
@@ -515,7 +501,7 @@
 	}
 	h1 em {
 		color: #e2b6ff;
-		font-family: 'Delicatus', 'GameDemo', sans-serif;
+		font-family: 'Delicatus', 'Game Paused', sans-serif;
 		font-size: 1.04em;
 		font-weight: 400;
 		font-style: normal;
@@ -582,7 +568,7 @@
 		gap: 5px;
 	}
 	.hero-facts strong {
-		font-family: 'GameDemo', 'Bruno Ace', sans-serif;
+		font-family: 'Game Paused', 'GameDemo', sans-serif;
 		font-size: 30px;
 		font-weight: 500;
 		line-height: 1;
@@ -767,7 +753,7 @@
 	}
 	h2 {
 		margin: 10px 0 0;
-		font-family: 'GameDemo', 'Bruno Ace', sans-serif;
+		font-family: 'Game Paused', 'GameDemo', sans-serif;
 		font-size: clamp(26px, 2.8vw, 42px);
 		font-weight: 500;
 		line-height: 1.12;
@@ -776,7 +762,7 @@
 	}
 	h2 em {
 		color: #e2b6ff;
-		font-family: 'Delicatus', 'GameDemo', sans-serif;
+		font-family: 'Delicatus', 'Game Paused', sans-serif;
 		font-style: normal;
 		font-weight: 400;
 	}
@@ -982,7 +968,7 @@
 	.gallery-footer p {
 		margin: 9px 0 0;
 		color: #e2b6ff;
-		font-family: 'Delicatus', 'GameDemo', sans-serif;
+		font-family: 'Delicatus', 'Game Paused', sans-serif;
 		font-size: clamp(22px, 2.4vw, 30px);
 		letter-spacing: 0.03em;
 	}
@@ -1100,7 +1086,7 @@
 	.viewer-help span {
 		margin: 0 7px;
 	}
-	
+
 	.photo-viewer {
 		position: fixed;
 		inset: 0;
@@ -1142,7 +1128,6 @@
 		overflow: hidden;
 	}
 
-
 	.viewer-backdrop {
 		position: absolute;
 		inset: -48px;
@@ -1169,18 +1154,16 @@
 
 		z-index: -2;
 
-		background:
-			linear-gradient(
-				180deg,
-				rgba(5, 5, 5, 0.88) 0%,
-				rgba(5, 5, 5, 0.18) 27%,
-				rgba(5, 5, 5, 0.12) 55%,
-				rgba(5, 5, 5, 0.92) 100%
-			);
+		background: linear-gradient(
+			180deg,
+			rgba(5, 5, 5, 0.88) 0%,
+			rgba(5, 5, 5, 0.18) 27%,
+			rgba(5, 5, 5, 0.12) 55%,
+			rgba(5, 5, 5, 0.92) 100%
+		);
 
 		pointer-events: none;
 	}
-
 
 	.viewer-topbar {
 		position: relative;
@@ -1192,8 +1175,7 @@
 
 		width: 100%;
 
-		padding: clamp(1.1rem, 3vw, 2rem)
-			clamp(1.1rem, 4vw, 3.5rem);
+		padding: clamp(1.1rem, 3vw, 2rem) clamp(1.1rem, 4vw, 3.5rem);
 	}
 
 	.eyebrow {
@@ -1246,7 +1228,6 @@
 		outline-offset: 4px;
 	}
 
-
 	.viewer-stage {
 		position: relative;
 		flex: 1;
@@ -1286,8 +1267,6 @@
 		pointer-events: none;
 	}
 
-
-
 	.single-photo-slide :global(img) {
 		display: block;
 
@@ -1316,18 +1295,12 @@
 		z-index: 1;
 	}
 
-
-
 	.slide-out-next {
-		animation: photo-out-next 520ms
-			cubic-bezier(0.76, 0, 0.24, 1)
-			forwards;
+		animation: photo-out-next 520ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
 	}
 
 	.slide-in-next {
-		animation: photo-in-next 520ms
-			cubic-bezier(0.76, 0, 0.24, 1)
-			forwards;
+		animation: photo-in-next 520ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
 	}
 
 	@keyframes photo-out-next {
@@ -1354,17 +1327,12 @@
 		}
 	}
 
-
 	.slide-out-prev {
-		animation: photo-out-prev 520ms
-			cubic-bezier(0.76, 0, 0.24, 1)
-			forwards;
+		animation: photo-out-prev 520ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
 	}
 
 	.slide-in-prev {
-		animation: photo-in-prev 520ms
-			cubic-bezier(0.76, 0, 0.24, 1)
-			forwards;
+		animation: photo-in-prev 520ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
 	}
 
 	@keyframes photo-out-prev {
@@ -1391,7 +1359,6 @@
 		}
 	}
 
-
 	.viewer-bottom {
 		position: relative;
 		z-index: 10;
@@ -1403,8 +1370,7 @@
 
 		width: 100%;
 
-		padding: clamp(1rem, 3vw, 2rem)
-			clamp(1.1rem, 4vw, 3.5rem);
+		padding: clamp(1rem, 3vw, 2rem) clamp(1.1rem, 4vw, 3.5rem);
 	}
 
 	.viewer-caption {
@@ -1439,7 +1405,6 @@
 
 		color: white;
 	}
-
 
 	.viewer-controls {
 		display: flex;
@@ -1505,16 +1470,13 @@
 		color: rgba(255, 255, 255, 0.42);
 	}
 
-
 	.viewer-help {
 		position: relative;
 		z-index: 10;
 
 		margin: 0;
 
-		padding: 0
-			clamp(1.1rem, 4vw, 3.5rem)
-			clamp(1rem, 2vw, 1.5rem);
+		padding: 0 clamp(1.1rem, 4vw, 3.5rem) clamp(1rem, 2vw, 1.5rem);
 
 		font-size: 0.65rem;
 		letter-spacing: 0.08em;
@@ -1526,7 +1488,6 @@
 	.viewer-help span {
 		margin: 0 0.5rem;
 	}
-
 
 	@media (max-width: 640px) {
 		.viewer-topbar {
@@ -1582,7 +1543,6 @@
 		}
 	}
 
-	
 	@media (prefers-reduced-motion: reduce) {
 		.slide-out-next,
 		.slide-in-next,
@@ -1910,5 +1870,36 @@
 			transition: none !important;
 			scroll-behavior: auto !important;
 		}
+	}
+
+	/* Gallery type system: readable copy, technical labels, and one display face. */
+	.gallery-page {
+		font-family: 'Sulphur Point', sans-serif;
+	}
+
+	.gallery-page h1,
+	.gallery-page h2,
+	.gallery-page .hero-facts strong,
+	.gallery-page .gallery-footer p {
+		font-family: 'Orbitron', sans-serif;
+	}
+
+	.gallery-page h1 em,
+	.gallery-page h2 em {
+		font-family: 'Orbitron', sans-serif;
+		font-style: normal;
+	}
+
+	.gallery-page .eyebrow,
+	.gallery-page .explore-link,
+	.gallery-page .hero-facts span,
+	.gallery-page .filters button,
+	.gallery-page .frame-count,
+	.gallery-page .photo-category,
+	.gallery-page .photo-number,
+	.gallery-page figcaption h3,
+	.gallery-page figcaption time,
+	.gallery-page .gallery-footer a {
+		font-family: 'Bruno Ace', sans-serif;
 	}
 </style>

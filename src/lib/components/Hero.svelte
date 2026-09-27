@@ -22,6 +22,13 @@
 		logoY = 0;
 	}
 
+	function scrollToNextSection() {
+		document.querySelector<HTMLElement>('[data-section-name="ABOUT"]')?.scrollIntoView({
+			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+			block: 'start'
+		});
+	}
+
 	// ---- Gyroscope parallax for the logo (touch devices) ------------------------
 	// Same effect as the mouse parallax, but driven by tilting the phone.
 	// Android: starts automatically. iOS: needs a permission prompt, which can only be
@@ -242,16 +249,19 @@
 				>
 			</div>
 
-			<div
+			<button
+				type="button"
+				onclick={scrollToNextSection}
 				class="absolute bottom-4 left-[35vw] z-20 flex w-fit -translate-x-1/2 flex-col items-center justify-center font-display text-[0.88rem] leading-none tracking-[0.08em] text-white/90 lowercase transition-opacity duration-500 max-[900px]:bottom-2 max-[900px]:left-[35vw] max-[900px]:text-[0.72rem] max-md:bottom-2 max-md:left-1/2 max-md:text-[0.68rem]"
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
+				aria-label="Scroll to the About section"
 			>
 				<span class="mb-2.5 block text-[1.7rem] leading-[0.7] max-md:mb-1.5 max-md:text-[1.15rem]"
 					>⌄</span
 				>
 				<span class="block text-center">scroll</span>
-			</div>
+			</button>
 		</main>
 	</div>
 </div>

@@ -26,19 +26,14 @@
 		scene.traverse((object) => {
 			if (!(object instanceof Mesh)) return;
 
-			const materials = Array.isArray(object.material)
-				? object.material
-				: [object.material];
+			const materials = Array.isArray(object.material) ? object.material : [object.material];
 
 			for (const material of materials) {
 				if (material instanceof MeshStandardMaterial) {
 					material.roughness = 0.85;
 					material.metalness = 0;
 					material.color.multiplyScalar(0.75);
-					material.emissiveIntensity = Math.min(
-						material.emissiveIntensity,
-						0.6
-					);
+					material.emissiveIntensity = Math.min(material.emissiveIntensity, 0.6);
 					material.needsUpdate = true;
 				}
 			}
@@ -75,7 +70,7 @@
 
 	useTask((delta) => {
 		rotation += delta * 0.4;
-		y = Math.sin(Date.now() / 1000 * 1.2) * 0.3;
+		y = Math.sin((Date.now() / 1000) * 1.2) * 0.3;
 
 		const stiffness = 12;
 		const damping = 4;
@@ -88,11 +83,7 @@
 	});
 </script>
 
-<T.PerspectiveCamera
-	makeDefault
-	position={[0, 0, 7]}
-	fov={50}
-/>
+<T.PerspectiveCamera makeDefault position={[0, 0, 7]} fov={50} />
 
 <OrbitControls enableDamping target={[0, 0, 0]} />
 
@@ -113,10 +104,7 @@
 	{@const _shadows = configureShadows(model.scene)}
 	{@const _material = configureMaterial(model.scene)}
 
-	<T.Group
-		position={[0, y, 0]}
-		rotation={[swayZ, rotation + swayX, 0]}
-	>
+	<T.Group position={[0, y, 0]} rotation={[swayZ, rotation + swayX, 0]}>
 		<T is={model.scene} scale={0.4} />
 	</T.Group>
 {/await}

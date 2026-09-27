@@ -122,7 +122,11 @@
 				const d = Math.hypot(dx, dy);
 				const steps = Math.max(1, Math.floor(d * TRAIL_SIZE * (interpolate / 100)));
 				for (let i = 1; i <= steps; i++) {
-					trailPoints.push({ x: lastPt.x + (dx * i) / steps, y: lastPt.y + (dy * i) / steps, age: 0 });
+					trailPoints.push({
+						x: lastPt.x + (dx * i) / steps,
+						y: lastPt.y + (dy * i) / steps,
+						age: 0
+					});
 				}
 			} else {
 				trailPoints.push({ x: ux, y: uy, age: 0 });
@@ -186,7 +190,7 @@
 </script>
 
 {#if gooeyFilter}
-	<svg class="z-[1] absolute overflow-hidden">
+	<svg class="absolute z-[1] overflow-hidden">
 		<defs>
 			<filter id={gooeyFilter.id}>
 				<feGaussianBlur in="SourceGraphic" stdDeviation={gooeyFilter.strength} result="blur" />

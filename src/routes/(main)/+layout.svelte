@@ -54,17 +54,6 @@
 		class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_33%,rgba(223,164,255,0.18),transparent_25%)]"
 		aria-hidden="true"
 	></div>
-	{#if page.url.pathname === '/home'}
-		<nav
-			class="fixed top-1/2 left-[0.9rem] z-20 flex -translate-y-1/2 rotate-180 flex-row items-center gap-[1.6rem] text-[0.72rem] tracking-[0.14em] text-white/80 uppercase [text-orientation:mixed] [writing-mode:vertical-rl] max-md:hidden"
-			aria-label="Page sections"
-		>
-			<span>Hero</span>
-			<span>About</span>
-			<span>Events</span>
-			<span>Sponsors</span>
-		</nav>
-	{/if}
 	<!-- Phones: a compact centred row that sits in its own strip at the bottom.
 	     The old w-[80%] bar stretched across the screen and covered the last
 	     section. Large screens keep the vertical rail on the right. -->

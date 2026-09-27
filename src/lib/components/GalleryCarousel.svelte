@@ -1,4 +1,3 @@
-
 <script lang="ts">
 	import type { GalleryPhoto } from '$lib/data/gallery';
 
@@ -17,18 +16,13 @@
 	let dragStartX = $state(0);
 	let dragOffset = $state(0);
 
-	const clamp = (value: number, min: number, max: number) =>
-		Math.min(max, Math.max(min, value));
+	const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 	const currentPhoto = $derived(photos[currentIndex]);
 
-	const previousIndex = $derived(
-		currentIndex > 0 ? currentIndex - 1 : photos.length - 1
-	);
+	const previousIndex = $derived(currentIndex > 0 ? currentIndex - 1 : photos.length - 1);
 
-	const nextIndex = $derived(
-		currentIndex < photos.length - 1 ? currentIndex + 1 : 0
-	);
+	const nextIndex = $derived(currentIndex < photos.length - 1 ? currentIndex + 1 : 0);
 
 	const previousPhoto = $derived(photos[previousIndex]);
 	const nextPhoto = $derived(photos[nextIndex]);
@@ -147,12 +141,7 @@
 				<span>{String(photos.length).padStart(2, '0')}</span>
 			</div>
 
-			<button
-				class="close-button"
-				type="button"
-				aria-label="Close gallery"
-				onclick={close}
-			>
+			<button class="close-button" type="button" aria-label="Close gallery" onclick={close}>
 				<span>Close</span>
 				<span class="close-icon" aria-hidden="true">×</span>
 			</button>
@@ -160,11 +149,7 @@
 
 		<!-- Main carousel -->
 		<main class="carousel-main">
-			<div
-				class="carousel-stage"
-				role="group"
-				aria-label="Gallery carousel"
-			>
+			<div class="carousel-stage" role="group" aria-label="Gallery carousel">
 				<!-- Previous card -->
 				<button
 					class="side-card previous-card"
@@ -172,11 +157,7 @@
 					aria-label={`Previous photo: ${previousPhoto.title}`}
 					onclick={goPrevious}
 				>
-					<img
-						src={getImage(previousPhoto)}
-						alt=""
-						draggable="false"
-					/>
+					<img src={getImage(previousPhoto)} alt="" draggable="false" />
 				</button>
 
 				<!-- Active image -->
@@ -207,11 +188,7 @@
 					aria-label={`Next photo: ${nextPhoto.title}`}
 					onclick={goNext}
 				>
-					<img
-						src={getImage(nextPhoto)}
-						alt=""
-						draggable="false"
-					/>
+					<img src={getImage(nextPhoto)} alt="" draggable="false" />
 				</button>
 			</div>
 		</main>
@@ -236,21 +213,11 @@
 			</div>
 
 			<div class="navigation-controls">
-				<button
-					type="button"
-					class="nav-button"
-					aria-label="Previous photo"
-					onclick={goPrevious}
-				>
+				<button type="button" class="nav-button" aria-label="Previous photo" onclick={goPrevious}>
 					<span aria-hidden="true">←</span>
 				</button>
 
-				<button
-					type="button"
-					class="nav-button"
-					aria-label="Next photo"
-					onclick={goNext}
-				>
+				<button type="button" class="nav-button" aria-label="Next photo" onclick={goNext}>
 					<span aria-hidden="true">→</span>
 				</button>
 			</div>
@@ -277,11 +244,7 @@
 					aria-current={index === currentIndex ? 'true' : undefined}
 					onclick={() => goTo(index)}
 				>
-					<img
-						src={photo.sources.mobile}
-						alt=""
-						draggable="false"
-					/>
+					<img src={photo.sources.mobile} alt="" draggable="false" />
 				</button>
 			{/each}
 		</div>
@@ -327,13 +290,12 @@
 	}
 
 	.backdrop-tint {
-		background:
-			linear-gradient(
-				180deg,
-				rgba(12, 9, 18, 0.86) 0%,
-				rgba(12, 9, 18, 0.2) 42%,
-				rgba(12, 9, 18, 0.7) 100%
-			);
+		background: linear-gradient(
+			180deg,
+			rgba(12, 9, 18, 0.86) 0%,
+			rgba(12, 9, 18, 0.2) 42%,
+			rgba(12, 9, 18, 0.7) 100%
+		);
 	}
 
 	.backdrop-grain {

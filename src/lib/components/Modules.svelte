@@ -1,7 +1,6 @@
-
 <script lang="ts">
 	import type { MouseEventHandler } from 'svelte/elements';
-    import imgMod from '$lib/assets/moduleImg.png'
+	import imgMod from '$lib/assets/moduleImg.png';
 
 	let {
 		gifSrc = imgMod,
@@ -54,24 +53,30 @@
 		z-index: 1;
 		margin: 0;
 		color: #fff;
-        font-size: clamp(3rem, 11vw, 8rem);
+		font-size: clamp(3rem, 11vw, 8rem);
 		font-weight: 900;
 		letter-spacing: 0.06em;
 		line-height: 0.85;
 		text-align: center;
-		text-shadow: 0 0 15px #fff8, 0 0 35px #a78bfa55;
+		text-shadow:
+			0 0 15px #fff8,
+			0 0 35px #a78bfa55;
 	}
 
 	button {
 		padding: 0.65rem 2.2rem;
 		color: #090019;
-		font: 700 clamp(0.85rem, 2vw, 1.2rem) 'Arial Black', sans-serif;
+		font:
+			700 clamp(0.85rem, 2vw, 1.2rem) 'Arial Black',
+			sans-serif;
 		letter-spacing: 0.02em;
 		background: linear-gradient(135deg, #e5dfff, #8170d8);
 		border: 2px solid #c8baff;
 		clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%);
 		cursor: pointer;
-		transition: transform 0.25s, filter 0.25s;
+		transition:
+			transform 0.25s,
+			filter 0.25s;
 	}
 
 	button:hover {

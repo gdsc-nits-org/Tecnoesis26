@@ -1,6 +1,13 @@
 <script lang="ts">
 	import ShapeBlur from './ShapeBlur.svelte';
 
+	type Sponsor = {
+		sponsor_name: string;
+		sponsor_img: string;
+	};
+
+	let { sponsors = [] }: { sponsors?: Sponsor[] } = $props();
+
 	// The marquee is rendered twice back to back so the -50% scroll animation loops
 	// seamlessly. Named arrays keep the {#each} blocks keyed and free of unused bindings.
 	const MARQUEE_PASSES = [0, 1];
@@ -21,60 +28,32 @@
 	<!-- Content Section (Flows naturally with standard page scroll) -->
 	<div class="flex w-full flex-1 items-center justify-center py-8 lg:w-[85vw] lg:py-12">
 		<div class="w-full px-4 lg:w-[90%]">
-			<div
-				class="grid h-auto w-full shrink-0 auto-rows-[11rem] grid-cols-2 sm:auto-rows-[13rem] md:grid-cols-3 lg:auto-rows-[16rem] lg:grid-cols-3"
-			>
-				<div class="relative h-full w-full overflow-hidden">
-					<img
-						src="/Amul.png"
-						alt="Sponsor 6"
-						class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
-					/>
-					<div class="pointer-events-none absolute inset-0 z-10">
-						<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
-					</div>
+			{#if sponsors.length}
+				<div
+					class="grid h-auto w-full shrink-0 auto-rows-[11rem] grid-cols-2 sm:auto-rows-[13rem] md:grid-cols-3 lg:auto-rows-[16rem] lg:grid-cols-3"
+				>
+					{#each sponsors as sponsor (sponsor.sponsor_name)}
+						<div class="relative h-full w-full overflow-hidden">
+							<img
+								src={sponsor.sponsor_img}
+								alt={sponsor.sponsor_name}
+								class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
+							/>
+							<div class="pointer-events-none absolute inset-0 z-10">
+								<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
+							</div>
+						</div>
+					{/each}
 				</div>
-				<div class="relative h-full w-full overflow-hidden">
-					<img
-						src="/Amul.png"
-						alt="Sponsor 7"
-						class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
-					/>
-					<div class="pointer-events-none absolute inset-0 z-10">
-						<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
-					</div>
+			{:else}
+				<div class="flex min-h-[24rem] items-center justify-center">
+					<p
+						class="text-center font-['Bruno_Ace'] text-2xl tracking-[0.18em] text-white/80 sm:text-4xl"
+					>
+						REVEALING SOON!
+					</p>
 				</div>
-				<div class="relative h-full w-full overflow-hidden">
-					<img
-						src="/Amul.png"
-						alt="Sponsor 8"
-						class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
-					/>
-					<div class="pointer-events-none absolute inset-0 z-10">
-						<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
-					</div>
-				</div>
-				<div class="relative h-full w-full overflow-hidden">
-					<img
-						src="/Amul.png"
-						alt="Sponsor 9"
-						class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
-					/>
-					<div class="pointer-events-none absolute inset-0 z-10">
-						<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
-					</div>
-				</div>
-				<div class="relative h-full w-full overflow-hidden">
-					<img
-						src="/Amul.png"
-						alt="Sponsor 9"
-						class="absolute top-1/2 left-1/2 z-0 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 object-contain p-2 lg:h-[70%] lg:w-[70%] lg:p-8"
-					/>
-					<div class="pointer-events-none absolute inset-0 z-10">
-						<ShapeBlur variation={0} borderSize={0.02} shapeSize={1.4} circleSize={0.4} />
-					</div>
-				</div>
-			</div>
+			{/if}
 
 			<section
 				class="flex w-full min-w-0 flex-col items-center justify-center gap-4 py-5 lg:gap-6 lg:py-8"
