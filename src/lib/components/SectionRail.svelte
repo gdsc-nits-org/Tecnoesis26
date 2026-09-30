@@ -88,7 +88,7 @@
 	onDestroy(stopGlitch);
 </script>
 
-<aside class="section-rail" aria-label={label}>
+<aside class="section-rail absolute !top-16" aria-label={label}>
 	<div class="rail-word" aria-hidden="true" onmouseenter={triggerHoverGlitch}>
 		{#each letters as letter, index (index)}
 			<span class:opacity-0={!isLetterVisible(index)}>{letter}</span>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ShapeBlur from './ShapeBlur.svelte';
+	import previousSponsors from '$lib/data/previous-sponsors.json';
 
 	type Sponsor = {
 		sponsor_name: string;
@@ -8,10 +9,8 @@
 
 	let { sponsors = [] }: { sponsors?: Sponsor[] } = $props();
 
-	// The marquee is rendered twice back to back so the -50% scroll animation loops
-	// seamlessly. Named arrays keep the {#each} blocks keyed and free of unused bindings.
-	const MARQUEE_PASSES = [0, 1];
-	const PREVIOUS_SPONSORS = Array.from({ length: 8 }, (_, index) => index);
+	type PreviousSponsor = (typeof previousSponsors.topRow)[number];
+	const sponsorRows: PreviousSponsor[][] = [previousSponsors.topRow, previousSponsors.bottomRow];
 </script>
 
 <!-- Phones let the grid set the height: a fixed h-screen with overflow-hidden clipped
@@ -59,22 +58,25 @@
 				class="flex w-full min-w-0 flex-col items-center justify-center gap-4 py-5 lg:gap-6 lg:py-8"
 			>
 				<h2 class="font-['Bruno_Ace'] text-2xl text-white sm:text-3xl">Previous Sponsors</h2>
-				<!-- w-full + min-w-0 matter: with no width this wrapper sizes to its w-max
-				     marquee child and pushes ~970px of horizontal scroll onto phones. -->
-				<div class="w-full min-w-0 overflow-hidden lg:w-4/5">
-					<div class="flex w-max animate-[sponsors-scroll_20s_linear_infinite]">
-						{#each MARQUEE_PASSES as pass (pass)}
-							<div class="flex shrink-0">
-								{#each PREVIOUS_SPONSORS as index (index)}
-									<img
-										src="/Amul.png"
-										alt={`Previous sponsor ${index + 1}`}
-										class="mx-2 h-16 w-24 rounded-xl object-contain p-2 sm:h-20 sm:w-28 lg:h-24 lg:w-32 lg:p-3"
-									/>
+				<div class="flex w-full flex-col gap-5 lg:w-4/5 lg:gap-7">
+					{#each sponsorRows as row, rowIndex (rowIndex)}
+						<div
+							class="sponsor-marquee"
+							aria-label={`${rowIndex === 0 ? 'Primary' : 'Community'} previous sponsors`}
+						>
+							<div class:reverse={rowIndex === 1} class="sponsor-track">
+								{#each [0, 1] as pass (pass)}
+									<div class="sponsor-set" aria-hidden={pass === 1}>
+										{#each row as sponsor (sponsor.name)}
+											<div class="sponsor-logo">
+												<img src={sponsor.image} alt={pass === 0 ? sponsor.name : ''} />
+											</div>
+										{/each}
+									</div>
 								{/each}
 							</div>
-						{/each}
-					</div>
+						</div>
+					{/each}
 				</div>
 			</section>
 		</div>
@@ -91,6 +93,63 @@
 			}
 			to {
 				transform: translateX(-50%);
+			}
+		}
+
+		.sponsor-marquee {
+			width: 100%;
+			overflow: hidden;
+			mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+		}
+
+		.sponsor-track {
+			display: flex;
+			width: max-content;
+			animation: sponsors-scroll 22s linear infinite;
+		}
+
+		.sponsor-track.reverse {
+			animation-name: sponsors-scroll-reverse;
+			animation-duration: 25s;
+		}
+
+		.sponsor-set {
+			display: flex;
+			min-width: 100%;
+			align-items: center;
+			justify-content: space-around;
+			gap: clamp(1.5rem, 4vw, 4.5rem);
+			padding: 0 clamp(0.75rem, 2vw, 2rem);
+		}
+
+		.sponsor-logo {
+			display: grid;
+			width: clamp(6rem, 13vw, 14rem);
+			height: clamp(4.5rem, 8vw, 7rem);
+			flex: 0 0 clamp(6rem, 13vw, 14rem);
+			place-items: center;
+		}
+
+		.sponsor-logo img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			filter: drop-shadow(0 0 12px rgba(216, 160, 255, 0.18));
+		}
+
+		@keyframes sponsors-scroll-reverse {
+			from {
+				transform: translateX(-50%);
+			}
+			to {
+				transform: translateX(0);
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.sponsor-track {
+				animation-play-state: paused;
 			}
 		}
 	}

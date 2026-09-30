@@ -35,15 +35,13 @@ alter table public.profiles
 add constraint profiles_scholar_id_check
 check (scholar_id is null or scholar_id ~ '^[A-Za-z0-9/-]{4,20}$') not valid;
 
--- 5. The identity trigger pinned username, which can no longer be set. Scholar
---    ID and email stay immutable; username is dropped from the guard so that a
---    legacy value cannot be edited either way.
+-- 5. The identity trigger pins legacy username and account identity fields.
+--    Scholar ID is intentionally editable from the profile page.
 create or replace function public.prevent_profile_identity_changes() returns trigger
 language plpgsql security invoker set search_path = public as $$
 begin
   new.id = old.id;
   new.username = old.username;
-  new.scholar_id = old.scholar_id;
   new.institute_email = old.institute_email;
   new.auth_provider = old.auth_provider;
   return new;

@@ -66,7 +66,6 @@ language plpgsql security invoker set search_path = public as $$
 begin
   new.id = old.id;
   new.username = old.username;
-  new.scholar_id = old.scholar_id;
   new.institute_email = old.institute_email;
   new.auth_provider = old.auth_provider;
   return new;

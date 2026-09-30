@@ -18,7 +18,7 @@
 	});
 </script>
 
-<header class="site-header">
+<header class="site-header !w-screen" role="banner" aria-label="Site header">
 	<a class="site-header__brand" href={resolve('/home')} aria-label="Tecnoesis 2026 home">
 		<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
 	</a>

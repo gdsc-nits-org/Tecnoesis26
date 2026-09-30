@@ -1,0 +1,18 @@
+{
+	"topRow": [
+		{ "name": "Amul", "image": "/past-sponsor-logos/amul-blue.webp" },
+		{ "name": "HackerEarth", "image": "/past-sponsor-logos/hackerearth.webp" },
+		{ "name": "G Plus", "image": "/past-sponsor-logos/gplus.webp" },
+		{ "name": "Coca Cola", "image": "/past-sponsor-logos/cocacolaa.webp" },
+		{ "name": "Zebronics", "image": "/past-sponsor-logos/unknown.webp" },
+		{ "name": "MTV", "image": "/past-sponsor-logos/mtv.webp" }
+	],
+	"bottomRow": [
+		{ "name": "IEEE", "image": "/past-sponsor-logos/ieee.webp" },
+		{ "name": "COGG", "image": "/past-sponsor-logos/cogg.webp" },
+		{ "name": "ED Times", "image": "/past-sponsor-logos/ed.webp" },
+		{ "name": "Unacademy", "image": "/past-sponsor-logos/unacademy.webp" },
+		{ "name": "Yes Bank", "image": "/past-sponsor-logos/yesbank.webp" },
+		{ "name": "Unstop", "image": "/past-sponsor-logos/unstop.webp" }
+	]
+}

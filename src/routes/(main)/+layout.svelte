@@ -63,7 +63,7 @@
 		>
 			<a
 				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-				href="https://instagram.com/tecnoesis"
+				href="https://www.instagram.com/tecnoesis.nits"
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="Instagram"
@@ -108,7 +108,7 @@
 			</a>
 			<a
 				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-				href="https://facebook.com/tecnoesis"
+				href="https://facebook.com/tecnoesis.nits"
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="Facebook"

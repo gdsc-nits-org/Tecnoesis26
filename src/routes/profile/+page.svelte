@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { enhance } from '$app/forms';
 	import { GENDER_OPTIONS } from '$lib/auth-options';
 
 	let { data, form } = $props();
@@ -28,17 +29,34 @@
 			<p class="profile-alert profile-alert--ok" role="status">Profile updated.</p>
 		{/if}
 
-		<form method="POST" class="profile-form" onsubmit={() => (submitting = true)}>
+		<form
+			method="POST"
+			class="profile-form"
+			use:enhance={() => {
+				submitting = true;
+				return async ({ update }) => {
+					try {
+						await update({ reset: false });
+					} finally {
+						submitting = false;
+					}
+				};
+			}}
+		>
 			<label class="profile-field">
 				<span>Full name</span>
-				<input name="full_name" value={data.profile!.full_name ?? ''} maxlength={100} />
+				<input
+					name="full_name"
+					value={form?.values?.fullName ?? data.profile!.full_name ?? ''}
+					maxlength={100}
+				/>
 			</label>
 
 			<label class="profile-field">
 				<span>Phone number</span>
 				<input
 					name="phone_number"
-					value={data.profile!.phone_number ?? ''}
+					value={form?.values?.phoneNumber ?? data.profile!.phone_number ?? ''}
 					inputmode="numeric"
 					maxlength={15}
 				/>
@@ -46,17 +64,26 @@
 
 			<label class="profile-field">
 				<span>Hostel</span>
-				<input name="hostel_number" value={data.profile!.hostel_number ?? ''} maxlength={40} />
+				<input
+					name="hostel_number"
+					value={form?.values?.hostelNumber ?? data.profile!.hostel_number ?? ''}
+					maxlength={40}
+				/>
+			</label>
+			<label class="profile-field">
+				<span>Scholar ID</span>
+				<input
+					name="scholar_id"
+					value={form?.values?.scholarId ?? data.profile!.scholar_id ?? ''}
+					maxlength={20}
+					autocomplete="off"
+				/>
 			</label>
 
 			<dl class="profile-readonly">
 				<div>
 					<dt>Institute email</dt>
 					<dd>{data.profile!.institute_email}</dd>
-				</div>
-				<div>
-					<dt>Scholar ID</dt>
-					<dd>{data.profile!.scholar_id ?? '—'}</dd>
 				</div>
 				<div>
 					<dt>Gender</dt>

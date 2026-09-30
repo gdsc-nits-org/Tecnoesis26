@@ -148,14 +148,17 @@
 	>
 {/snippet}
 
-<main class="gallery-page" id="gallery-top">
+<main class="gallery-page bg-[#3a1a5a51]!" id="gallery-top">
 	<div class="gallery-wrap">
 		<section class="gallery-hero" aria-labelledby="gallery-title">
 			<div class="hero-copy">
 				<p class="eyebrow">
 					<span class="status-dot"></span> The Tecnoesis archive <span class="edition">/ 2026</span>
 				</p>
-				<h1 id="gallery-title"><span>You had to</span> <em>be there.</em></h1>
+				<h1 id="gallery-title">
+					<span class="font-bold! 2xl:text-8xl!">You had to</span>
+					<em class="font-delicatus! font-bold! 2xl:text-8xl!">be there.</em>
+				</h1>
 				<p class="hero-description">
 					From the first idea to the final encore.<br />A few frames of everything we felt.
 				</p>
@@ -248,9 +251,12 @@
 							<span class="photo-open" aria-hidden="true">{@render arrow('diagonal')}</span>
 							<span class="photo-category" aria-hidden="true">{photo.category}</span>
 						</button>
-						<figcaption>
+						<figcaption class="flex! items-center!">
 							<div>
-								<span class="photo-number">{number(photo.id)}</span>
+								<span
+									class="photo-number flex size-7 items-center justify-center rounded-full border border-[#952cff] bg-[#4a355fa2] text-center text-white!"
+									>{number(photo.id)}</span
+								>
 								<h3>{photo.title}</h3>
 							</div>
 							<time datetime={photo.date.split('.').reverse().join('-')}
@@ -268,7 +274,7 @@
 				<p>Some things stay with you.</p>
 			</div>
 			<div class="footer-links">
-				<nav aria-label="Tecnoesis social links">
+				<!-- <nav aria-label="Tecnoesis social links">
 					<a href="https://instagram.com/tecnoesis" target="_blank" rel="noopener noreferrer"
 						>Instagram ↗</a
 					>
@@ -278,7 +284,7 @@
 					<a href="https://facebook.com/tecnoesis" target="_blank" rel="noopener noreferrer"
 						>Facebook ↗</a
 					>
-				</nav>
+				</nav> -->
 				<a href="#gallery-top">Back to top {@render arrow('diagonal')}</a>
 			</div>
 		</footer>
