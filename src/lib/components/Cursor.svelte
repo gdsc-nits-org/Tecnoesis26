@@ -49,7 +49,7 @@
 </script>
 
 <div
-	class="custom-cursor"
+	class="custom-cursor z-9999!"
 	class:custom-cursor--visible={isVisible}
 	style={`left:${x}px;top:${y}px`}
 	aria-hidden="true"
