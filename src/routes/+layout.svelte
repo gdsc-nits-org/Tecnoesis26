@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
 	import { Navbar } from '$lib';
+	import Cursor from '$lib/components/Cursor.svelte';
 
 	let { children } = $props();
 </script>
@@ -50,6 +51,7 @@
 </svelte:head>
 {#if page.url.pathname !== '/'}
 	<Navbar />
+	<Cursor />
 {/if}
 <div class="min-h-screen bg-[#09062d]">
 	{@render children()}

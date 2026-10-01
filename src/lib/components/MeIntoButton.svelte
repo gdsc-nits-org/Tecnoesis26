@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import Cursor from './Cursor.svelte';
 
 	type Phase = 1 | 2 | 3;
 	type OrientationPermissionApi = typeof DeviceOrientationEvent & {
@@ -216,6 +217,9 @@
 >
 	<div class="landing__shade" aria-hidden="true"></div>
 	<div class="landing__grain" aria-hidden="true"></div>
+	{#if phase !== 1}
+		<Cursor />
+	{/if}
 
 	{#if phase === 1}
 		<section
