@@ -125,7 +125,6 @@
 </script>
 
 <svelte:head>
-	<title>Gallery | The Tecnoesis Archive</title>
 	<meta
 		name="description"
 		content="Relive Tecnoesis 2026 at NIT Silchar. Explore 25 photographs of the performances, competitions, and people who made it unforgettable."

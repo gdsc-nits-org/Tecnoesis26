@@ -3,7 +3,6 @@
 </script>
 
 <svelte:head>
-	<title>{data.mainmodule} / {data.submodule}</title>
 </svelte:head>
 
 <h1>{data.mainmodule} / {data.submodule}</h1>

@@ -18,7 +18,6 @@
 </script>
 
 <svelte:head>
-	<title>{status} | Tecnoesis 2026</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 

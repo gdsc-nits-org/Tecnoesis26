@@ -25,7 +25,6 @@
 </script>
 
 <svelte:head>
-	<title>Log in | Tecnoesis 2026</title>
 	<meta name="description" content="Log in to your Tecnoesis 2026 participant account." />
 </svelte:head>
 

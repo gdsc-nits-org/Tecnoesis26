@@ -22,7 +22,6 @@
 </script>
 
 <svelte:head>
-	<title>Complete registration | Tecnoesis 2026</title>
 	<meta name="description" content="Complete your Tecnoesis 2026 participant profile." />
 </svelte:head>
 

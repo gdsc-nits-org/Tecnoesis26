@@ -21,7 +21,6 @@
 </script>
 
 <svelte:head>
-	<title>Recover account | Tecnoesis 2026</title>
 	<meta name="description" content="Reset your Tecnoesis 2026 account password." />
 </svelte:head>
 

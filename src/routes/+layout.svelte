@@ -8,6 +8,7 @@
 </script>
 
 <svelte:head>
+	<title>TECNOESIS 2026 | NIT SILCHAR</title>
 	<link rel="icon" href={favicon} />
 	<meta
 		name="description"

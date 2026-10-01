@@ -4,10 +4,6 @@
 	import MerchText from './MerchText.svelte';
 </script>
 
-<svelte:head>
-	<title>THE FUTURE — SCROLL</title>
-</svelte:head>
-
 <main class="flex min-h-screen flex-col items-center px-6 md:flex-row md:px-16">
 	<div class="merch-stage relative flex h-[90vh] w-full items-center justify-center md:w-3/5">
 		<div class="merch-glow" aria-hidden="true"></div>

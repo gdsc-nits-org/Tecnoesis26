@@ -10,7 +10,6 @@
 		GENDER_OPTIONS.find((option) => option.value === value)?.label ?? '—';
 </script>
 
-<svelte:head><title>Profile | Tecnoesis</title></svelte:head>
 
 <div class="profile-page">
 	<div class="profile-page__backdrop" aria-hidden="true"></div>

@@ -22,7 +22,6 @@
 </script>
 
 <svelte:head>
-	<title>Sign up | Tecnoesis 2026</title>
 	<meta
 		name="description"
 		content="Create your Tecnoesis 2026 participant account with your institute Google account."
