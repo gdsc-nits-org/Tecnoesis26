@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { label = '' } = $props<{ label?: string }>();
+	let { label = '', type = 'button' } = $props<{ label?: string; type?: 'button' | 'submit' }>();
 </script>
 
 <button
-	type="button"
+	{type}
 	aria-label={label}
 	class="group relative h-11 w-40 transition-transform duration-200 hover:scale-105 focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#32176f] focus-visible:outline-none active:scale-95"
 >

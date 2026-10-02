@@ -1,11 +1,7 @@
 <script lang="ts">
-	import type { MouseEventHandler } from 'svelte/elements';
+	import { resolve } from '$app/paths';
 	import imgMod from '$lib/assets/Gallery.png';
-
-	let {
-		gifSrc = imgMod,
-		onExplore = () => {}
-	}: { gifSrc?: string; onExplore?: MouseEventHandler<HTMLButtonElement> } = $props();
+	let { gifSrc = imgMod }: { gifSrc?: string } = $props();
 </script>
 
 <section class="modules">
@@ -13,7 +9,7 @@
 		<img src={gifSrc} alt="" />
 		<h1 class="font-paused">GALLERY</h1>
 	</div>
-	<button onclick={onExplore}>CHECK OUT <span>↗</span></button>
+	<a href={resolve('/gallery')}>CHECK OUT <span aria-hidden="true">↗</span></a>
 </section>
 
 <style>
@@ -63,28 +59,39 @@
 			0 0 35px #a78bfa55;
 	}
 
-	button {
+	a {
+		display: inline-flex;
 		padding: 0.65rem 2.2rem;
-		color: #090019;
+		align-items: center;
+		color: #f8f5ff;
 		font:
-			700 clamp(0.85rem, 2vw, 1.2rem) 'Arial Black',
+			700 clamp(0.78rem, 1.5vw, 0.92rem) 'BankGothic',
 			sans-serif;
-		letter-spacing: 0.02em;
-		background: linear-gradient(135deg, #e5dfff, #8170d8);
-		border: 2px solid #c8baff;
-		clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%);
-		cursor: pointer;
+		letter-spacing: 0.12em;
+		text-decoration: none;
+		background: rgba(11, 12, 38, 0.45);
+		border: 1px solid rgba(226, 213, 255, 0.7);
+		clip-path: polygon(0 0, 94% 0, 100% 50%, 94% 100%, 0 100%);
+		backdrop-filter: blur(8px);
 		transition:
-			transform 0.25s,
-			filter 0.25s;
+			transform 0.2s ease,
+			background-color 0.2s ease,
+			border-color 0.2s ease;
 	}
 
-	button:hover {
-		transform: scale(1.06);
-		filter: brightness(1.2);
+	a:hover,
+	a:focus-visible {
+		transform: translateY(-2px);
+		background: rgba(216, 188, 233, 0.18);
+		border-color: #f0d7ef;
 	}
 
-	button span {
+	a:focus-visible {
+		outline: 2px solid #f0d7ef;
+		outline-offset: 4px;
+	}
+
+	a span {
 		margin-left: 0.7rem;
 	}
 

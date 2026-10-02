@@ -18,9 +18,10 @@
 		THE FUTURE HAS A TEXTURE
 	</p>
 
-	<button
-		class="self-start rounded-xl border border-purple-400/40 px-8 py-3 text-sm tracking-widest text-white backdrop-blur-md transition-all duration-300 hover:border-purple-300/70 hover:bg-purple-400/10 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+	<a
+		href="/merch"
+		class="self-start border border-white/55 bg-[#090d2b]/35 px-7 py-3 font-bankgothic text-xs tracking-[0.14em] text-white backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-[#e5c8e5] hover:bg-[#e5c8e5]/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e5c8e5]"
 	>
-		HAVE A LOOK
-	</button>
+		HAVE A LOOK <span class="ml-3" aria-hidden="true">↗</span>
+	</a>
 </div>
