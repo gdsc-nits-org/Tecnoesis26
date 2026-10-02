@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { tryGetSupabaseServerClient } from '$lib/supabase';
+import { getSupabaseAdminClient, tryGetSupabaseServerClient } from '$lib/supabase';
 
 export type Sponsor = {
 	sponsor_name: string;
@@ -7,7 +7,13 @@ export type Sponsor = {
 };
 
 export const load: PageServerLoad = async ({ cookies }) => {
-	const supabase = tryGetSupabaseServerClient(cookies);
+	let supabase;
+	try {
+		supabase = getSupabaseAdminClient();
+	} catch {
+		supabase = tryGetSupabaseServerClient(cookies);
+	}
+
 	if (!supabase) return { sponsors: [] satisfies Sponsor[] };
 
 	const { data, error } = await supabase
@@ -15,7 +21,11 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		.select('sponsor_name, sponsor_img')
 		.order('created_at', { ascending: true });
 
-	if (error) return { sponsors: [] satisfies Sponsor[] };
+	if (error) {
+		console.error('Error fetching sponsors:', error.message);
+		return { sponsors: [] satisfies Sponsor[] };
+	}
+
 	const rows = (data ?? []) as Array<Partial<Sponsor>>;
 
 	return {
