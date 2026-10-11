@@ -1,15 +1,46 @@
-<script>
+<script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import Scene3d from './Scene3d.svelte';
 	import MerchText from './MerchText.svelte';
+
+	let dragRotationX = $state(0);
+	let dragRotationY = $state(0);
+	let activePointerId: number | null = null;
+
+	function startDrag(event: PointerEvent) {
+		if (event.pointerType !== 'mouse' || event.button !== 0) return;
+		if (!(event.currentTarget instanceof HTMLElement)) return;
+		activePointerId = event.pointerId;
+		event.currentTarget.setPointerCapture(event.pointerId);
+	}
+
+	function dragModel(event: PointerEvent) {
+		if (event.pointerType !== 'mouse' || event.pointerId !== activePointerId) return;
+		dragRotationX += event.movementY * 0.008;
+		dragRotationY += event.movementX * 0.008;
+	}
+
+	function endDrag(event: PointerEvent) {
+		if (event.pointerId === activePointerId) activePointerId = null;
+	}
 </script>
 
-<main class="flex min-h-screen min-h-[100svh] w-full flex-col items-center justify-center px-6 md:flex-row md:px-16">
-	<div class="merch-stage relative flex h-[90vh] w-full items-center justify-center md:w-3/5">
+<main
+	class="flex min-h-[100svh] min-h-screen w-full flex-col items-center justify-center gap-4 px-4 py-6 sm:px-6 md:flex-row md:gap-0 md:px-8"
+>
+	<div
+		class="merch-stage relative flex aspect-square w-full max-w-[min(74svh,100%)] shrink-0 items-center justify-center md:w-[min(54vw,78svh)] md:max-w-[54vw]"
+		role="group"
+		aria-label="3D merchandise model. Drag with the mouse to rotate."
+		onpointerdown={startDrag}
+		onpointermove={dragModel}
+		onpointerup={endDrag}
+		onpointercancel={endDrag}
+	>
 		<div class="merch-glow" aria-hidden="true"></div>
 		<div class="relative z-[1] h-full w-full">
 			<Canvas>
-				<Scene3d />
+				<Scene3d {dragRotationX} {dragRotationY} />
 			</Canvas>
 		</div>
 	</div>
@@ -20,6 +51,12 @@
 <style>
 	.merch-stage {
 		isolation: isolate;
+		cursor: grab;
+		touch-action: pan-y;
+	}
+
+	.merch-stage:active {
+		cursor: grabbing;
 	}
 
 	.merch-glow {

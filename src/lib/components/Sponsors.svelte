@@ -56,131 +56,51 @@
 				</div>
 			{/if}
 
-		<!-- Previous Sponsors Section -->
-		<section
-			class="flex w-full min-w-0 max-w-full flex-col items-center justify-center gap-3 sm:gap-5"
-		>
-			<div class="flex items-center gap-3">
-				<span class="h-[1px] w-8 bg-gradient-to-r from-transparent to-white/40 sm:w-16"></span>
-				<h2
-					class="font-['Bruno_Ace'] text-base tracking-[0.16em] text-white/90 sm:text-xl lg:text-2xl"
-				>
-					PREVIOUS SPONSORS
-				</h2>
-				<span class="h-[1px] w-8 bg-gradient-to-l from-transparent to-white/40 sm:w-16"></span>
-			</div>
-
-			<div class="flex w-full min-w-0 max-w-5xl flex-col gap-3 sm:gap-5">
-				{#each sponsorRows as row, rowIndex (rowIndex)}
-					<div
-						class="sponsor-marquee"
-						aria-label={`${rowIndex === 0 ? 'Primary' : 'Community'} previous sponsors`}
+			<!-- Previous Sponsors Section -->
+			<section
+				class="flex w-full max-w-full min-w-0 flex-col items-center justify-center gap-3 sm:gap-5"
+			>
+				<div class="flex items-center gap-3">
+					<span class="h-[1px] w-8 bg-gradient-to-r from-transparent to-white/40 sm:w-16"></span>
+					<h2
+						class="font-['Bruno_Ace'] text-base tracking-[0.16em] text-white/90 sm:text-xl lg:text-2xl"
 					>
-						<div class:reverse={rowIndex === 1} class="sponsor-track">
-							{#each [0, 1] as pass (pass)}
-								<div class="sponsor-set" aria-hidden={pass === 1}>
-									{#each row as sponsor (sponsor.name)}
-										<div class="sponsor-logo" title={sponsor.name}>
-											<img
-												src={sponsor.image}
-												alt={pass === 0 ? sponsor.name : ''}
-												loading="lazy"
-											/>
-										</div>
-									{/each}
-								</div>
-							{/each}
+						PREVIOUS SPONSORS
+					</h2>
+					<span class="h-[1px] w-8 bg-gradient-to-l from-transparent to-white/40 sm:w-16"></span>
+				</div>
+
+				<div class="flex w-full max-w-5xl min-w-0 flex-col gap-3 sm:gap-5">
+					{#each sponsorRows as row, rowIndex (rowIndex)}
+						<div
+							class="sponsor-marquee"
+							aria-label={`${rowIndex === 0 ? 'Primary' : 'Community'} previous sponsors`}
+						>
+							<div class:reverse={rowIndex === 1} class="sponsor-track">
+								{#each [0, 1] as pass (pass)}
+									<div class="sponsor-set" aria-hidden={pass === 1}>
+										{#each row as sponsor (sponsor.name)}
+											<div class="sponsor-logo" title={sponsor.name}>
+												<img
+													src={sponsor.image}
+													alt={pass === 0 ? sponsor.name : ''}
+													loading="lazy"
+												/>
+											</div>
+										{/each}
+									</div>
+								{/each}
+							</div>
 						</div>
-					</div>
-				{/each}
-			</div>
-		</section>
+					{/each}
+				</div>
+			</section>
+		</div>
 	</div>
 </main>
 
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
-
-	.revealing-banner {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		padding: 1.25rem 1.5rem;
-		border-radius: 16px;
-		background: rgba(14, 12, 38, 0.65);
-		border: 1px solid rgba(226, 213, 255, 0.2);
-		backdrop-filter: blur(12px);
-		box-shadow:
-			0 10px 30px rgba(5, 7, 28, 0.5),
-			inset 0 1px 0 rgba(255, 255, 255, 0.1);
-		overflow: hidden;
-	}
-
-	.revealing-banner__glow {
-		position: absolute;
-		top: -50%;
-		left: 20%;
-		width: 60%;
-		height: 200%;
-		background: radial-gradient(
-			circle,
-			rgba(191, 92, 243, 0.25) 0%,
-			rgba(236, 34, 184, 0.12) 40%,
-			transparent 70%
-		);
-		filter: blur(25px);
-		pointer-events: none;
-	}
-
-	.revealing-banner__inner {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-		text-align: center;
-	}
-
-	.revealing-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 3px 10px;
-		border-radius: 9999px;
-		background: rgba(236, 34, 184, 0.15);
-		border: 1px solid rgba(236, 34, 184, 0.35);
-	}
-
-	.revealing-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: #ec22b8;
-		box-shadow: 0 0 8px #ec22b8;
-		animation: pulse-dot 2s ease-in-out infinite;
-	}
-
-	.revealing-tag {
-		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
-		font-size: 10px;
-		letter-spacing: 0.14em;
-		color: #f5b4e8;
-		font-weight: 700;
-	}
-
-	@keyframes pulse-dot {
-		0%,
-		100% {
-			opacity: 1;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 0.4;
-			transform: scale(0.8);
-		}
-	}
 
 	:global {
 		@keyframes sponsors-scroll {
@@ -224,33 +144,35 @@
 			min-width: 100%;
 			align-items: center;
 			justify-content: space-around;
-			gap: clamp(1rem, 2.5vw, 3rem);
+			gap: clamp(0.5rem, 1.5vw, 1.25rem);
 			padding: 0 clamp(0.5rem, 1.5vw, 1.5rem);
 		}
 
 		.sponsor-logo {
 			display: grid;
-			width: clamp(5rem, 10vw, 10rem);
-			height: clamp(3.2rem, 6vw, 5rem);
-			flex: 0 0 clamp(5rem, 10vw, 10rem);
+			width: clamp(4.5rem, 8vw, 7rem);
+			height: clamp(3.25rem, 5.5vw, 4.5rem);
+			flex: 0 0 clamp(4.5rem, 8vw, 7rem);
 			place-items: center;
-			padding: 0.25rem 0.5rem;
+			overflow: visible;
+			border-radius: 0.75rem;
+			background: #fff;
+			padding: 0.5rem;
 		}
 
 		.sponsor-logo img {
 			display: block;
 			width: 100%;
 			height: 100%;
+			max-width: 100%;
+			max-height: 100%;
 			object-fit: contain;
-			filter: drop-shadow(0 0 10px rgba(216, 160, 255, 0.2));
-			transition:
-				transform 220ms ease,
-				filter 220ms ease;
+			transform-origin: center;
+			transition: transform 220ms ease;
 		}
 
 		.sponsor-logo:hover img {
-			transform: scale(1.1);
-			filter: drop-shadow(0 0 18px rgba(236, 34, 184, 0.45));
+			transform: scale(1.08);
 		}
 
 		@keyframes sponsors-scroll-reverse {

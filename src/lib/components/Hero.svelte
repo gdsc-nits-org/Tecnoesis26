@@ -193,11 +193,9 @@
 		Retro-Futurism
 	</div>
 
-	<header
-		class="relative z-20 ml-[15vw] box-border flex w-[85vw] items-center gap-8 px-8 pt-7 max-md:ml-0 max-md:w-full max-md:px-4"
-	>
+	<header class="relative z-20 box-border flex w-full items-center gap-8 px-4 pt-7">
 		<div
-			class="absolute top-[0.6rem] left-[46%] z-[5] flex w-[min(52vw,760px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-[4dvh] max-[900px]:left-[46%] max-[900px]:w-[min(46vw,36dvh)] max-[900px]:max-w-none max-md:top-[10.5dvh] max-md:left-[54.3%] max-md:w-[min(97vw,calc(50dvh_-_18px))] max-md:max-w-none"
+			class="hero-logo absolute top-[0.6rem] left-1/2 z-[5] flex w-[min(52vw,760px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-[4dvh] max-[900px]:w-[min(46vw,36dvh)] max-[900px]:max-w-none max-md:top-[10.5dvh] max-md:w-[min(97vw,calc(50dvh_-_18px))] max-md:max-w-none"
 			class:opacity-0={currentPage >= 1}
 			class:pointer-events-none={currentPage >= 1}
 			aria-label="Tecnoesis home"
@@ -223,11 +221,10 @@
 
 		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
 			<!-- Intro text: 16.8px, 3 lines, left edge at ~20% on mobile -->
-			
 
 			<!-- 3D MAP button: centred, 58.6vw x 40px, sits 17dvh above the bottom on mobile -->
 			<div
-				class="hero-reveal hero-reveal--delay-2 absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-pointer items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300 active:before:scale-100 active:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
+				class="hero-map-button hero-reveal hero-reveal--delay-2 absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-pointer items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300 active:before:scale-100 active:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
 			>
@@ -278,5 +275,22 @@
 
 	.hero-reveal--delay-2 {
 		animation-delay: 360ms;
+	}
+
+	@media (max-aspect-ratio: 1 / 1) {
+		.hero-logo {
+			top: 8dvh;
+			left: 50%;
+			width: min(78vw, 42dvh);
+			max-width: calc(100vw - 2rem);
+		}
+
+		.hero-map-button {
+			top: calc(8dvh + min(78vw, 42dvh) + 1rem);
+			right: auto;
+			bottom: auto;
+			left: 50%;
+			translate: -50% 0;
+		}
 	}
 </style>

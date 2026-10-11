@@ -133,4 +133,10 @@
 			display: none;
 		}
 	}
+
+	@media (max-aspect-ratio: 1 / 1) {
+		.section-rail {
+			display: none;
+		}
+	}
 </style>

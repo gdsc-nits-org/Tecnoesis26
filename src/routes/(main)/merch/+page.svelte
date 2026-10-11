@@ -67,19 +67,21 @@
 </script>
 
 <main
-	class="fixed inset-0 overflow-y-auto bg-[url('/GalleryBgImg.png')] bg-cover bg-center bg-no-repeat font-game-demo select-none md:flex md:items-center md:justify-center md:overflow-hidden"
+	class="relative isolate min-h-[100svh] min-h-screen w-full overflow-x-clip bg-[url('/GalleryBgImg.png')] bg-cover bg-center bg-no-repeat px-4 pt-28 pb-24 font-game-demo select-none sm:px-6 md:flex md:items-center md:justify-around md:gap-6 md:px-8 md:pt-28 md:pb-10 lg:px-12"
 >
-	<div class="absolute top-24 left-5 z-10 m-0 hidden md:top-35 md:left-20 md:m-4 md:block">
+	<div
+		class="pointer-events-none absolute top-24 left-5 z-0 m-0 hidden md:top-35 md:left-20 md:m-4 md:block"
+	>
 		<div class="mt-2 h-[10%] w-[60%]">
 			<img src={merchPageElement} alt="Merch page element" />
 		</div>
 	</div>
-	<div class="absolute right-6 bottom-60 z-10 w-40 md:hidden">
+	<div class="pointer-events-none absolute right-6 bottom-60 z-0 w-40 md:hidden">
 		<img src={merchPageElementReverse} alt="Merch page element" class="w-full" />
 	</div>
 
 	<div
-		class="relative top-26 left-1/2 flex h-[60%] w-[60%] -translate-x-1/2 items-center justify-center md:relative md:top-auto md:bottom-10 md:left-auto md:mx-0 md:w-[30%] md:translate-x-0"
+		class="relative z-[1] mx-auto flex w-full max-w-2xl items-center justify-around rounded-2xl border-2 border-white/40 bg-[#8B75D933] px-4 py-6 backdrop-blur-[20%] md:mx-0 md:w-auto md:min-w-0 md:flex-1 md:px-6 md:py-8"
 	>
 		<button
 			type="button"
@@ -92,7 +94,7 @@
 		<img
 			src={selectedStyle === 'Tecno' ? '/tecno-back.png' : '/spark-back.png'}
 			alt={`${selectedStyle} T-shirt, back view`}
-			class="h-auto w-full"
+			class="h-auto max-h-[42svh] w-auto max-w-[min(76vw,30rem)] object-contain md:max-h-[76svh] md:max-w-[min(50vw,42rem)]"
 		/>
 		<button
 			type="button"
@@ -105,7 +107,7 @@
 	</div>
 
 	<div
-		class="relative top-25 mt-3 mb-6 flex flex-col items-center text-center font-bankgothic text-white md:hidden"
+		class="relative z-[1] mt-4 mb-6 flex flex-col items-center text-center font-bankgothic text-white md:hidden"
 	>
 		<h2 class="mb-3 text-xl">STYLE</h2>
 		<div class="flex items-center justify-center gap-[clamp(0.75rem,4vw,1.5rem)]">
@@ -135,7 +137,7 @@
 	</div>
 
 	<div
-		class="relative mx-4 mt-44 mb-6 w-auto rounded-2xl p-6 pb-5 font-bankgothic text-white md:absolute md:top-1/2 md:right-6 md:mx-0 md:mt-0 md:mb-0 md:w-[30%] md:-translate-y-1/2 md:border-2 md:border-white/40 md:bg-[#8B75D933] md:p-3 md:pb-3 md:backdrop-blur-[20%] lg:right-20 lg:w-[20%] lg:p-6 lg:pb-0"
+		class="relative z-[1] mx-auto mb-6 flex w-full max-w-xl flex-col justify-around rounded-2xl p-4 pb-5 font-bankgothic text-white sm:p-6 md:mx-0 md:mb-0 md:w-[min(40%,30rem)] md:flex-none md:border-2 md:border-white/40 md:bg-[#8B75D933] md:p-4 md:pb-3 md:backdrop-blur-[20%] lg:p-6"
 	>
 		<form method="POST" action="?/optIn" class="flex flex-col">
 			<div class="m-2 flex h-auto items-center justify-center">
@@ -152,7 +154,7 @@
 			<div class="m-2 flex h-auto items-center justify-center">
 				<img src={Partiton} alt="" class="max-w-full" />
 			</div>
-			<div class="mt-8 mb-8 text-center md:mt-10 md:mb-10">
+			<div class="mt-6 mb-6 text-center sm:mt-8 md:mt-6 md:mb-6 lg:mt-8 lg:mb-8">
 				<h2 class="mb-3 text-xl md:text-base lg:text-xl">SIZE</h2>
 				<div class="flex items-center justify-center gap-2 md:gap-0 lg:gap-2">
 					{#each sizes as size (size)}

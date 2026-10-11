@@ -30,11 +30,7 @@
 	let showFlash = $state(false);
 	let holdFrame = 0;
 	let drainFrame = 0;
-	let quickChargeFrame = 0;
 	let holdStartedAt = 0;
-	let pointerDownAt = 0;
-	let pointerDownPos = { x: 0, y: 0 };
-	let touchStart: { x: number; y: number } | null = null;
 	let gyroRequested = false;
 	let gyroEnabled = false;
 	let transitionTimer: ReturnType<typeof setTimeout>;
@@ -55,39 +51,9 @@
 		}, 1000);
 	}
 
-	function triggerQuickEnter() {
-		if (isExiting || phase !== 1) return;
-		if (holdFrame) cancelAnimationFrame(holdFrame);
-		if (drainFrame) cancelAnimationFrame(drainFrame);
-		if (quickChargeFrame) cancelAnimationFrame(quickChargeFrame);
-
-		isHolding = false;
-		const startProgress = holdProgress;
-		const startTime = performance.now();
-		const duration = 240;
-
-		const quickStep = (now: number) => {
-			const elapsed = now - startTime;
-			const t = Math.min(1, elapsed / duration);
-			// Smooth ease-out charge
-			const eased = 1 - Math.pow(1 - t, 2);
-			holdProgress = startProgress + (100 - startProgress) * eased;
-
-			if (t < 1) {
-				quickChargeFrame = requestAnimationFrame(quickStep);
-			} else {
-				holdProgress = 100;
-				transitionToPhase(2);
-			}
-		};
-
-		quickChargeFrame = requestAnimationFrame(quickStep);
-	}
-
 	function startHold(event?: PointerEvent) {
 		if (phase !== 1 || isHolding || isExiting) return;
 		if (drainFrame) cancelAnimationFrame(drainFrame);
-		if (quickChargeFrame) cancelAnimationFrame(quickChargeFrame);
 		if (event) updatePointer(event);
 
 		isHolding = true;
@@ -122,12 +88,9 @@
 
 	function handlePointerDown(event: PointerEvent) {
 		if (phase !== 1 || isExiting) return;
-		pointerDownAt = performance.now();
-		pointerDownPos = { x: event.clientX, y: event.clientY };
 
 		if (event.pointerType === 'touch') {
 			isTouchDevice = true;
-			touchStart = { x: event.clientX, y: event.clientY };
 			void enableGyroscope();
 		}
 		startHold(event);
@@ -135,24 +98,10 @@
 
 	function handlePointerUp(event: PointerEvent) {
 		if (phase !== 1) return;
-		const pressDuration = performance.now() - pointerDownAt;
-		const moveDist = Math.hypot(event.clientX - pointerDownPos.x, event.clientY - pointerDownPos.y);
-
-		// If user tapped/clicked quickly (< 350ms, minimal movement)
-		if (pressDuration < 350 && moveDist < 25 && !isExiting) {
-			cancelHold();
-			triggerQuickEnter();
-			return;
-		}
-
-		if (event.pointerType === 'touch') {
-			touchStart = null;
-		}
 		cancelHold();
 	}
 
-	function handlePointerCancel(event: PointerEvent) {
-		if (event.pointerType === 'touch') touchStart = null;
+	function handlePointerCancel() {
 		cancelHold();
 	}
 
@@ -219,13 +168,13 @@
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return;
+		if (phase !== 1 || event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return;
 		event.preventDefault();
-		triggerQuickEnter();
+		startHold();
 	}
 
 	function handleKeyUp(event: KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') cancelHold();
+		if (phase === 1 && (event.key === 'Enter' || event.key === ' ')) cancelHold();
 	}
 
 	function launchWebsite() {
@@ -246,7 +195,6 @@
 		return () => {
 			if (holdFrame) cancelAnimationFrame(holdFrame);
 			if (drainFrame) cancelAnimationFrame(drainFrame);
-			if (quickChargeFrame) cancelAnimationFrame(quickChargeFrame);
 			if (gyroEnabled) window.removeEventListener('deviceorientation', handleDeviceOrientation);
 			clearTimeout(transitionTimer);
 			clearTimeout(flashTimer);
@@ -288,7 +236,9 @@
 			class="phase phase--welcome"
 			class:phase--exiting={isExiting}
 			role="group"
-			aria-label={isTouchDevice ? 'Tap to enter Tecnoesis' : 'Click or hold to enter Tecnoesis'}
+			aria-label={isTouchDevice
+				? 'Press and hold to enter Tecnoesis'
+				: 'Click and hold to enter Tecnoesis'}
 			aria-describedby="hold-instruction"
 		>
 			<div class="welcome-lockup">
@@ -303,29 +253,14 @@
 				<p class="welcome-lockup__caption">A new horizon in technology and ideas</p>
 			</div>
 
-			<div
-				class="hold-prompt"
-				role="button"
-				tabindex="0"
-				onclick={(e) => {
-					e.stopPropagation();
-					triggerQuickEnter();
-				}}
-				onkeydown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') {
-						e.preventDefault();
-						triggerQuickEnter();
-					}
-				}}
-				aria-label="Click or hold to enter"
-			>
+			<div class="hold-prompt">
 				<div class="hold-prompt__label">
 					<span>
 						{isTouchDevice
-							? 'TAP TO ENTER'
+							? 'PRESS AND HOLD TO ENTER'
 							: isHolding
 								? 'HOLD TO OPEN'
-								: 'CLICK OR HOLD TO ENTER'}
+								: 'CLICK AND HOLD TO ENTER'}
 					</span>
 				</div>
 				<div class="hold-prompt__track">
@@ -333,8 +268,8 @@
 				</div>
 				<p id="hold-instruction">
 					{isTouchDevice
-						? 'Tap anywhere to begin your journey'
-						: 'Click or hold anywhere to begin your journey'}
+						? 'Press and hold anywhere to begin your journey'
+						: 'Click and hold anywhere to begin your journey'}
 				</p>
 			</div>
 		</section>
@@ -348,12 +283,9 @@
 				<a class="wordmark" href="/" aria-label="Back to landing">
 					<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
 				</a>
-				<span class="masthead__rule"></span>
-				<p>SELECT DESTINATION <span>·</span> 02</p>
 			</header>
 
 			<div class="destination-heading stagger-item" style="--stagger: 1">
-				<p class="eyebrow">THE FESTIVAL IS YOURS TO EXPLORE</p>
 				<h1>Where to?</h1>
 				<p>Choose a path into the world of Tecnoesis.</p>
 			</div>
@@ -374,7 +306,9 @@
 						</svg>
 					</span>
 					<span class="destination__title">3D MAP</span>
-					<span class="destination__description">Find your place across the NIT Silchar campus.</span>
+					<span class="destination__description"
+						>Find your place across the NIT Silchar campus.</span
+					>
 					<span class="destination__action">OPEN THE MAP <span aria-hidden="true">↗</span></span>
 				</button>
 
@@ -393,15 +327,13 @@
 						</svg>
 					</span>
 					<span class="destination__title">TECNOESIS</span>
-					<span class="destination__description">Step into the festival, its people and ideas.</span>
-					<span class="destination__action">ENTER THE WEBSITE <span aria-hidden="true">↗</span></span>
+					<span class="destination__description">Step into the festival, its people and ideas.</span
+					>
+					<span class="destination__action"
+						>ENTER THE WEBSITE <span aria-hidden="true">↗</span></span
+					>
 				</button>
 			</div>
-
-			<footer class="choose-footer stagger-item" style="--stagger: 4">
-				<span>TECNOESIS 2026</span>
-				<span>AN INITIATIVE OF NIT SILCHAR</span>
-			</footer>
 		</section>
 	{/if}
 
@@ -543,42 +475,47 @@
 	@keyframes welcome-exit {
 		0% {
 			opacity: 1;
-			transform: scale(1);
-			filter: blur(0);
+			transform: translateY(0);
 		}
 		100% {
 			opacity: 0;
-			transform: scale(1.1);
-			filter: blur(10px);
+			transform: translateY(-18px);
 		}
 	}
 
 	@keyframes choose-exit {
 		0% {
 			opacity: 1;
-			transform: scale(1);
-			filter: blur(0);
+			transform: translateY(0);
 		}
 		100% {
 			opacity: 0;
-			transform: scale(0.92);
-			filter: blur(12px);
+			transform: translateY(-14px);
 		}
 	}
 
-	/* ── Transition shockwave flash overlay ── */
 	.transition-flash {
 		position: fixed;
 		inset: 0;
 		z-index: 200;
+		overflow: hidden;
 		pointer-events: none;
-		background: radial-gradient(
-			ellipse at center,
-			rgba(230, 180, 255, 0.75) 0%,
-			rgba(160, 80, 240, 0.35) 30%,
-			transparent 68%
-		);
-		animation: flash-pulse 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		background: radial-gradient(ellipse at center, rgba(111, 79, 190, 0.16), transparent 68%);
+		animation: transition-wash 850ms ease-out forwards;
+	}
+
+	.transition-flash::after {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: min(100vw, 1400px);
+		height: 1px;
+		transform: translate(-50%, -50%) scaleX(0);
+		transform-origin: center;
+		background: linear-gradient(90deg, transparent, rgba(239, 211, 255, 0.9), transparent);
+		box-shadow: 0 0 22px rgba(216, 180, 254, 0.55);
+		content: '';
+		animation: transition-sweep 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 	}
 
 	/* ── Staggered entrance for phase 2 children ── */
@@ -587,40 +524,14 @@
 		animation-delay: calc(var(--stagger, 0) * 120ms + 100ms);
 	}
 
-	.masthead,
-	.choose-footer {
+	.masthead {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: center;
 		gap: 16px;
 		color: rgba(245, 240, 255, 0.76);
 		font-size: 10px;
 		letter-spacing: 0.14em;
-	}
-
-	.masthead {
-		justify-content: center;
-	}
-
-	.masthead p,
-	.choose-footer span {
-		margin: 0;
-		white-space: nowrap;
-	}
-
-	.masthead p span {
-		padding-inline: 8px;
-		color: var(--pink);
-	}
-
-	.masthead__rule {
-		width: clamp(32px, 8vw, 112px);
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(234, 213, 255, 0.65));
-	}
-
-	.masthead__rule:last-child {
-		transform: rotate(180deg);
 	}
 
 	.phase--welcome {
@@ -636,13 +547,6 @@
 		flex-direction: column;
 		text-align: center;
 		animation: logo-arrive 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-	}
-
-	.eyebrow {
-		margin: 0;
-		color: var(--lilac);
-		font-size: 10px;
-		letter-spacing: 0.24em;
 	}
 
 	.welcome-lockup__logo {
@@ -710,17 +614,19 @@
 	}
 
 	.phase--choose {
-		justify-content: space-between;
+		justify-content: flex-start;
 	}
 
 	.masthead--compact {
-		justify-content: flex-end;
+		width: 100%;
+		justify-content: center;
+		margin-bottom: clamp(24px, 4vh, 48px);
 	}
 
 	.wordmark {
 		display: block;
 		width: clamp(130px, 17vw, 220px);
-		margin-right: auto;
+		margin: 0;
 	}
 
 	.wordmark img {
@@ -730,7 +636,7 @@
 	}
 
 	.destination-heading {
-		margin: clamp(36px, 6vh, 64px) 0 clamp(24px, 4vh, 42px);
+		margin: 0 0 clamp(24px, 4vh, 42px);
 		text-align: center;
 	}
 
@@ -742,7 +648,7 @@
 		line-height: 1.1;
 	}
 
-	.destination-heading > p:last-child {
+	.destination-heading > p {
 		margin: 0;
 		color: rgba(245, 240, 255, 0.77);
 		font-family: 'Sulphur Point', sans-serif;
@@ -752,7 +658,7 @@
 	.destinations {
 		display: grid;
 		width: min(100%, 960px);
-		margin: 0 auto auto;
+		margin: 0 auto;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		border-block: 1px solid rgba(242, 227, 255, 0.32);
 	}
@@ -786,7 +692,9 @@
 	.destination:hover,
 	.destination:focus-visible {
 		background: rgba(26, 18, 68, 0.65);
-		box-shadow: 0 0 35px rgba(216, 180, 254, 0.22), inset 0 0 30px rgba(236, 72, 153, 0.12);
+		box-shadow:
+			0 0 35px rgba(216, 180, 254, 0.22),
+			inset 0 0 30px rgba(236, 72, 153, 0.12);
 		transform: translateY(-4px);
 	}
 
@@ -867,11 +775,6 @@
 		transform: translate(3px, -3px);
 	}
 
-	.choose-footer {
-		margin-top: clamp(28px, 5vh, 54px);
-		font-size: 9px;
-	}
-
 	.legacy-cursor {
 		position: fixed;
 		z-index: 50;
@@ -945,6 +848,33 @@
 		}
 	}
 
+	@keyframes transition-wash {
+		0% {
+			opacity: 0;
+		}
+		35% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes transition-sweep {
+		0% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scaleX(0);
+		}
+		35% {
+			opacity: 1;
+			transform: translate(-50%, -50%) scaleX(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scaleX(1);
+		}
+	}
+
 	@keyframes phase-enter {
 		from {
 			opacity: 0;
@@ -1002,8 +932,7 @@
 			padding: max(24px, env(safe-area-inset-top)) 24px max(22px, env(safe-area-inset-bottom));
 		}
 
-		.masthead,
-		.choose-footer {
+		.masthead {
 			font-size: 8px;
 			letter-spacing: 0.1em;
 		}
@@ -1032,16 +961,15 @@
 		}
 
 		.masthead--compact {
-			flex-wrap: wrap;
-			justify-content: flex-end;
+			margin-bottom: 28px;
 		}
 
 		.wordmark {
-			width: 138px;
+			width: min(54vw, 190px);
 		}
 
 		.destination-heading {
-			margin: clamp(28px, 5vh, 46px) 0 20px;
+			margin-bottom: 20px;
 		}
 
 		.destinations {
@@ -1075,18 +1003,17 @@
 		.destination__action {
 			padding-top: 16px;
 		}
-
-		.choose-footer {
-			margin-top: 16px;
-		}
 	}
 
 	@media (max-height: 620px) and (min-width: 641px) {
 		.phase {
 			padding-block: 22px;
 		}
+		.masthead--compact {
+			margin-bottom: 26px;
+		}
 		.destination-heading {
-			margin-block: 26px 18px;
+			margin-block: 0 18px;
 		}
 		.destination {
 			min-height: 270px;
@@ -1108,8 +1035,11 @@
 			padding-block: 32px;
 		}
 
+		.masthead--compact {
+			margin-bottom: clamp(18px, 3vh, 32px);
+		}
 		.destination-heading {
-			margin-block: clamp(24px, 4vh, 40px) clamp(20px, 3vh, 32px);
+			margin-block: 0 clamp(20px, 3vh, 32px);
 		}
 	}
 
