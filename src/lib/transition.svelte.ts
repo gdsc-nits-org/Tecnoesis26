@@ -58,7 +58,7 @@ class PortalTransitionManager {
 				this.stage = 'idle';
 				this.progress = 0;
 				this.clearTimers();
-			}, 700);
+			}, 900);
 		}
 	}
 }
