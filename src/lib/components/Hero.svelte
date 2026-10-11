@@ -223,23 +223,11 @@
 
 		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
 			<!-- Intro text: 16.8px, 3 lines, left edge at ~20% on mobile -->
-			<div
-				class="absolute top-[calc(38%-6vh)] left-[7%] z-10 m-0 transition-opacity duration-500 max-[900px]:top-[34%] max-[900px]:left-[7%] max-[900px]:text-[clamp(0.85rem,1.5vw,1.2rem)] max-md:top-auto max-md:bottom-[27.3dvh] max-md:left-1/2 max-md:w-[90vw] max-md:max-w-none max-md:-translate-x-1/2"
-				class:opacity-0={currentPage >= 1}
-				class:pointer-events-none={currentPage >= 1}
-			>
-				<p
-					class="m-0 text-left font-delicatus text-[clamp(1.1rem,1.5vw,1.3rem)] leading-[1.4] font-normal tracking-[0.05em] whitespace-nowrap text-white/85 capitalize max-md:w-full max-md:text-center max-md:text-[clamp(1rem,4.8vw,1.15rem)] max-md:leading-[1.45]"
-				>
-					Tecnoesis is the annual<br />
-					Techno-Managerial<br />
-					Event of NIT Silchar
-				</p>
-			</div>
+			
 
 			<!-- 3D MAP button: centred, 58.6vw x 40px, sits 17dvh above the bottom on mobile -->
 			<div
-				class="absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-pointer items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300 active:before:scale-100 active:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
+				class="hero-reveal hero-reveal--delay-2 absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-pointer items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300 active:before:scale-100 active:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
 			>
@@ -252,7 +240,7 @@
 			<button
 				type="button"
 				onclick={scrollToNextSection}
-				class="absolute bottom-4 left-[35vw] z-20 flex w-fit -translate-x-1/2 flex-col items-center justify-center font-display text-[0.88rem] leading-none tracking-[0.08em] text-white/90 lowercase transition-opacity duration-500 max-[900px]:bottom-2 max-[900px]:left-[35vw] max-[900px]:text-[0.72rem] max-md:bottom-2 max-md:left-1/2 max-md:text-[0.68rem]"
+				class="hero-reveal hero-reveal--delay-2 absolute bottom-4 left-[35vw] z-20 flex w-fit -translate-x-1/2 flex-col items-center justify-center font-display text-[0.88rem] leading-none tracking-[0.08em] text-white/90 lowercase transition-opacity duration-500 max-[900px]:bottom-2 max-[900px]:left-[35vw] max-[900px]:text-[0.72rem] max-md:bottom-2 max-md:left-1/2 max-md:text-[0.68rem]"
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
 				aria-label="Scroll to the About section"
@@ -265,3 +253,30 @@
 		</main>
 	</div>
 </div>
+
+<style>
+	@keyframes hero-element-reveal {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+			filter: blur(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+			filter: blur(0);
+		}
+	}
+
+	.hero-reveal {
+		animation: hero-element-reveal 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	.hero-reveal--delay-1 {
+		animation-delay: 200ms;
+	}
+
+	.hero-reveal--delay-2 {
+		animation-delay: 360ms;
+	}
+</style>

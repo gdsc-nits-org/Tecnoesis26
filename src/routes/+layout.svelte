@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { Navbar } from '$lib';
 	import Cursor from '$lib/components/Cursor.svelte';
+	import PageTransition from '$lib/components/PageTransition.svelte';
 
 	let { children } = $props();
 </script>
@@ -53,6 +54,8 @@
 	<Navbar />
 	<Cursor />
 {/if}
+<PageTransition />
 <div class="min-h-screen bg-[#09062d]">
 	{@render children()}
 </div>
+
