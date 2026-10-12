@@ -91,6 +91,8 @@
 		if (event.pointerType === 'touch') {
 			isTouchDevice = true;
 			void enableGyroscope();
+			transitionToPhase(2);
+			return;
 		}
 		startHold(event);
 	}
@@ -220,9 +222,7 @@
 			class="phase phase--welcome"
 			class:phase--exiting={isExiting}
 			role="group"
-			aria-label={isTouchDevice
-				? 'Press and hold to enter Tecnoesis'
-				: 'Click and hold to enter Tecnoesis'}
+			aria-label={isTouchDevice ? 'Tap to enter Tecnoesis' : 'Click and hold to enter Tecnoesis'}
 			aria-describedby="hold-instruction"
 		>
 			<div class="welcome-lockup">
@@ -240,18 +240,20 @@
 				<div class="hold-prompt__label">
 					<span>
 						{isTouchDevice
-							? 'PRESS AND HOLD TO ENTER'
+							? 'TAP TO ENTER'
 							: isHolding
 								? 'HOLD TO OPEN'
 								: 'CLICK AND HOLD TO ENTER'}
 					</span>
 				</div>
-				<div class="hold-prompt__track">
-					<span style={`transform: scaleX(${holdProgress / 100})`}></span>
-				</div>
+				{#if !isTouchDevice}
+					<div class="hold-prompt__track">
+						<span style={`transform: scaleX(${holdProgress / 100})`}></span>
+					</div>
+				{/if}
 				<p id="hold-instruction">
 					{isTouchDevice
-						? 'Press and hold anywhere to begin your journey'
+						? 'Tap anywhere once to begin your journey'
 						: 'Click and hold anywhere to begin your journey'}
 				</p>
 			</div>
