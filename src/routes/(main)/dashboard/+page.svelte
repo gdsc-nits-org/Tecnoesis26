@@ -2,9 +2,7 @@
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Dashboard</title>
-</svelte:head>
+<svelte:head></svelte:head>
 
 <main>
 	<h1>Dashboard</h1>

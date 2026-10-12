@@ -1,8 +1,7 @@
-<script>
-	import D01 from '$lib/components/comingsoon/D01.svelte';
-
-	import Cursor from '$lib/components/comingsoon/Cursor.svelte';
+<script lang="ts">
+	import MeIntoButton from '$lib/components/MeIntoButton.svelte';
 </script>
 
-<D01 />
-<Cursor />
+<main class="min-h-screen w-full">
+	<MeIntoButton />
+</main>

@@ -1,32 +1,49 @@
 import { redirect, type Handle } from '@sveltejs/kit';
-import { hasActiveSession } from '$lib/server/auth';
+import { getCurrentAuth } from '$lib/server/auth';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const { cookies, url } = event;
-	const pathname = url.pathname;
+	const auth = await getCurrentAuth(event.cookies).catch(() => ({
+		user: null,
+		session: null,
+		profile: null
+	}));
+	event.locals.user = auth.user;
+	event.locals.session = auth.session;
+	event.locals.profile = auth.profile;
 
-	const isAuthRoute = pathname === '/auth' || pathname.startsWith('/auth/');
-	const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
-	const isModuleParticipateRoute =
-		pathname.includes('/modules/') && pathname.includes('/participate');
+	const pathname = event.url.pathname;
+	const publicRoutes = [
+		'/login',
+		'/signup',
+		'/auth',
+		'/auth/login',
+		'/auth/signup',
+		'/auth/callback'
+	];
+	const isPublic = publicRoutes.some(
+		(route) => pathname === route || pathname.startsWith(`${route}/`)
+	);
+	const isProtected =
+		!isPublic &&
+		// pathname === '/home' ||
+		// pathname.startsWith('/home/') ||
+		(pathname === '/profile' ||
+			pathname.startsWith('/profile/') ||
+			pathname.startsWith('/dashboard') ||
+			(pathname.includes('/modules/') && pathname.includes('/participate')));
 
-	if (pathname.startsWith('/') && pathname != '/') {
-		throw redirect(302, '/');
+	if (
+		auth.user &&
+		auth.profile &&
+		['/login', '/signup', '/auth', '/auth/login', '/auth/signup'].includes(pathname)
+	) {
+		throw redirect(303, '/home');
 	}
-	if (isAuthRoute || isDashboardRoute || isModuleParticipateRoute) {
-		const hasSession = await hasActiveSession(cookies);
-
-		if (isAuthRoute && hasSession) {
-			throw redirect(302, '/dashboard');
-		}
-
-		if (isDashboardRoute && !hasSession) {
-			throw redirect(302, '/auth/login');
-		}
-
-		if (isModuleParticipateRoute && !hasSession) {
-			throw redirect(302, '/auth/login');
-		}
+	if (auth.user && !auth.profile && isProtected && pathname !== '/signup/complete') {
+		throw redirect(303, '/signup/complete');
+	}
+	if (!auth.user && isProtected) {
+		throw redirect(303, '/login');
 	}
 
 	return resolve(event);

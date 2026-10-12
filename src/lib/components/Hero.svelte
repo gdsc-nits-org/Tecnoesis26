@@ -1,0 +1,318 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+
+	let logoX = $state(0);
+	let logoY = $state(0);
+	let currentPage = $state(0);
+	let retroProgress = $state(0);
+
+	function handlePointerMove(event: PointerEvent) {
+		if (event.pointerType === 'touch') return;
+
+		const target = event.currentTarget as HTMLElement;
+		const bounds = target.getBoundingClientRect();
+		logoX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 18;
+		logoY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 12;
+	}
+
+	function resetLogoPosition() {
+		// When the gyroscope is driving the logo, a touch ending must not snap it back to centre.
+		if (gyroActive) return;
+		logoX = 0;
+		logoY = 0;
+	}
+
+	function scrollToNextSection() {
+		document.querySelector<HTMLElement>('[data-section-name="ABOUT"]')?.scrollIntoView({
+			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+			block: 'start'
+		});
+	}
+
+	// ---- Gyroscope parallax for the logo (touch devices) ------------------------
+	// Same effect as the mouse parallax, but driven by tilting the phone.
+	// Android: starts automatically. iOS: needs a permission prompt, which can only be
+	// shown from a tap, so it is requested on the first tap anywhere on the page.
+	// (Requires HTTPS or localhost.)
+	const GYRO_RANGE_X = 9; // px each way (mouse parallax is +-9 too)
+	const GYRO_RANGE_Y = 6; // px each way (mouse parallax is +-6 too)
+	const GYRO_TILT_DEG = 25; // tilt from the resting pose that gives the full movement
+	const GYRO_SMOOTHING = 0.15; // 0-1, lower = smoother/laggier
+	const GYRO_RECENTER = 0.002; // how slowly the "rest" pose follows how you hold the phone
+	const GYRO_DIRECTION = 1; // 1 = logo moves with the tilt, -1 = opposite
+
+	type OrientationPermissionApi = { requestPermission?: () => Promise<'granted' | 'denied'> };
+
+	let gyroActive = false;
+	let gyroRequested = false;
+	let gyroBaseX: number | null = null;
+	let gyroBaseY: number | null = null;
+	let gyroX = 0;
+	let gyroY = 0;
+
+	function clamp(value: number, min: number, max: number) {
+		return Math.min(Math.max(value, min), max);
+	}
+
+	function recenterGyro() {
+		// Forget the resting pose (used after a screen rotation).
+		gyroBaseX = null;
+		gyroBaseY = null;
+	}
+
+	function handleOrientation(event: DeviceOrientationEvent) {
+		// Desktops without a sensor fire one event with null values.
+		if (event.beta === null || event.gamma === null) return;
+
+		// gamma = left/right tilt, beta = front/back tilt. Swap them when the screen is rotated.
+		const angle = screen.orientation?.angle ?? 0;
+		let x = event.gamma;
+		let y = event.beta;
+		if (angle === 90) {
+			x = event.beta;
+			y = -event.gamma;
+		} else if (angle === 270) {
+			x = -event.beta;
+			y = event.gamma;
+		} else if (angle === 180) {
+			x = -event.gamma;
+			y = -event.beta;
+		}
+
+		// The first reading is the resting pose; it then drifts slowly toward how you hold the phone.
+		gyroBaseX ??= x;
+		gyroBaseY ??= y;
+		gyroBaseX += (x - gyroBaseX) * GYRO_RECENTER;
+		gyroBaseY += (y - gyroBaseY) * GYRO_RECENTER;
+
+		const targetX = clamp((x - gyroBaseX) / GYRO_TILT_DEG, -1, 1) * GYRO_RANGE_X * GYRO_DIRECTION;
+		const targetY = clamp((y - gyroBaseY) / GYRO_TILT_DEG, -1, 1) * GYRO_RANGE_Y * GYRO_DIRECTION;
+
+		gyroX += (targetX - gyroX) * GYRO_SMOOTHING;
+		gyroY += (targetY - gyroY) * GYRO_SMOOTHING;
+
+		logoX = gyroX;
+		logoY = gyroY;
+	}
+
+	async function enableGyro() {
+		if (gyroRequested) return;
+		gyroRequested = true;
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const api = window.DeviceOrientationEvent as unknown as OrientationPermissionApi | undefined;
+		if (!api) return;
+
+		if (typeof api.requestPermission === 'function') {
+			try {
+				const state = await api.requestPermission();
+				if (state !== 'granted') return;
+			} catch {
+				return;
+			}
+		}
+
+		window.addEventListener('deviceorientation', handleOrientation);
+		screen.orientation?.addEventListener('change', recenterGyro);
+		gyroActive = true;
+	}
+
+	onMount(() => {
+		// Only touch-first devices (phones/tablets) get the gyro effect; desktops keep the mouse parallax.
+		if (!window.matchMedia('(pointer: coarse)').matches) return;
+
+		const api = window.DeviceOrientationEvent as unknown as OrientationPermissionApi | undefined;
+		const needsPermission = typeof api?.requestPermission === 'function';
+
+		if (needsPermission) {
+			// iOS: the permission prompt must come from a user gesture.
+			window.addEventListener('click', enableGyro, { once: true });
+			window.addEventListener('touchend', enableGyro, { once: true });
+		} else {
+			enableGyro();
+		}
+
+		return () => {
+			window.removeEventListener('click', enableGyro);
+			window.removeEventListener('touchend', enableGyro);
+			window.removeEventListener('deviceorientation', handleOrientation);
+			screen.orientation?.removeEventListener('change', recenterGyro);
+			gyroActive = false;
+		};
+	});
+
+	// The browser owns scrolling. This progress value links the scrollbar to both
+	// the About entrance and the retro word's horizontal travel.
+	onMount(() => {
+		let frame = 0;
+		const updateScrollProgress = () => {
+			frame = 0;
+			const viewportHeight = Math.max(window.innerHeight, 1);
+			retroProgress = Math.min(Math.max(window.scrollY / viewportHeight, 0), 1);
+			currentPage = retroProgress >= 0.5 ? 1 : 0;
+		};
+		const handleScroll = () => {
+			if (!frame) frame = requestAnimationFrame(updateScrollProgress);
+		};
+
+		updateScrollProgress();
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('resize', handleScroll, { passive: true });
+		return () => {
+			if (frame) cancelAnimationFrame(frame);
+			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('resize', handleScroll);
+		};
+	});
+</script>
+
+<!--
+	Breakpoints
+	- max-md  (< 768px)   : mobile layout, matched to the 350 x 762 reference
+	- md      (768-1023)  : desktop layout, text/button sizes clamp so they stay readable
+	- lg+     (1024px +)  : desktop layout, sizes grow smoothly on large screens
+-->
+<div
+	class="hero-home relative min-h-screen overflow-hidden text-white max-md:min-h-[100dvh]"
+	class:about-active={currentPage >= 1}
+	role="presentation"
+	onpointermove={handlePointerMove}
+	onpointerleave={resetLogoPosition}
+>
+	<!--
+		Retro-futurism text: sits behind the logo and page content, moves with the page transition.
+		Desktop: one row, anchored to the bottom.
+		Mobile: wraps at the hyphen into two big rows (RETRO- / FUTURISM), anchored from the top.
+	-->
+	<div
+		class="retro-text pointer-events-none fixed bottom-[-4vh] left-[1vw] z-[1] origin-bottom-left font-paused text-[35vw] leading-[0.72] tracking-normal whitespace-nowrap text-white/[0.17] uppercase will-change-transform select-none [--retro-x:-190vw] [--retro-y:-90vh] max-md:top-[39dvh] max-md:bottom-auto max-md:left-[1vw] max-md:w-screen max-md:origin-top-left max-md:text-[63vw] max-md:leading-[1.24] max-md:whitespace-normal max-md:[--retro-x:-300vw] max-md:[--retro-y:-83dvh]"
+		class:invisible={currentPage === 0}
+		style={`transform: translate3d(calc(var(--retro-x) * ${retroProgress}), calc(var(--retro-y) * ${retroProgress}), 0) scaleY(0.82)`}
+		aria-hidden="true"
+	>
+		Retro-Futurism
+	</div>
+
+	<header class="box-border flex w-full items-center gap-8 px-4 pt-7">
+		<div
+			class="hero-logo absolute top-1/2 left-1/2 z-[5] flex w-[min(64vw,50dvh,880px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-1/2 max-[900px]:w-[min(60vw,52dvh)] max-[900px]:max-w-none max-md:top-1/2 max-md:w-[min(86vw,58dvh)] max-md:max-w-none"
+			class:opacity-0={currentPage >= 1}
+			class:invisible={currentPage >= 1}
+			class:pointer-events-none={currentPage >= 1}
+			aria-label="Tecnoesis home"
+			style={`transform: translate3d(calc(-50% + ${logoX}px), calc(-50% + ${logoY}px), 0)`}
+		>
+			<div
+				class="pointer-events-none absolute inset-[-22%_-12%] z-0 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(142,48,210,0.44)_0%,rgba(82,24,160,0.25)_38%,rgba(44,14,104,0.08)_62%,transparent_78%)] blur-[26px] max-md:inset-[-30%_-20%] max-md:bg-[radial-gradient(ellipse_at_center,rgba(169,61,239,0.62)_0%,rgba(92,27,180,0.38)_40%,rgba(44,14,104,0.12)_68%,transparent_82%)] max-md:blur-[34px]"
+				aria-hidden="true"
+			></div>
+			<img
+				class="relative z-[1] block w-full drop-shadow-[0_0_10px_rgba(241,191,255,0.42)] drop-shadow-[0_0_28px_rgba(164,83,255,0.28)]"
+				src="/logo.png"
+				alt="Tecnoesis logo"
+			/>
+		</div>
+	</header>
+
+	<!-- On mobile the header is 1.75rem tall, so this makes <main> end exactly at the screen bottom -->
+	<div
+		class="hero-content relative z-[2] flex min-h-[calc(100vh-110px)] max-md:min-h-[calc(100dvh_-_1.75rem)]"
+	>
+		<aside
+			class="relative box-border w-[15vw] max-w-[15vw] shrink-0 px-4 pb-4 max-md:hidden"
+		></aside>
+
+		<main class="relative box-border w-[85vw] min-w-0 shrink-0 pr-8 max-md:w-full max-md:pr-0">
+			<!-- Intro text: 16.8px, 3 lines, left edge at ~20% on mobile -->
+
+			<!-- 3D MAP button: centred, 58.6vw x 40px, sits 17dvh above the bottom on mobile -->
+			<div
+				class="hero-map-button hero-reveal hero-reveal--delay-2 pointer-events-none absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-default items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
+				class:opacity-0={currentPage >= 1}
+				class:pointer-events-none={currentPage >= 1}
+			>
+				<span
+					class="relative z-[1] flex w-full -translate-y-0.5 flex-col items-center text-center font-display leading-tight [text-shadow:0_0_18px_rgba(255,255,255,0.18)]"
+					><span class="text-[0.8em]">3D MAP</span><span class="text-[0.42em] tracking-[0.2em]"
+						>COMING SOON</span
+					></span
+				>
+			</div>
+
+			<button
+				type="button"
+				onclick={scrollToNextSection}
+				class="hero-reveal hero-reveal--delay-2 absolute bottom-4 left-[35vw] z-20 flex w-fit -translate-x-1/2 flex-col items-center justify-center font-display text-[0.88rem] leading-none tracking-[0.08em] text-white/90 lowercase transition-opacity duration-500 max-[900px]:bottom-2 max-[900px]:left-[35vw] max-[900px]:text-[0.72rem] max-md:bottom-2 max-md:left-1/2 max-md:text-[0.68rem]"
+				class:opacity-0={currentPage >= 1}
+				class:pointer-events-none={currentPage >= 1}
+				aria-label="Scroll to the About section"
+			>
+				<span class="mb-2.5 block text-[1.7rem] leading-[0.7] max-md:mb-1.5 max-md:text-[1.15rem]"
+					>⌄</span
+				>
+				<span class="block text-center">scroll</span>
+			</button>
+		</main>
+	</div>
+</div>
+
+<style>
+	@keyframes hero-element-reveal {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+			filter: blur(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+			filter: blur(0);
+		}
+	}
+
+	.hero-reveal {
+		animation: hero-element-reveal 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	.hero-reveal--delay-1 {
+		animation-delay: 200ms;
+	}
+
+	.hero-reveal--delay-2 {
+		animation-delay: 360ms;
+	}
+
+	@media (max-aspect-ratio: 1 / 1) {
+		.hero-logo {
+			top: 50%;
+			left: 50%;
+			width: min(86vw, 58dvh);
+			max-width: calc(100vw - 2rem);
+		}
+
+		.hero-map-button {
+			top: auto;
+			right: auto;
+			bottom: max(17dvh, 56px);
+			left: 50%;
+			translate: -50% 0;
+		}
+	}
+
+	@media (min-aspect-ratio: 1 / 1) and (max-width: 900px) {
+		.hero-map-button {
+			bottom: 14dvh;
+		}
+	}
+
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.hero-home {
+			min-height: 88svh;
+		}
+
+		.hero-home .hero-content {
+			min-height: calc(88svh - 1.75rem);
+		}
+	}
+</style>

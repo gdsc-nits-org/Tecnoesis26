@@ -2,11 +2,15 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.png';
 	import { page } from '$app/state';
+	import { Navbar } from '$lib';
+	import Cursor from '$lib/components/Cursor.svelte';
+	import PageTransition from '$lib/components/PageTransition.svelte';
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
+	<title>TECNOESIS 2026 | NIT SILCHAR</title>
 	<link rel="icon" href={favicon} />
 	<meta
 		name="description"
@@ -27,8 +31,11 @@
 		content="Tecnoesis is the annual techno-managerial event of NIT Silchar, bringing tech enthusiasts fascinating events, workshops, competitions, and interactions worth a lifetime."
 	/>
 	<meta property="og:url" content={page.url.href} />
-	<meta property="og:image" content={`${page.url.origin}/tecnoesisbanner.png`} />
-	<meta property="og:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
+	<meta property="og:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
+	<meta
+		property="og:image:alt"
+		content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar"
+	/>
 	<meta property="og:locale" content="en_IN" />
 
 	<meta name="twitter:card" content="summary_large_image" />
@@ -37,7 +44,17 @@
 		name="twitter:description"
 		content="Tecnoesis is the annual techno-managerial event of NIT Silchar, bringing tech enthusiasts fascinating events, workshops, competitions, and interactions worth a lifetime."
 	/>
-	<meta name="twitter:image" content={`${page.url.origin}/tecnoesisbanner.png`} />
-	<meta name="twitter:image:alt" content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar" />
+	<meta name="twitter:image" content={`${page.url.origin}/tecnoesis_banner.png`} />
+	<meta
+		name="twitter:image:alt"
+		content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar"
+	/>
 </svelte:head>
-{@render children()}
+{#if page.url.pathname !== '/'}
+	<Navbar />
+	<Cursor />
+{/if}
+<PageTransition />
+<div class="min-h-screen bg-[#09062d]">
+	{@render children()}
+</div>
