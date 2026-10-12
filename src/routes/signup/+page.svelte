@@ -55,9 +55,8 @@
 			class="auth-button signup-button"
 			disabled={submitting}
 		>
-			<AuthIcon name="google" size={21} />
+			{#if !submitting}<AuthIcon name="google" size={18} />{/if}
 			<span>{submitting ? 'Connecting...' : 'Continue with Google'}</span>
-			{#if !submitting}<AuthIcon name="arrow-right" size={20} />{/if}
 		</button>
 	</form>
 
@@ -69,10 +68,6 @@
 </AuthShell>
 
 <style>
-	.signup-button :global(span:nth-child(2)) {
-		flex: 1;
-	}
-
 	.terms-copy {
 		margin: 1rem auto 0;
 		max-width: 24rem;

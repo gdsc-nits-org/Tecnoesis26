@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import GalleryPhoto from '$lib/components/GalleryPhoto.svelte';
-	import { photos, categories, formatGalleryDate, type GalleryCategory } from '$lib/data/gallery';
+	import { photos, categories, type GalleryCategory } from '$lib/data/gallery';
 
 	let category = $state<GalleryCategory>('All moments');
 	let selectedId = $state<number | null>(null);
@@ -70,6 +70,7 @@
 		await tick();
 
 		viewer.showModal();
+		window.dispatchEvent(new Event('tecnoesis:modal-open'));
 	}
 
 	function closeViewer() {
@@ -168,7 +169,7 @@
 				<div class="hero-facts" aria-label="Archive summary">
 					<div><strong>{number(photos.length)}</strong><span>photographs</span></div>
 					<div><strong>{number(eventCount)}</strong><span>events</span></div>
-					<div class="hero-location"><span>NIT SILCHAR</span><span>09—13 MAR 2026</span></div>
+					<div class="hero-location"><span>NIT SILCHAR</span><span>13-16 Jan 2026</span></div>
 				</div>
 			</div>
 
@@ -192,7 +193,7 @@
 					aria-label={`Open ${secondFeature.title} photo ${secondFeature.id}`}
 				>
 					<GalleryPhoto photo={secondFeature} eager />
-					<span class="snapshot-caption"><span>Spark Night</span><span>13.03.26 ↗</span></span>
+					<span class="snapshot-caption"><span>Spark Night</span><span>16.01.26 ↗</span></span>
 				</button>
 				<span class="frame-note">LIVE LOUD. KEEP THE FRAME.</span>
 			</div>
@@ -258,9 +259,6 @@
 								>
 								<h3>{photo.title}</h3>
 							</div>
-							<time datetime={photo.date.split('.').reverse().join('-')}
-								>{formatGalleryDate(photo.date)}</time
-							>
 						</figcaption>
 					</figure>
 				{/each}
@@ -277,9 +275,7 @@
 					<a href="https://instagram.com/tecnoesis" target="_blank" rel="noopener noreferrer"
 						>Instagram ↗</a
 					>
-					<a href="https://linkedin.com/company/tecnoesis" target="_blank" rel="noopener noreferrer"
-						>LinkedIn ↗</a
-					>
+					<a href="mailto:tecnoesis@nits.ac.in">Email ↗</a>
 					<a href="https://facebook.com/tecnoesis" target="_blank" rel="noopener noreferrer"
 						>Facebook ↗</a
 					>
@@ -377,8 +373,6 @@
 				<div class="viewer-caption" aria-live="polite">
 					<p>
 						{selectedPhoto.category}
-						<span>·</span>
-						{formatGalleryDate(selectedPhoto.date)}
 					</p>
 
 					<h2>{selectedPhoto.title}</h2>
@@ -953,14 +947,6 @@
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 	}
-	figcaption time {
-		flex-shrink: 0;
-		color: rgba(200, 186, 240, 0.5);
-		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
-		font-size: 8px;
-		line-height: 1.8;
-		letter-spacing: 0.14em;
-	}
 	.gallery-footer {
 		display: flex;
 		align-items: center;
@@ -1034,9 +1020,6 @@
 		font-size: 9px;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
-	}
-	.viewer-caption p span {
-		margin: 0 7px;
 	}
 	.viewer-caption h2 {
 		margin-top: 9px;
@@ -1787,10 +1770,6 @@
 		.photo-number {
 			font-size: 7px;
 		}
-		figcaption time {
-			margin-left: 17px;
-			font-size: 7px;
-		}
 		.photo-open {
 			width: 26px;
 			height: 26px;
@@ -1864,9 +1843,6 @@
 		h3 {
 			font-size: 13px;
 		}
-		figcaption time {
-			font-size: 9px;
-		}
 	}
 	@media (prefers-reduced-motion: reduce) {
 		*,
@@ -1903,7 +1879,6 @@
 	.gallery-page .photo-category,
 	.gallery-page .photo-number,
 	.gallery-page figcaption h3,
-	.gallery-page figcaption time,
 	.gallery-page .gallery-footer a {
 		font-family: 'Bruno Ace', sans-serif;
 	}

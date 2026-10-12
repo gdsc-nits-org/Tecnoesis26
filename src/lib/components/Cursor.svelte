@@ -35,21 +35,42 @@
 		isClickable = false;
 	}
 
+	function elevateCursor() {
+		const cursor = document.querySelector<HTMLDivElement>('.custom-cursor');
+		if (
+			!cursor ||
+			typeof cursor.hidePopover !== 'function' ||
+			typeof cursor.showPopover !== 'function'
+		) {
+			return;
+		}
+
+		if (cursor.matches(':popover-open')) cursor.hidePopover();
+		cursor.showPopover();
+	}
+
 	onMount(() => {
 		if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
 
+		const cursor = document.querySelector<HTMLDivElement>('.custom-cursor');
+		if (cursor && typeof cursor.showPopover === 'function') cursor.showPopover();
+
 		window.addEventListener('pointermove', updateCursor);
 		window.addEventListener('blur', hideCursor);
+		window.addEventListener('tecnoesis:modal-open', elevateCursor);
 
 		return () => {
 			window.removeEventListener('pointermove', updateCursor);
 			window.removeEventListener('blur', hideCursor);
+			window.removeEventListener('tecnoesis:modal-open', elevateCursor);
+			if (cursor?.matches(':popover-open')) cursor.hidePopover();
 		};
 	});
 </script>
 
 <div
 	class="custom-cursor z-9999!"
+	popover="manual"
 	class:custom-cursor--visible={isVisible}
 	style={`left:${x}px;top:${y}px`}
 	aria-hidden="true"
@@ -65,10 +86,18 @@
 		position: fixed;
 		z-index: 9999;
 		display: flex;
+		inset: auto;
 		width: 90px;
+		height: max-content;
+		margin: 0;
+		padding: 0;
+		border: 0;
 		transform: translate(-50%, -50%);
 		align-items: center;
 		flex-direction: column;
+		overflow: visible;
+		background: transparent;
+		color: inherit;
 		pointer-events: none;
 		user-select: none;
 		opacity: 0;

@@ -10,7 +10,6 @@
 		GENDER_OPTIONS.find((option) => option.value === value)?.label ?? '—';
 </script>
 
-
 <div class="profile-page">
 	<div class="profile-page__backdrop" aria-hidden="true"></div>
 	<div class="profile-page__veil" aria-hidden="true"></div>

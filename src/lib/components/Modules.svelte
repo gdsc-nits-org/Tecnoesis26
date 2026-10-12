@@ -10,12 +10,12 @@
 		<img src={gifSrc} alt="" />
 		<h1 class="font-paused">MODULES</h1>
 	</div>
-	<a href={resolve('/modules')} class="cyber-btn" aria-label="Explore modules">
+	<a href={resolve('/home')} class="cyber-btn" aria-label="Explore modules">
 		<span class="cyber-btn__border-glow" aria-hidden="true"></span>
 		<span class="cyber-btn__backdrop" aria-hidden="true"></span>
 		<span class="cyber-btn__shimmer" aria-hidden="true"></span>
 		<span class="cyber-btn__content">
-			<span class="cyber-btn__text">CHECK OUT</span>
+			<span class="cyber-btn__text">COMING SOON</span>
 			<span class="cyber-btn__arrow" aria-hidden="true">
 				<svg viewBox="0 0 20 20" fill="none" stroke="currentColor">
 					<path

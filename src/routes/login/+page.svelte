@@ -74,8 +74,7 @@
 		</div>
 
 		<button type="submit" class="auth-button" disabled={submitting}>
-			<span>{submitting ? 'Entering...' : 'Log In'}</span>
-			{#if !submitting}<AuthIcon name="arrow-right" size={20} />{/if}
+			{submitting ? 'Entering…' : 'Log in'}
 		</button>
 	</form>
 

@@ -26,7 +26,12 @@
 			<span class="cyber-btn__text">HAVE A LOOK</span>
 			<span class="cyber-btn__arrow" aria-hidden="true">
 				<svg viewBox="0 0 20 20" fill="none" stroke="currentColor">
-					<path d="M5 15L15 5M15 5H7M15 5V13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					<path
+						d="M5 15L15 5M15 5H7M15 5V13"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
 				</svg>
 			</span>
 		</span>
@@ -92,7 +97,9 @@
 		);
 		clip-path: inherit;
 		z-index: 0;
-		transition: opacity 300ms ease, filter 300ms ease;
+		transition:
+			opacity 300ms ease,
+			filter 300ms ease;
 		box-shadow: 0 0 20px rgba(236, 34, 184, 0.3);
 	}
 
@@ -187,7 +194,9 @@
 		width: 18px;
 		height: 18px;
 		color: #f5b4e8;
-		transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms ease;
+		transition:
+			transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+			color 240ms ease;
 	}
 
 	.cyber-btn__arrow svg {

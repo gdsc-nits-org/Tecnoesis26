@@ -210,3 +210,31 @@
 		@apply font-sans;
 	}
 }
+
+html {
+	scrollbar-color: #8b5cf6 #09062d;
+	scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #09062d;
+}
+
+::-webkit-scrollbar-thumb {
+	border: 2px solid #09062d;
+	border-radius: 999px;
+	background: linear-gradient(180deg, #c4b5fd 0%, #8b5cf6 48%, #6d28d9 100%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #ddd6fe 0%, #a78bfa 48%, #8b5cf6 100%);
+}
+
+::-webkit-scrollbar-corner {
+	background: #09062d;
+}

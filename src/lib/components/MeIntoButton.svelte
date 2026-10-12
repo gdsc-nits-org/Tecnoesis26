@@ -183,12 +183,6 @@
 		portalTransition.start('/home');
 	}
 
-	function launchMap() {
-		if (isExiting) return;
-		isExiting = true;
-		portalTransition.start('/home');
-	}
-
 	onMount(() => {
 		isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
@@ -291,11 +285,9 @@
 			</div>
 
 			<div class="destinations">
-				<button
-					class="destination destination--map stagger-item"
+				<div
+					class="destination destination--map destination--coming-soon stagger-item"
 					style="--stagger: 2"
-					type="button"
-					onclick={launchMap}
 				>
 					<span class="destination__art destination__art--map" aria-hidden="true">
 						<svg viewBox="0 0 180 120" fill="none">
@@ -309,8 +301,8 @@
 					<span class="destination__description"
 						>Find your place across the NIT Silchar campus.</span
 					>
-					<span class="destination__action">OPEN THE MAP <span aria-hidden="true">↗</span></span>
-				</button>
+					<span class="destination__action">COMING SOON</span>
+				</div>
 
 				<button
 					class="destination destination--site stagger-item"
@@ -698,8 +690,18 @@
 		transform: translateY(-4px);
 	}
 
-	.destination:active {
+	.destination:not(.destination--coming-soon):active {
 		transform: scale(0.98);
+	}
+
+	.destination--coming-soon {
+		cursor: default;
+	}
+
+	.destination--coming-soon:hover {
+		background: rgba(9, 12, 39, 0.3);
+		box-shadow: none;
+		transform: none;
 	}
 
 	.destination:focus-visible,
@@ -731,7 +733,12 @@
 			color 350ms ease;
 	}
 
-	.destination:hover .destination__art svg,
+	.destination--coming-soon:hover .destination__art svg {
+		transform: none;
+		color: var(--lilac);
+	}
+
+	.destination:not(.destination--coming-soon):hover .destination__art svg,
 	.destination:focus-visible .destination__art svg {
 		transform: translateY(-5px) scale(1.04);
 		color: #f3c0e1;
@@ -770,7 +777,7 @@
 		transition: transform 250ms ease;
 	}
 
-	.destination:hover .destination__action span,
+	.destination:not(.destination--coming-soon):hover .destination__action span,
 	.destination:focus-visible .destination__action span {
 		transform: translate(3px, -3px);
 	}

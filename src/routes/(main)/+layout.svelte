@@ -85,10 +85,8 @@
 			</a>
 			<a
 				class="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-white/35 bg-white/6 text-white/90 backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:border-white/60 hover:bg-white/15 lg:h-11 lg:w-11"
-				href="https://linkedin.com/company/tecnoesis"
-				target="_blank"
-				rel="noopener noreferrer"
-				aria-label="LinkedIn"
+				href="mailto:tecnoesis@nits.ac.in"
+				aria-label="Email Tecnoesis"
 			>
 				<svg
 					class="h-5 w-5"
@@ -98,12 +96,7 @@
 					stroke-width="2"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect
-						x="2"
-						y="9"
-						width="4"
-						height="12"
-					/><circle cx="4" cy="4" r="2" /></svg
+					><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg
 				>
 			</a>
 			<a

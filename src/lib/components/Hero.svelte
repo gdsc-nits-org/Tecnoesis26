@@ -224,13 +224,15 @@
 
 			<!-- 3D MAP button: centred, 58.6vw x 40px, sits 17dvh above the bottom on mobile -->
 			<div
-				class="hero-map-button hero-reveal hero-reveal--delay-2 absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-pointer items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-300 active:before:scale-100 active:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
+				class="hero-map-button hero-reveal hero-reveal--delay-2 pointer-events-none absolute top-[38%] right-[4.5%] z-10 flex h-[clamp(44px,4.1vw,64px)] w-[clamp(180px,19.7vw,320px)] cursor-default items-center justify-center overflow-hidden bg-[#3522b8] px-4 pb-[0.15rem] font-display text-[clamp(1.3rem,2vw,2.4rem)] leading-none font-medium tracking-[0.05em] text-white/95 uppercase transition-opacity duration-500 [clip-path:polygon(0_0,100%_0,100%_58%,89%_100%,0_100%)] before:absolute before:top-1/2 before:left-1/2 before:h-[240%] before:w-[130%] before:-translate-x-1/2 before:-translate-y-1/2 before:scale-[0.3] before:bg-[radial-gradient(ellipse_closest-side,#b41ecb_0%,#8a26d6_30%,#5527e0_62%,rgba(53,34,184,0)_100%)] before:opacity-0 before:transition-[transform,opacity] before:duration-500 before:ease-out hover:before:scale-100 hover:before:opacity-100 max-[900px]:top-[38%] max-[900px]:right-[4.5%] max-[900px]:h-[clamp(38px,5.4vw,52px)] max-[900px]:w-[clamp(170px,25vw,220px)] max-[900px]:text-[clamp(1rem,2.5vw,1.5rem)] max-md:top-auto max-md:right-auto max-md:bottom-[17dvh] max-md:left-1/2 max-md:h-[40px] max-md:w-[58.6vw] max-md:max-w-[300px] max-md:-translate-x-1/2 max-md:text-[clamp(1.1rem,5.9vw,1.5rem)]"
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
 			>
 				<span
-					class="relative z-[1] w-full -translate-y-0.5 text-center font-display [text-shadow:0_0_18px_rgba(255,255,255,0.18)]"
-					>3D MAP</span
+					class="relative z-[1] flex w-full -translate-y-0.5 flex-col items-center text-center font-display leading-tight [text-shadow:0_0_18px_rgba(255,255,255,0.18)]"
+					><span class="text-[0.8em]">3D MAP</span><span class="text-[0.42em] tracking-[0.2em]"
+						>COMING SOON</span
+					></span
 				>
 			</div>
 

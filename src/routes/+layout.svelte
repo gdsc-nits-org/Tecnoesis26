@@ -58,4 +58,3 @@
 <div class="min-h-screen bg-[#09062d]">
 	{@render children()}
 </div>
-
