@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	let { data } = $props();
 </script>
 
@@ -8,8 +9,8 @@
 
 <main class="event-detail" style={`--event-accent:${data.module.accent}`}>
 	<nav class="breadcrumbs" aria-label="Breadcrumb">
-		<a href="/modules">Modules</a><span aria-hidden="true">/</span><a
-			href={`/modules/${data.module.slug}`}>{data.module.name}</a
+		<a href={resolve('/modules')}>Modules</a><span aria-hidden="true">/</span><a
+			href={resolve(`/modules/${data.module.slug}`)}>{data.module.name}</a
 		><span aria-hidden="true">/</span><span>{data.event.name}</span>
 	</nav>
 	<section class="event-hero">
@@ -22,10 +23,15 @@
 		<div class="event-mark"><span>TECNOESIS</span><i></i><span>2026</span></div>
 	</section>
 	<div class="event-actions">
-		<a class="register-link" href={`/modules/${data.module.slug}/${data.event.slug}/participate`}>
+		<!-- eslint-disable svelte/no-navigation-without-resolve -->
+		<a
+			class="register-link"
+			href={`${resolve('/modules')}/${data.module.slug}/${data.event.slug}/participate`}
+		>
 			REGISTER NOW <span aria-hidden="true">↗</span>
 		</a>
-		<a class="back-link" href={`/modules/${data.module.slug}`}
+		<!-- eslint-enable svelte/no-navigation-without-resolve -->
+		<a class="back-link" href={resolve(`/modules/${data.module.slug}`)}
 			><span aria-hidden="true">←</span> BACK TO {data.module.name.toUpperCase()} EVENTS</a
 		>
 	</div>

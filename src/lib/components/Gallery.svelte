@@ -48,6 +48,12 @@
 		isolation: isolate;
 	}
 
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.gallery-section {
+			min-height: 88svh;
+		}
+	}
+
 	.gallery-glow {
 		position: absolute;
 		z-index: 0;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import Cursor from './Cursor.svelte';
 	import { portalTransition } from '$lib/transition.svelte';
@@ -21,9 +22,7 @@
 	let pointerX = $state(0);
 	let pointerY = $state(0);
 	let pointerType = $state('mouse');
-	let isHoveringText = $state(false);
 	let isTouchDevice = $state(false);
-	let logoElement = $state<HTMLImageElement | null>(null);
 	let logoX = $state(0);
 	let logoY = $state(0);
 	let isExiting = $state(false);
@@ -96,7 +95,7 @@
 		startHold(event);
 	}
 
-	function handlePointerUp(event: PointerEvent) {
+	function handlePointerUp() {
 		if (phase !== 1) return;
 		cancelHold();
 	}
@@ -156,15 +155,6 @@
 
 		logoX = (event.clientX / Math.max(window.innerWidth, 1) - 0.5) * PARALLAX_RANGE_X * 2;
 		logoY = (event.clientY / Math.max(window.innerHeight, 1) - 0.5) * PARALLAX_RANGE_Y * 2;
-
-		if (logoElement) {
-			const bounds = logoElement.getBoundingClientRect();
-			isHoveringText =
-				event.clientX >= bounds.left - 20 &&
-				event.clientX <= bounds.right + 20 &&
-				event.clientY >= bounds.top - 20 &&
-				event.clientY <= bounds.bottom + 20;
-		}
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -237,7 +227,6 @@
 		>
 			<div class="welcome-lockup">
 				<img
-					bind:this={logoElement}
 					class="welcome-lockup__logo"
 					style:pointer-events="none"
 					src="/TecnoLogoFull.png"
@@ -274,7 +263,7 @@
 			aria-label="Choose your destination"
 		>
 			<header class="masthead masthead--compact stagger-item" style="--stagger: 0">
-				<a class="wordmark" href="/" aria-label="Back to landing">
+				<a class="wordmark" href={resolve('/')} aria-label="Back to landing">
 					<img src="/TecnoLogoFull.png" alt="Tecnoesis 2026" />
 				</a>
 			</header>

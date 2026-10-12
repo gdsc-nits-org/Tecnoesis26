@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { modules } from '$lib/data/modules';
 </script>
 
@@ -29,12 +30,12 @@
 		</header>
 
 		<div class="module-grid">
-			{#each modules as module, index}
+			{#each modules as module, index (module.slug)}
 				<a
 					class="module-card"
 					class:offset-card={index % 4 === 1 || index % 4 === 2}
 					style={`--card-accent:${module.accent};--card-order:${index}`}
-					href={`/modules/${module.slug}`}
+					href={resolve(`/modules/${module.slug}`)}
 				>
 					<div class="card-art" aria-hidden="true">
 						<span class="card-number">{String(index + 1).padStart(2, '0')}</span>

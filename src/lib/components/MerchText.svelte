@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { resolve } from '$app/paths';
+</script>
+
 <div class="mt-8 flex w-fit max-w-full flex-col gap-6 md:mt-0">
 	<div class="flex items-end">
 		<span
@@ -18,7 +22,7 @@
 		THE FUTURE HAS A TEXTURE
 	</p>
 
-	<a href="/merch" class="cyber-btn" aria-label="Explore merchandise">
+	<a href={resolve('/merch')} class="cyber-btn" aria-label="Explore merchandise">
 		<span class="cyber-btn__border-glow" aria-hidden="true"></span>
 		<span class="cyber-btn__backdrop" aria-hidden="true"></span>
 		<span class="cyber-btn__shimmer" aria-hidden="true"></span>

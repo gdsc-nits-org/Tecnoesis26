@@ -263,7 +263,7 @@
       word per line and runs underneath the sphere. Stacking the three blocks
       as ordinary full-width sections is both readable and far less fragile.
     */
-	@media (max-width: 860px) {
+	@media (max-width: 1100px) and (orientation: portrait), (max-width: 860px) {
 		.about-section {
 			height: auto;
 			min-height: 0;
@@ -281,8 +281,8 @@
 			width: 100%;
 			height: auto;
 			flex-direction: column;
-			gap: 2.5rem;
-			padding: 3.5rem 0 5.5rem;
+			gap: 1.75rem;
+			padding: 2rem 0 3rem;
 			transform: none;
 			will-change: auto;
 		}
@@ -330,8 +330,8 @@
 		}
 
 		.sphere-img {
-			width: min(62vw, 260px);
-			height: min(62vw, 260px);
+			width: min(52vw, 220px);
+			height: min(52vw, 220px);
 		}
 
 		/* Nothing slides any more, so the dots would be lying. */

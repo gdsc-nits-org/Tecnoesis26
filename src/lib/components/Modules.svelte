@@ -49,6 +49,12 @@
 		isolation: isolate;
 	}
 
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.modules {
+			min-height: 88svh;
+		}
+	}
+
 	.modules-glow {
 		position: absolute;
 		z-index: 0;

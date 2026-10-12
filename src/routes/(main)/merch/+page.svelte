@@ -67,7 +67,7 @@
 </script>
 
 <main
-	class="relative isolate min-h-[100svh] min-h-screen w-full overflow-x-clip bg-[url('/GalleryBgImg.png')] bg-cover bg-center bg-no-repeat px-4 pt-28 pb-24 font-game-demo select-none sm:px-6 md:flex md:items-center md:justify-around md:gap-6 md:px-8 md:pt-28 md:pb-10 lg:px-12"
+	class="relative isolate min-h-[100svh] min-h-screen w-full overflow-x-clip bg-[url('/GalleryBgImg.png')] bg-cover bg-fixed bg-center bg-no-repeat px-4 pt-28 pb-24 font-game-demo select-none sm:px-6 md:flex md:items-center md:justify-around md:gap-6 md:px-8 md:pt-28 md:pb-10 lg:px-12"
 >
 	<div
 		class="pointer-events-none absolute top-24 left-5 z-0 m-0 hidden md:top-35 md:left-20 md:m-4 md:block"

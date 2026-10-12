@@ -1,5 +1,5 @@
 <script>
-	import wave from '$lib/assets/wave.svg?raw';
+	import wave from '$lib/assets/wave.svg';
 	let isPlaying = $state(true);
 </script>
 
@@ -13,8 +13,12 @@
 			<div
 				class="flex w-max shrink-0 animate-[wave_1.2s_linear_infinite] items-center [&_svg]:block [&_svg]:h-[16px] [&_svg]:w-auto md:[&_svg]:h-[18px]"
 			>
-				<span class="flex shrink-0">{@html wave}</span>
-				<span class="flex shrink-0">{@html wave}</span>
+				<span class="flex shrink-0"
+					><img src={wave} alt="" aria-hidden="true" class="h-[16px] w-auto md:h-[18px]" /></span
+				>
+				<span class="flex shrink-0"
+					><img src={wave} alt="" aria-hidden="true" class="h-[16px] w-auto md:h-[18px]" /></span
+				>
 			</div>
 		{:else}
 			<div

@@ -51,14 +51,15 @@ class PortalTransitionManager {
 		} catch (error) {
 			console.error('Could not complete page transition:', error);
 		} finally {
-			if (!this.isActive) return;
-			this.stage = 'revealing';
-			this.revealTimer = setTimeout(() => {
-				this.isActive = false;
-				this.stage = 'idle';
-				this.progress = 0;
-				this.clearTimers();
-			}, 900);
+			if (this.isActive) {
+				this.stage = 'revealing';
+				this.revealTimer = setTimeout(() => {
+					this.isActive = false;
+					this.stage = 'idle';
+					this.progress = 0;
+					this.clearTimers();
+				}, 900);
+			}
 		}
 	}
 }

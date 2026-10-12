@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	const glitchFrames = [
 		'100110100',
@@ -62,7 +63,7 @@
 		const sections = [...document.querySelectorAll<HTMLElement>('[data-section-name]')];
 		if (!sections.length) return;
 
-		const visibleSections = new Map<Element, IntersectionObserverEntry>();
+		const visibleSections = new SvelteMap<Element, IntersectionObserverEntry>();
 		const updateLabel = () => {
 			const currentSection = [...visibleSections.values()]
 				.filter((entry) => entry.isIntersecting)

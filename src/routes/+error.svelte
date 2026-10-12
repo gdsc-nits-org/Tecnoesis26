@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 
 	const status = $derived(page.status);
@@ -45,7 +46,9 @@
 		</div>
 
 		<div class="error-actions">
-			<a class="primary-action" href="/home">Return home <span aria-hidden="true">↗</span></a>
+			<a class="primary-action" href={resolve('/home')}
+				>Return home <span aria-hidden="true">↗</span></a
+			>
 			<button class="secondary-action" type="button" onclick={goBack}
 				>Go back <span aria-hidden="true">←</span></button
 			>

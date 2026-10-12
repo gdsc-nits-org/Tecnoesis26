@@ -24,10 +24,12 @@
 	}: Props = $props();
 
 	let host: HTMLDivElement;
+	let canvas: HTMLCanvasElement;
 
 	$effect(() => {
 		if (!host) return;
 		const renderer = new THREE.WebGLRenderer({
+			canvas,
 			antialias: false,
 			alpha: true,
 			powerPreference: 'high-performance'
@@ -38,7 +40,6 @@
 		renderer.domElement.style.inset = '0';
 		renderer.domElement.style.width = '100%';
 		renderer.domElement.style.height = '100%';
-		host.appendChild(renderer.domElement);
 
 		const scene = new THREE.Scene();
 		const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -178,8 +179,6 @@
 			trailTex.dispose();
 			renderer.dispose();
 			renderer.forceContextLoss();
-			if (renderer.domElement.parentElement)
-				renderer.domElement.parentElement.removeChild(renderer.domElement);
 		};
 	});
 
@@ -209,4 +208,6 @@
 	bind:this={host}
 	class="absolute inset-0 z-[1] {className}"
 	style={gooeyFilter ? `filter:url(#${gooeyFilter.id});` : ''}
-></div>
+>
+	<canvas bind:this={canvas}></canvas>
+</div>

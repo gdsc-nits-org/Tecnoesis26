@@ -15,16 +15,18 @@
 
 <main
 	data-sponsors-section
-	class="relative flex min-h-screen flex-col overflow-visible pb-4 lg:h-screen lg:min-h-0 lg:flex-row lg:overflow-hidden lg:pb-0"
+	class="home-sponsors relative flex min-h-screen flex-col overflow-visible pb-4 lg:h-screen lg:min-h-0 lg:flex-row lg:overflow-hidden lg:pb-0"
 >
 	<!-- Mobile / Small tablet title (Desktop has SectionRail displaying SPONSORS) -->
 	<div
-		class="flex min-h-[12vh] w-full items-center justify-center py-6 font-['Bruno_Ace'] text-[clamp(2rem,7vw,3rem)] text-white sm:text-[clamp(2.25rem,5vw,3rem)] md:text-[clamp(2.5rem,4vw,3.25rem)] lg:hidden"
+		class="home-sponsors-title flex min-h-[12vh] w-full items-center justify-center py-6 font-['Bruno_Ace'] text-[clamp(2rem,7vw,3rem)] text-white sm:text-[clamp(2.25rem,5vw,3rem)] md:text-[clamp(2.5rem,4vw,3.25rem)] lg:hidden"
 	>
 		SPONSORS
 	</div>
 	<!-- Content Section (Flows naturally with standard page scroll) -->
-	<div class="flex w-full flex-1 items-center justify-center py-8 lg:w-[85vw] lg:py-12">
+	<div
+		class="home-sponsors-content flex w-full flex-1 items-center justify-center py-8 lg:w-[85vw] lg:py-12"
+	>
 		<div class="w-full px-4 lg:w-[90%]">
 			{#if sponsors.length}
 				<div class="flex w-full flex-wrap items-center justify-center gap-4 py-4 sm:gap-6 lg:gap-8">
@@ -188,6 +190,21 @@
 			.sponsor-track {
 				animation-play-state: paused;
 			}
+		}
+	}
+
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.home-sponsors {
+			min-height: 88svh;
+		}
+
+		.home-sponsors-title {
+			min-height: 8svh;
+			padding-block: 1rem;
+		}
+
+		.home-sponsors-content {
+			padding-block: 1rem;
 		}
 	}
 </style>

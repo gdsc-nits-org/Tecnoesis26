@@ -6,7 +6,6 @@
 	let category = $state<GalleryCategory>('All moments');
 	let selectedId = $state<number | null>(null);
 	let viewer: HTMLDialogElement;
-	let touchStart: { x: number; y: number } | null = null;
 	const featured = photos.find((photo) => photo.id === 19)!;
 	const secondFeature = photos.find((photo) => photo.id === 22)!;
 	const eventCount = new Set(photos.map((photo) => photo.title)).size;
@@ -94,27 +93,6 @@
 		}
 	}
 
-	function handleTouchEnd(event: TouchEvent) {
-		if (!touchStart || isSliding) {
-			return;
-		}
-
-		const touch = event.changedTouches[0];
-
-		if (!touch) {
-			touchStart = null;
-			return;
-		}
-
-		const dx = touch.clientX - touchStart.x;
-		const dy = touch.clientY - touchStart.y;
-
-		if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-			movePhoto(dx < 0 ? 1 : -1);
-		}
-
-		touchStart = null;
-	}
 	$effect(() => {
 		if (selectedId === null) return;
 		const previousOverflow = document.body.style.overflow;

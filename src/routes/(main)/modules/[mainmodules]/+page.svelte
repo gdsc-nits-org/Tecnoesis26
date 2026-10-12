@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	let { data } = $props();
 </script>
 
@@ -8,7 +9,9 @@
 
 <main class="module-detail" style={`--module-accent:${data.module.accent}`}>
 	<nav class="breadcrumbs" aria-label="Breadcrumb">
-		<a href="/modules">Modules</a><span aria-hidden="true">/</span><span>{data.module.name}</span>
+		<a href={resolve('/modules')}>Modules</a><span aria-hidden="true">/</span><span
+			>{data.module.name}</span
+		>
 	</nav>
 	<header class="module-heading">
 		<p class="kicker">{data.module.kicker}</p>
@@ -26,8 +29,9 @@
 			<span>SELECT A CHALLENGE <b>↘</b></span>
 		</div>
 		<div class="event-list">
-			{#each data.module.events as event, index}
-				<a class="event-card" href={`/modules/${data.module.slug}/${event.slug}`}>
+			{#each data.module.events as event, index (event.slug)}
+				<!-- eslint-disable svelte/no-navigation-without-resolve -->
+				<a class="event-card" href={`${resolve('/modules')}/${data.module.slug}/${event.slug}`}>
 					<span class="event-index">0{index + 1}</span>
 					<span class="event-copy"
 						><span class="event-label">EVENT / {data.module.name.toUpperCase()}</span><strong
@@ -36,6 +40,7 @@
 					>
 					<span class="event-arrow" aria-hidden="true">↗</span>
 				</a>
+				<!-- eslint-enable svelte/no-navigation-without-resolve -->
 			{/each}
 		</div>
 	</section>

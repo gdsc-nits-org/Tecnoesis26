@@ -10,6 +10,15 @@ describe('/home +page.server.ts load', () => {
 		vi.restoreAllMocks();
 	});
 
+	async function loadSponsors() {
+		const result = await load({
+			cookies: mockCookies
+		} as unknown as Parameters<typeof load>[0]);
+
+		if (!result || !('sponsors' in result)) throw new Error('Sponsor load returned no data');
+		return result.sponsors;
+	}
+
 	it('returns sponsors from supabase admin client', async () => {
 		const mockSponsors = [
 			{
@@ -27,13 +36,13 @@ describe('/home +page.server.ts load', () => {
 			from: vi.fn().mockReturnValue(mockQuery)
 		};
 
-		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(mockClient as any);
+		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(
+			mockClient as unknown as ReturnType<typeof supabaseModule.getSupabaseAdminClient>
+		);
 
-		const result = (await load({
-			cookies: mockCookies
-		} as any)) as { sponsors: any[] };
+		const sponsors = await loadSponsors();
 
-		expect(result.sponsors).toEqual(mockSponsors);
+		expect(sponsors).toEqual(mockSponsors);
 		expect(mockClient.from).toHaveBeenCalledWith('sponsors');
 		expect(mockQuery.select).toHaveBeenCalledWith('sponsor_name, sponsor_img');
 	});
@@ -54,13 +63,13 @@ describe('/home +page.server.ts load', () => {
 			from: vi.fn().mockReturnValue(mockQuery)
 		};
 
-		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(mockClient as any);
+		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(
+			mockClient as unknown as ReturnType<typeof supabaseModule.getSupabaseAdminClient>
+		);
 
-		const result = (await load({
-			cookies: mockCookies
-		} as any)) as { sponsors: any[] };
+		const sponsors = await loadSponsors();
 
-		expect(result.sponsors).toEqual([
+		expect(sponsors).toEqual([
 			{ sponsor_name: 'Valid Sponsor', sponsor_img: 'https://example.com/logo.png' }
 		]);
 	});
@@ -83,13 +92,13 @@ describe('/home +page.server.ts load', () => {
 			from: vi.fn().mockReturnValue(mockQuery)
 		};
 
-		vi.spyOn(supabaseModule, 'tryGetSupabaseServerClient').mockReturnValue(mockClient as any);
+		vi.spyOn(supabaseModule, 'tryGetSupabaseServerClient').mockReturnValue(
+			mockClient as unknown as ReturnType<typeof supabaseModule.tryGetSupabaseServerClient>
+		);
 
-		const result = (await load({
-			cookies: mockCookies
-		} as any)) as { sponsors: any[] };
+		const sponsors = await loadSponsors();
 
-		expect(result.sponsors).toEqual(mockSponsors);
+		expect(sponsors).toEqual(mockSponsors);
 	});
 
 	it('returns empty sponsors array on supabase query error', async () => {
@@ -102,13 +111,13 @@ describe('/home +page.server.ts load', () => {
 			from: vi.fn().mockReturnValue(mockQuery)
 		};
 
-		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(mockClient as any);
+		vi.spyOn(supabaseModule, 'getSupabaseAdminClient').mockReturnValue(
+			mockClient as unknown as ReturnType<typeof supabaseModule.getSupabaseAdminClient>
+		);
 
-		const result = (await load({
-			cookies: mockCookies
-		} as any)) as { sponsors: any[] };
+		const sponsors = await loadSponsors();
 
-		expect(result.sponsors).toEqual([]);
+		expect(sponsors).toEqual([]);
 	});
 
 	it('returns empty sponsors array when no supabase client is available', async () => {
@@ -117,10 +126,8 @@ describe('/home +page.server.ts load', () => {
 		});
 		vi.spyOn(supabaseModule, 'tryGetSupabaseServerClient').mockReturnValue(null);
 
-		const result = (await load({
-			cookies: mockCookies
-		} as any)) as { sponsors: any[] };
+		const sponsors = await loadSponsors();
 
-		expect(result.sponsors).toEqual([]);
+		expect(sponsors).toEqual([]);
 	});
 });

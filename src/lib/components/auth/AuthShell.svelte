@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import './auth.css';
 
@@ -16,13 +15,6 @@
 	let { title, description = '', mode = 'login', compact = false, children }: Props = $props();
 
 	let headingId = $derived(`auth-${mode}-title`);
-	let prompt = $derived(
-		mode === 'login'
-			? { text: "Don't have an account?", action: 'Sign up', href: resolve('/signup') }
-			: mode === 'signup'
-				? { text: 'Already have an account?', action: 'Log in', href: resolve('/login') }
-				: { text: 'Remember your password?', action: 'Log in', href: resolve('/login') }
-	);
 </script>
 
 <div class:auth-shell--compact={compact} class="auth-shell">

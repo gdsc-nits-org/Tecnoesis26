@@ -25,6 +25,7 @@
 	}: Props = $props();
 
 	let mountRef = $state<HTMLDivElement | null>(null);
+	let canvas: HTMLCanvasElement;
 	let material: THREE.ShaderMaterial | null = null;
 
 	const vertexShader = /* glsl */ `
@@ -182,9 +183,8 @@ void main() {
 		const camera = new THREE.OrthographicCamera();
 		camera.position.z = 1;
 
-		const renderer = new THREE.WebGLRenderer({ alpha: true });
+		const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
 		renderer.setClearColor(0x000000, 0);
-		mountRef.appendChild(renderer.domElement);
 
 		const geo = new THREE.PlaneGeometry(1, 1);
 		material = new THREE.ShaderMaterial({
@@ -268,9 +268,6 @@ void main() {
 			ro.disconnect();
 			document.removeEventListener('mousemove', onPointerMove);
 			document.removeEventListener('pointermove', onPointerMove);
-			if (mountRef && mountRef.contains(renderer.domElement)) {
-				mountRef.removeChild(renderer.domElement);
-			}
 			geo.dispose();
 			material?.dispose();
 			material = null;
@@ -280,4 +277,6 @@ void main() {
 	});
 </script>
 
-<div bind:this={mountRef} class="h-full w-full {className}"></div>
+<div bind:this={mountRef} class="h-full w-full {className}">
+	<canvas bind:this={canvas}></canvas>
+</div>

@@ -100,11 +100,14 @@
 
 <T.DirectionalLight position={[4, 2, -4]} intensity={0.4} />
 
-{#await tshirt then model}
-	{@const _shadows = configureShadows(model.scene)}
-	{@const _material = configureMaterial(model.scene)}
+{#await $tshirt then model}
+	{#if model}
+		{@const modelScene = model.scene}
+		{configureShadows(modelScene)}
+		{configureMaterial(modelScene)}
 
-	<T.Group position={[0, y, 0]} rotation={[swayZ, rotation + swayX, 0]}>
-		<T is={model.scene} scale={0.4} />
-	</T.Group>
+		<T.Group position={[0, y, 0]} rotation={[swayZ, rotation + swayX, 0]}>
+			<T is={modelScene} scale={0.4} />
+		</T.Group>
+	{/if}
 {/await}

@@ -11,13 +11,14 @@ Title: Tshirt
 	import type { Snippet } from 'svelte';
 	import { T } from '@threlte/core';
 	import { useGltf, useDraco } from '@threlte/extras';
+	import type { Group } from 'three';
 
 	type Props = {
 		fallback?: Snippet;
 		error?: Snippet<[{ error: unknown }]>;
-		children?: Snippet<[{ ref: any }]>;
-		ref?: any;
-		[key: string]: any;
+		children?: Snippet<[{ ref: Group | undefined }]>;
+		ref?: Group;
+		[key: string]: unknown;
 	};
 
 	let { fallback, error, children, ref = $bindable(), ...props }: Props = $props();
@@ -28,15 +29,17 @@ Title: Tshirt
 </script>
 
 <T.Group bind:ref dispose={false} {...props}>
-	{#await gltf}
+	{#await $gltf}
 		{@render fallback?.()}
 	{:then gltf}
-		<T.Mesh
-			geometry={gltf.nodes.Object_4.geometry}
-			material={gltf.materials.FABRIC_1_FRONT_4193}
-			rotation={[Math.PI / 2, 0, 0]}
-			scale={0.04}
-		/>
+		{#if gltf}
+			<T.Mesh
+				geometry={gltf.nodes.Object_4.geometry}
+				material={gltf.materials.FABRIC_1_FRONT_4193}
+				rotation={[Math.PI / 2, 0, 0]}
+				scale={0.04}
+			/>
+		{/if}
 	{:catch err}
 		{@render error?.({ error: err })}
 	{/await}

@@ -26,7 +26,7 @@
 </script>
 
 <main
-	class="flex min-h-[100svh] min-h-screen w-full flex-col items-center justify-center gap-4 px-4 py-6 sm:px-6 md:flex-row md:gap-0 md:px-8"
+	class="merch-home flex min-h-[100svh] min-h-screen w-full flex-col items-center justify-center gap-4 px-4 py-6 sm:px-6 md:flex-row md:gap-0 md:px-8"
 >
 	<div
 		class="merch-stage relative flex aspect-square w-full max-w-[min(74svh,100%)] shrink-0 items-center justify-center md:w-[min(54vw,78svh)] md:max-w-[54vw]"
@@ -93,6 +93,22 @@
 	@media (prefers-reduced-motion: reduce) {
 		.merch-glow {
 			animation: none;
+		}
+	}
+
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.merch-home {
+			min-height: 88svh;
+		}
+
+		.merch-home .merch-stage {
+			max-width: min(44svh, 100%);
+		}
+	}
+
+	@media (max-width: 600px) and (orientation: portrait) {
+		.merch-home .merch-stage {
+			max-width: min(31svh, 100%);
 		}
 	}
 </style>

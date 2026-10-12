@@ -174,7 +174,7 @@
 	- lg+     (1024px +)  : desktop layout, sizes grow smoothly on large screens
 -->
 <div
-	class="relative min-h-screen overflow-hidden text-white max-md:min-h-[100dvh]"
+	class="hero-home relative min-h-screen overflow-hidden text-white max-md:min-h-[100dvh]"
 	class:about-active={currentPage >= 1}
 	role="presentation"
 	onpointermove={handlePointerMove}
@@ -187,19 +187,21 @@
 	-->
 	<div
 		class="retro-text pointer-events-none fixed bottom-[-4vh] left-[1vw] z-[1] origin-bottom-left font-paused text-[35vw] leading-[0.72] tracking-normal whitespace-nowrap text-white/[0.17] uppercase will-change-transform select-none [--retro-x:-190vw] [--retro-y:-90vh] max-md:top-[39dvh] max-md:bottom-auto max-md:left-[1vw] max-md:w-screen max-md:origin-top-left max-md:text-[63vw] max-md:leading-[1.24] max-md:whitespace-normal max-md:[--retro-x:-300vw] max-md:[--retro-y:-83dvh]"
+		class:invisible={currentPage === 0}
 		style={`transform: translate3d(calc(var(--retro-x) * ${retroProgress}), calc(var(--retro-y) * ${retroProgress}), 0) scaleY(0.82)`}
 		aria-hidden="true"
 	>
 		Retro-Futurism
 	</div>
 
-	<header class="relative z-20 box-border flex w-full items-center gap-8 px-4 pt-7">
+	<header class="box-border flex w-full items-center gap-8 px-4 pt-7">
 		<div
-			class="hero-logo absolute top-[0.6rem] left-1/2 z-[5] flex w-[min(52vw,760px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-[4dvh] max-[900px]:w-[min(46vw,36dvh)] max-[900px]:max-w-none max-md:top-[10.5dvh] max-md:w-[min(97vw,calc(50dvh_-_18px))] max-md:max-w-none"
+			class="hero-logo absolute top-1/2 left-1/2 z-[5] flex w-[min(64vw,50dvh,880px)] max-w-[calc(100vw-2rem)] items-center justify-center transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none max-[900px]:top-1/2 max-[900px]:w-[min(60vw,52dvh)] max-[900px]:max-w-none max-md:top-1/2 max-md:w-[min(86vw,58dvh)] max-md:max-w-none"
 			class:opacity-0={currentPage >= 1}
+			class:invisible={currentPage >= 1}
 			class:pointer-events-none={currentPage >= 1}
 			aria-label="Tecnoesis home"
-			style={`transform: translate3d(calc(-50% + ${logoX}px), ${logoY}px, 0)`}
+			style={`transform: translate3d(calc(-50% + ${logoX}px), calc(-50% + ${logoY}px), 0)`}
 		>
 			<div
 				class="pointer-events-none absolute inset-[-22%_-12%] z-0 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(142,48,210,0.44)_0%,rgba(82,24,160,0.25)_38%,rgba(44,14,104,0.08)_62%,transparent_78%)] blur-[26px] max-md:inset-[-30%_-20%] max-md:bg-[radial-gradient(ellipse_at_center,rgba(169,61,239,0.62)_0%,rgba(92,27,180,0.38)_40%,rgba(44,14,104,0.12)_68%,transparent_82%)] max-md:blur-[34px]"
@@ -214,7 +216,9 @@
 	</header>
 
 	<!-- On mobile the header is 1.75rem tall, so this makes <main> end exactly at the screen bottom -->
-	<div class="relative z-[2] flex min-h-[calc(100vh-110px)] max-md:min-h-[calc(100dvh_-_1.75rem)]">
+	<div
+		class="hero-content relative z-[2] flex min-h-[calc(100vh-110px)] max-md:min-h-[calc(100dvh_-_1.75rem)]"
+	>
 		<aside
 			class="relative box-border w-[15vw] max-w-[15vw] shrink-0 px-4 pb-4 max-md:hidden"
 		></aside>
@@ -281,18 +285,34 @@
 
 	@media (max-aspect-ratio: 1 / 1) {
 		.hero-logo {
-			top: 8dvh;
+			top: 50%;
 			left: 50%;
-			width: min(78vw, 42dvh);
+			width: min(86vw, 58dvh);
 			max-width: calc(100vw - 2rem);
 		}
 
 		.hero-map-button {
-			top: calc(8dvh + min(78vw, 42dvh) + 1rem);
+			top: auto;
 			right: auto;
-			bottom: auto;
+			bottom: max(17dvh, 56px);
 			left: 50%;
 			translate: -50% 0;
+		}
+	}
+
+	@media (min-aspect-ratio: 1 / 1) and (max-width: 900px) {
+		.hero-map-button {
+			bottom: 14dvh;
+		}
+	}
+
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.hero-home {
+			min-height: 88svh;
+		}
+
+		.hero-home .hero-content {
+			min-height: calc(88svh - 1.75rem);
 		}
 	}
 </style>

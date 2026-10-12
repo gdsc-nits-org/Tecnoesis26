@@ -45,15 +45,20 @@
 		content="Tecnoesis 2026, the techno-managerial fest of NIT Silchar"
 	/>
 </svelte:head>
-<div class="relative min-h-screen bg-[url('/background.jpg')] bg-cover bg-fixed bg-center">
-	<div
-		class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(22,9,36,0.12),rgba(76,26,115,0.2))]"
-		aria-hidden="true"
-	></div>
-	<div
-		class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_33%,rgba(223,164,255,0.18),transparent_25%)]"
-		aria-hidden="true"
-	></div>
+<div
+	class="relative min-h-screen bg-cover bg-fixed bg-center"
+	style:background-image={page.url.pathname === '/merch' ? 'none' : "url('/background.jpg')"}
+>
+	{#if page.url.pathname !== '/merch'}
+		<div
+			class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(22,9,36,0.12),rgba(76,26,115,0.2))]"
+			aria-hidden="true"
+		></div>
+		<div
+			class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_33%,rgba(223,164,255,0.18),transparent_25%)]"
+			aria-hidden="true"
+		></div>
+	{/if}
 	<!-- Phones: a compact centred row that sits in its own strip at the bottom.
 	     The old w-[80%] bar stretched across the screen and covered the last
 	     section. Large screens keep the vertical rail on the right. -->

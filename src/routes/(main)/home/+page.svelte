@@ -163,6 +163,17 @@
 		pointer-events: auto;
 	}
 
+	@media (max-width: 1100px) and (orientation: portrait) {
+		.home-section[data-section-name='TECNOESIS'],
+		.home-section--screen {
+			min-height: 88svh;
+		}
+
+		.home-section--about {
+			min-height: 0;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.home-section--screen {
 			opacity: 1 !important;

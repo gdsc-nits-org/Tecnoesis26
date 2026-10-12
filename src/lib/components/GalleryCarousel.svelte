@@ -16,8 +16,6 @@
 	let dragStartX = $state(0);
 	let dragOffset = $state(0);
 
-	const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
 	const currentPhoto = $derived(photos[currentIndex]);
 
 	const previousIndex = $derived(currentIndex > 0 ? currentIndex - 1 : photos.length - 1);
@@ -235,7 +233,7 @@
 
 		<!-- Thumbnail strip -->
 		<div class="thumbnail-strip" aria-label="Select photo">
-			{#each photos as photo, index}
+			{#each photos as photo, index (photo.id)}
 				<button
 					type="button"
 					class:active={index === currentIndex}
