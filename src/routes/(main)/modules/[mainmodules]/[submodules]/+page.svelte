@@ -8,12 +8,26 @@
 </svelte:head>
 
 <main class="event-detail" style={`--event-accent:${data.module.accent}`}>
+	{#if data.event.posterImage || data.event.bannerImage}
+		<img
+			class="page-backdrop"
+			src={data.event.posterImage ?? data.event.bannerImage ?? ''}
+			alt=""
+			aria-hidden="true"
+		/>
+	{/if}
+	<div class="page-backdrop-shade" aria-hidden="true"></div>
 	<nav class="breadcrumbs" aria-label="Breadcrumb">
 		<a href={resolve('/modules')}>Modules</a><span aria-hidden="true">/</span><a
 			href={resolve(`/modules/${data.module.slug}`)}>{data.module.name}</a
 		><span aria-hidden="true">/</span><span>{data.event.name}</span>
 	</nav>
 	<section class="event-hero">
+		{#if data.event.posterImage || data.event.bannerImage}
+			<div class="event-poster-frame" aria-hidden="true">
+				<img src={data.event.posterImage ?? data.event.bannerImage ?? ''} alt="" />
+			</div>
+		{/if}
 		<div class="event-orbit" aria-hidden="true"><span></span></div>
 		<p class="event-kicker">
 			{data.module.kicker} <span>·</span> EVENT {data.module.name.toUpperCase()}
@@ -22,6 +36,40 @@
 		<p class="event-summary">{data.event.description}</p>
 		<div class="event-mark"><span>TECNOESIS</span><i></i><span>2026</span></div>
 	</section>
+	{#if data.event.venue || data.event.registrationEndTime || data.event.prizeDescription || data.event.stagesDescription}
+		<section class="event-information" aria-label="Event information">
+			{#if data.event.venue}
+				<div>
+					<span>VENUE</span>
+					<p>{data.event.venue}</p>
+				</div>
+			{/if}
+			<div>
+				<span>TEAM SIZE</span>
+				<p>{data.event.minTeamSize}–{data.event.maxTeamSize} participants</p>
+			</div>
+			{#if data.event.registrationEndTime}
+				<div>
+					<span>REGISTRATION ENDS</span>
+					<p>
+						<time datetime={data.event.registrationEndTime}>{data.event.registrationEndTime}</time>
+					</p>
+				</div>
+			{/if}
+			{#if data.event.prizeDescription}
+				<div>
+					<span>PRIZES</span>
+					<p>{data.event.prizeDescription}</p>
+				</div>
+			{/if}
+			{#if data.event.stagesDescription}
+				<div>
+					<span>STAGES</span>
+					<p>{data.event.stagesDescription}</p>
+				</div>
+			{/if}
+		</section>
+	{/if}
 	<div class="event-actions">
 		<!-- eslint-disable svelte/no-navigation-without-resolve -->
 		<a
@@ -39,10 +87,35 @@
 
 <style>
 	.event-detail {
+		position: relative;
+		isolation: isolate;
 		min-height: 100vh;
 		padding: 126px clamp(20px, 9vw, 140px) 90px;
 		color: #f5edff;
 		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
+	}
+	.page-backdrop,
+	.page-backdrop-shade {
+		position: fixed;
+		z-index: -1;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+	.page-backdrop {
+		object-fit: cover;
+		opacity: 0.38;
+		filter: blur(28px);
+		transform: scale(1.08);
+	}
+	.page-backdrop-shade {
+		z-index: 0;
+		background: rgba(9, 6, 37, 0.18);
+	}
+	.event-detail > :not(.page-backdrop):not(.page-backdrop-shade) {
+		position: relative;
+		z-index: 1;
 	}
 	.breadcrumbs {
 		display: flex;
@@ -72,6 +145,35 @@
 		isolation: isolate;
 		overflow: hidden;
 	}
+	.event-poster-frame {
+		position: absolute;
+		z-index: 0;
+		top: 50%;
+		right: clamp(0px, 4vw, 60px);
+		width: clamp(220px, 36vw, 480px);
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		clip-path: polygon(
+			100% 80%,
+			50% 100%,
+			0% 80%,
+			0% 0%,
+			20% 0%,
+			30% 10%,
+			70% 10%,
+			80% 0%,
+			100% 0%
+		);
+		background: rgba(9, 6, 37, 0.2);
+		box-shadow: 0 24px 75px rgba(3, 2, 22, 0.38);
+		opacity: 0.88;
+		transform: translateY(-50%) rotate(3deg);
+	}
+	.event-poster-frame img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 	.event-orbit {
 		position: absolute;
 		z-index: -1;
@@ -96,6 +198,8 @@
 		box-shadow: 0 0 45px color-mix(in srgb, var(--event-accent), transparent 78%);
 	}
 	.event-kicker {
+		position: relative;
+		z-index: 1;
 		color: var(--event-accent);
 		font-size: 0.74rem;
 		letter-spacing: 0.1em;
@@ -115,6 +219,8 @@
 		text-shadow: 0 0 34px color-mix(in srgb, var(--event-accent), transparent 70%);
 	}
 	.event-summary {
+		position: relative;
+		z-index: 1;
 		max-width: 550px;
 		color: #e3d1f1;
 		font:
@@ -122,6 +228,8 @@
 			sans-serif;
 	}
 	.event-mark {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		align-items: center;
 		gap: 12px;
@@ -134,6 +242,29 @@
 		width: 54px;
 		height: 1px;
 		background: var(--event-accent);
+	}
+	.event-information {
+		display: grid;
+		max-width: 900px;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+		gap: 18px 28px;
+		margin: 0 0 34px;
+		padding: 24px;
+		border: 1px solid color-mix(in srgb, var(--event-accent), transparent 68%);
+		background: rgba(17, 10, 41, 0.48);
+	}
+	.event-information > div > span {
+		color: var(--event-accent);
+		font-size: 0.68rem;
+		letter-spacing: 0.1em;
+	}
+	.event-information p {
+		margin: 8px 0 0;
+		color: #e3d1f1;
+		font:
+			1rem/1.45 'Sulphur Point',
+			sans-serif;
+		white-space: pre-line;
 	}
 	.event-actions {
 		display: flex;
@@ -207,6 +338,11 @@
 		.event-orbit {
 			right: -25%;
 			opacity: 0.55;
+		}
+		.event-poster-frame {
+			right: -12%;
+			width: min(65vw, 310px);
+			opacity: 0.48;
 		}
 		.event-kicker {
 			max-width: 75%;
