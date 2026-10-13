@@ -32,7 +32,7 @@
 		navigationStartedAt = performance.now();
 		progressTimer = setInterval(() => {
 			routeProgress = Math.min(92, ((performance.now() - navigationStartedAt) / 520) * 92);
-		}, 24);
+		}, 32);
 	});
 
 	afterNavigate(() => {
@@ -99,6 +99,7 @@
 		background: #000;
 		pointer-events: auto;
 		animation: loader-enter 220ms ease-out both;
+		will-change: opacity;
 	}
 
 	.route-transition--revealing {
@@ -156,6 +157,7 @@
 		background-size: 42px 42px;
 		animation: loader-stripes 900ms linear infinite;
 		transition: transform 70ms linear;
+		will-change: transform;
 	}
 
 	.route-loader__counter {
@@ -181,6 +183,7 @@
 		filter: drop-shadow(0 0 22px rgb(167 139 250 / 55%));
 		opacity: 0;
 		pointer-events: none;
+		will-change: transform, opacity;
 	}
 
 	.route-transition__blend {
@@ -188,9 +191,10 @@
 		inset: 0;
 		z-index: 2;
 		background: rgb(0 0 0 / 0%);
-		backdrop-filter: blur(0);
+		backdrop-filter: blur(22px);
 		opacity: 0;
 		pointer-events: none;
+		will-change: opacity;
 	}
 
 	.route-transition--revealing .route-transition__logo {
@@ -234,34 +238,25 @@
 		0% {
 			opacity: 1;
 			transform: translate(-50%, -50%) scale(0.72);
-			filter: blur(0) drop-shadow(0 0 22px rgb(167 139 250 / 55%));
 		}
 		38% {
 			opacity: 0.78;
-			filter: blur(2px) drop-shadow(0 0 58px rgb(167 139 250 / 48%));
 		}
 		100% {
 			opacity: 0;
 			transform: translate(-50%, -50%) scale(30);
-			filter: blur(20px) drop-shadow(0 0 120px rgb(167 139 250 / 0%));
 		}
 	}
 
 	@keyframes blend-logo {
 		0% {
 			opacity: 0;
-			background: rgb(0 0 0 / 0%);
-			backdrop-filter: blur(0);
 		}
 		36% {
 			opacity: 0.45;
-			background: rgb(0 0 0 / 12%);
-			backdrop-filter: blur(3px);
 		}
 		100% {
 			opacity: 1;
-			background: rgb(0 0 0 / 48%);
-			backdrop-filter: blur(22px);
 		}
 	}
 
@@ -276,6 +271,7 @@
 		.route-loader,
 		.route-transition__logo,
 		.route-transition__blend,
+		.route-transition__blend::before,
 		.route-loader__bar {
 			animation-duration: 1ms;
 			transition-duration: 1ms;

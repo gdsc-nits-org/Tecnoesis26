@@ -37,7 +37,7 @@ class PortalTransitionManager {
 				clearInterval(this.progressInterval);
 				this.progressInterval = null;
 			}
-		}, 16);
+		}, 32);
 
 		this.navigationTimer = setTimeout(() => {
 			void this.navigate(targetUrl);
