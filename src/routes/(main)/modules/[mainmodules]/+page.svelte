@@ -365,6 +365,7 @@
 		width: 74%;
 		aspect-ratio: 4 / 3;
 		overflow: hidden;
+		border-radius: 12px;
 		clip-path: polygon(
 			100% 80%,
 			50% 100%,
@@ -492,6 +493,7 @@
 		overflow: hidden;
 		aspect-ratio: 4 / 3;
 		place-items: center;
+		border-radius: 12px;
 		clip-path: polygon(
 			100% 80%,
 			50% 100%,

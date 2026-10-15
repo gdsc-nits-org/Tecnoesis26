@@ -1,9 +1,46 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { onDestroy } from 'svelte';
 
 	let { data } = $props();
+	let heroMontage: HTMLDivElement;
+	let neuralArt: HTMLImageElement;
+	let pointerFrame = 0;
+	let pointerX = 0;
+	let pointerY = 0;
 
 	const number = (value: number) => String(value).padStart(2, '0');
+
+	function handleNeuralPointerMove(event: PointerEvent) {
+		if (
+			event.pointerType !== 'mouse' ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			return;
+		}
+
+		const bounds = heroMontage.getBoundingClientRect();
+		pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 22;
+		pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 22;
+
+		if (pointerFrame) return;
+		pointerFrame = requestAnimationFrame(() => {
+			neuralArt.style.setProperty('--neural-x', `${pointerX}px`);
+			neuralArt.style.setProperty('--neural-y', `${pointerY}px`);
+			pointerFrame = 0;
+		});
+	}
+
+	function resetNeuralPointer() {
+		if (pointerFrame) cancelAnimationFrame(pointerFrame);
+		pointerFrame = 0;
+		neuralArt.style.setProperty('--neural-x', '0px');
+		neuralArt.style.setProperty('--neural-y', '0px');
+	}
+
+	onDestroy(() => {
+		if (pointerFrame) cancelAnimationFrame(pointerFrame);
+	});
 </script>
 
 <svelte:head>
@@ -36,11 +73,23 @@
 				</div>
 			</div>
 
-			<div class="hero-montage" aria-hidden="true">
+			<div
+				class="hero-montage"
+				bind:this={heroMontage}
+				onpointermove={handleNeuralPointerMove}
+				onpointerleave={resetNeuralPointer}
+				aria-hidden="true"
+			>
 				<span class="montage-orbit" aria-hidden="true"></span>
 				<span class="montage-cross" aria-hidden="true">+</span>
 				<span class="montage-note">A FESTIVAL. A UNIVERSE.</span>
-				<img class="neural-art" src="/modules_bg.svg" alt="" fetchpriority="high" />
+				<img
+					class="neural-art"
+					bind:this={neuralArt}
+					src="/modules_bg.svg"
+					alt=""
+					fetchpriority="high"
+				/>
 				<span class="neural-label">TECNOESIS <i></i> 2026</span>
 				<span class="frame-note">FIND YOUR PLACE IN THE LINE-UP.</span>
 			</div>
@@ -129,6 +178,7 @@
 		min-height: 100svh;
 		color: var(--paper);
 		background:
+			linear-gradient(180deg, rgba(9, 6, 37, 0.22), rgba(9, 6, 37, 0.34)),
 			linear-gradient(180deg, rgba(22, 9, 36, 0.1), rgba(76, 26, 115, 0.2)),
 			radial-gradient(circle at 50% 33%, rgba(223, 164, 255, 0.1), transparent 25%);
 		font-family: 'BankGothic', 'Bruno Ace', sans-serif;
@@ -170,7 +220,7 @@
 	}
 	h1 {
 		margin: 30px 0 23px;
-		font-family: 'Game Paused', 'GameDemo', sans-serif;
+		font-family: 'Orbitron', sans-serif;
 		font-size: clamp(54px, 7vw, 104px);
 		font-weight: 500;
 		line-height: 0.98;
@@ -270,6 +320,7 @@
 		position: relative;
 		min-width: 0;
 		height: clamp(420px, 42vw, 595px);
+		overflow: hidden;
 	}
 	.montage-orbit {
 		position: absolute;
@@ -313,10 +364,23 @@
 		max-width: none;
 		height: 118%;
 		object-fit: contain;
-		opacity: 0.82;
-		filter: drop-shadow(0 0 34px rgba(167, 139, 250, 0.42));
+		opacity: 1;
+		mix-blend-mode: screen;
+		filter: brightness(1.18) saturate(1.12) drop-shadow(0 0 42px rgba(167, 139, 250, 0.54));
 		pointer-events: none;
-		transform: translate(-50%, -50%);
+		transform: translate(calc(-50% + var(--neural-x, 0px)), calc(-50% + var(--neural-y, 0px)));
+		transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+		animation: neural-breathe 5s ease-in-out infinite;
+		will-change: transform, opacity;
+	}
+	@keyframes neural-breathe {
+		0%,
+		100% {
+			opacity: 0.88;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 	.neural-label {
 		position: absolute;
@@ -427,6 +491,7 @@
 		position: relative;
 		overflow: hidden;
 		aspect-ratio: 4/3;
+		border-radius: 20px;
 		clip-path: polygon(
 			100% 80%,
 			50% 100%,
@@ -659,18 +724,39 @@
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
+	@media (max-width: 820px) {
+		.modules-wrap {
+			width: calc(100% - 64px);
+		}
+		.modules-hero {
+			grid-template-columns: 1fr;
+			gap: 12px;
+			min-height: auto;
+			padding: 145px 0 48px;
+		}
+		.hero-copy {
+			position: relative;
+			z-index: 2;
+		}
+		.hero-montage {
+			width: min(100%, 560px);
+			height: clamp(340px, 65vw, 460px);
+			margin: 8px auto 0;
+		}
+		.neural-art {
+			width: 130%;
+			height: 120%;
+		}
+		.montage-note {
+			right: 0;
+		}
+	}
 	@media (max-width: 700px) {
 		.modules-wrap {
 			width: calc(100% - 40px);
 		}
 		.modules-hero {
-			grid-template-columns: 1fr;
-			gap: 12px;
 			padding: 120px 0 44px;
-		}
-		.hero-copy {
-			position: relative;
-			z-index: 2;
 		}
 		h1 {
 			margin: 24px 0 18px;
@@ -758,6 +844,10 @@
 	@media (max-width: 420px) {
 		.modules-wrap {
 			width: calc(100% - 32px);
+		}
+		h1 {
+			font-size: clamp(40px, 12vw, 50px);
+			letter-spacing: 0.01em;
 		}
 		.eyebrow {
 			gap: 7px;

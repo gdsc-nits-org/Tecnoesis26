@@ -71,14 +71,11 @@
 		</section>
 	{/if}
 	<div class="event-actions">
-		<!-- eslint-disable svelte/no-navigation-without-resolve -->
-		<a
-			class="register-link"
-			href={`${resolve('/modules')}/${data.module.slug}/${data.event.slug}/participate`}
-		>
-			REGISTER NOW <span aria-hidden="true">↗</span>
-		</a>
-		<!-- eslint-enable svelte/no-navigation-without-resolve -->
+		{#if data.event.registrationLink}
+			<a class="register-link" href={data.event.registrationLink}>
+				REGISTER NOW <span aria-hidden="true">↗</span>
+			</a>
+		{/if}
 		<a class="back-link" href={resolve(`/modules/${data.module.slug}`)}
 			><span aria-hidden="true">←</span> BACK TO {data.module.name.toUpperCase()} EVENTS</a
 		>

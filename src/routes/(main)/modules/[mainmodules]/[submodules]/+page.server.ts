@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const { data: eventRow, error: eventError } = await supabase
 		.from('events')
 		.select(
-			'event_id, name, description, venue, min_team_size, max_team_size, registration_end_time, prize_description, stages_description, poster_image, banner_image'
+			'event_id, name, description, venue, min_team_size, max_team_size, registration_end_time, prize_description, stages_description, poster_image, banner_image, registration_link'
 		)
 		.eq('module_id', moduleRow.module_id)
 		.eq('event_id', params.submodules)
@@ -50,7 +50,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			prizeDescription: eventRow.prize_description,
 			stagesDescription: eventRow.stages_description,
 			posterImage: eventRow.poster_image,
-			bannerImage: eventRow.banner_image
+			bannerImage: eventRow.banner_image,
+			registrationLink: eventRow.registration_link
 		}
 	};
 };
