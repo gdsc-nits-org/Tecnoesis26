@@ -1,22 +1,173 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { resolve } from '$app/paths';
 	import GalleryPhoto from '$lib/components/GalleryPhoto.svelte';
-	import { photos } from '$lib/data/gallery';
+	import { photos, type GalleryPhoto as GalleryPhotoType } from '$lib/data/gallery';
 
 	const sparkArchive = photos.filter((photo) => photo.title === 'Spark Night');
-	const backgroundVideoPath = '/videos/spark-night-background.mp4';
+	const artistTracks = [
+		{ title: 'Ek Tukda Dhoop', film: 'Thappad' },
+		{ title: 'Dil', film: 'Ek Villain Returns' },
+		{ title: 'Hua Main', film: 'Animal' },
+		{ title: 'Tum Se', film: 'Teri Baaton Mein Aisa Uljha Jiya' }
+	];
+	const backgroundVideoPath = '/videos/spark-night.mp4';
 	let pageRoot: HTMLElement;
 	let backgroundVideo: HTMLVideoElement;
+	let photoViewer: HTMLDialogElement;
+	let activeSparkIndex = $state(0);
+	let wheelTurn = $state(0);
+	let selectedPhoto = $state<GalleryPhotoType | null>(null);
+	let portraitFlipped = $state(false);
+	let selectedTrackIndex = $state(0);
+	let trackRotationPaused = $state(false);
+	let progressVersion = $state(0);
+	let trackTimer = 0;
+	let photoTimer = 0;
+	let photoRotationPaused = $state(false);
+	const selectedTrack = $derived(artistTracks[selectedTrackIndex]);
+
+	function selectArtistTrack(index: number) {
+		selectedTrackIndex = index;
+		progressVersion += 1;
+	}
+
+	function advanceArtistTrack() {
+		selectedTrackIndex = (selectedTrackIndex + 1) % artistTracks.length;
+		progressVersion += 1;
+	}
+	let cursorTrail = $state<{ id: number; x: number; y: number; angle: number }[]>([]);
+	let nextTrailId = 0;
+	let lastTrailPoint = { x: 0, y: 0 };
+
+	function showPreviousSparkPhoto() {
+		wheelTurn -= 1;
+		activeSparkIndex = (activeSparkIndex - 1 + sparkArchive.length) % sparkArchive.length;
+	}
+
+	function showNextSparkPhoto() {
+		wheelTurn += 1;
+		activeSparkIndex = (activeSparkIndex + 1) % sparkArchive.length;
+	}
+
+	async function openSparkPhoto(index: number) {
+		wheelTurn += (index - activeSparkIndex + sparkArchive.length) % sparkArchive.length;
+		activeSparkIndex = index;
+		selectedPhoto = sparkArchive[index];
+		await tick();
+		photoViewer.showModal();
+	}
+
+	function closeSparkPhoto() {
+		photoViewer.close();
+		selectedPhoto = null;
+	}
+
+	function moveViewerPhoto(direction: 1 | -1) {
+		if (direction === 1) showNextSparkPhoto();
+		else showPreviousSparkPhoto();
+		selectedPhoto = sparkArchive[activeSparkIndex];
+	}
+
+	function handleViewerKeys(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			closeSparkPhoto();
+		} else if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			moveViewerPhoto(1);
+		} else if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			moveViewerPhoto(-1);
+		}
+	}
+
+	function updateIntroProgress() {
+		const fadeDistance = Math.max(window.innerHeight * 1.65, 1);
+		const progress = Math.min(1, Math.max(0, window.scrollY / fadeDistance));
+		pageRoot.style.setProperty('--intro-progress', String(progress));
+	}
+
+	function scrollIntoContent(event: MouseEvent) {
+		event.preventDefault();
+		document.getElementById('spark-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
 
 	onMount(() => {
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-		if (reduceMotion.matches) {
-			backgroundVideo.pause();
-			return;
-		}
+		if (reduceMotion.matches) backgroundVideo.pause();
+		trackTimer = window.setInterval(() => {
+			if (!trackRotationPaused) advanceArtistTrack();
+		}, 5000);
+		photoTimer = window.setInterval(() => {
+			if (!photoRotationPaused && !photoViewer.open && sparkArchive.length > 1) {
+				showNextSparkPhoto();
+			}
+		}, 5000);
 
-		if (!('IntersectionObserver' in window)) return;
+		let previousScrollY = window.scrollY;
+
+		const handlePointerMove = (event: PointerEvent) => {
+			if (reduceMotion.matches || (event.pointerType !== 'mouse' && event.pointerType !== 'pen')) return;
+			pageRoot.style.setProperty('--pointer-x', `${event.clientX}px`);
+			pageRoot.style.setProperty('--pointer-y', `${event.clientY}px`);
+			pageRoot.classList.add('pointer-active');
+
+			const deltaX = event.clientX - lastTrailPoint.x;
+			const deltaY = event.clientY - lastTrailPoint.y;
+			if (Math.hypot(deltaX, deltaY) < 22) return;
+
+			const trailId = nextTrailId++;
+			cursorTrail = [
+				...cursorTrail.slice(-5),
+				{
+					id: trailId,
+					x: event.clientX,
+					y: event.clientY,
+					angle: (Math.atan2(deltaY, deltaX) * 180) / Math.PI
+				}
+			];
+			lastTrailPoint = { x: event.clientX, y: event.clientY };
+			window.setTimeout(() => {
+				cursorTrail = cursorTrail.filter((point) => point.id !== trailId);
+			}, 560);
+		};
+
+		const handlePointerLeave = (event: PointerEvent) => {
+			if (!event.relatedTarget) pageRoot.classList.remove('pointer-active');
+		};
+
+		const handleScroll = () => {
+			const scrollY = window.scrollY;
+			updateIntroProgress();
+			if (Math.abs(scrollY - previousScrollY) < 2) return;
+			pageRoot.classList.add('is-scrolling');
+			pageRoot.classList.toggle('scrolling-down', scrollY > previousScrollY);
+			pageRoot.classList.toggle('scrolling-up', scrollY < previousScrollY);
+			previousScrollY = scrollY;
+			window.clearTimeout(scrollEndTimer);
+			scrollEndTimer = window.setTimeout(
+				() => pageRoot.classList.remove('is-scrolling', 'scrolling-down', 'scrolling-up'),
+				1100
+			);
+		};
+
+		let scrollEndTimer = 0;
+		updateIntroProgress();
+		window.addEventListener('pointermove', handlePointerMove, { passive: true });
+		window.addEventListener('pointerout', handlePointerLeave, { passive: true });
+		window.addEventListener('scroll', handleScroll, { passive: true });
+
+		if (reduceMotion.matches || !('IntersectionObserver' in window)) {
+			return () => {
+				window.removeEventListener('pointermove', handlePointerMove);
+				window.removeEventListener('pointerout', handlePointerLeave);
+				window.removeEventListener('scroll', handleScroll);
+				window.clearTimeout(scrollEndTimer);
+				window.clearInterval(trackTimer);
+				window.clearInterval(photoTimer);
+			};
+		}
 
 		const observer = new IntersectionObserver(
 			(entries, currentObserver) => {
@@ -34,7 +185,15 @@
 			observer.observe(element);
 		});
 
-		return () => observer.disconnect();
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('pointermove', handlePointerMove);
+			window.removeEventListener('pointerout', handlePointerLeave);
+			window.removeEventListener('scroll', handleScroll);
+			window.clearTimeout(scrollEndTimer);
+			window.clearInterval(trackTimer);
+			window.clearInterval(photoTimer);
+		};
 	});
 </script>
 
@@ -47,22 +206,38 @@
 </svelte:head>
 
 <main class="spark-page" id="spark-top" bind:this={pageRoot}>
-	<div class="spark-video-layer" aria-hidden="true">
+	<section class="spark-intro" aria-label="Spark Night introduction">
 		<video
 			bind:this={backgroundVideo}
-			data-source={backgroundVideoPath}
+			src={backgroundVideoPath}
 			autoplay
 			muted
 			loop
 			playsinline
-			preload="auto"
+			preload="metadata"
+			aria-hidden="true"
 		></video>
-		<div class="spark-video-shade"></div>
+		<div class="intro-video-shade" aria-hidden="true"></div>
+		<a
+			class="intro-scroll-cue"
+			href="#spark-content"
+			aria-label="Scroll to Spark Night details"
+			onclick={scrollIntoContent}
+		>
+			<i aria-hidden="true">↓</i>
+		</a>
+	</section>
+	<div class="intro-scroll-space" aria-hidden="true"></div>
+	<div class="cursor-trail" aria-hidden="true">
+		{#each cursorTrail as point (point.id)}
+			<span style={`--trail-x: ${point.x}px; --trail-y: ${point.y}px; --trail-angle: ${point.angle}deg`}></span>
+		{/each}
 	</div>
+	<div class="cursor-warp" aria-hidden="true"></div>
 	<div class="spark-backdrop" aria-hidden="true"></div>
 	<div class="spark-grain" aria-hidden="true"></div>
 
-	<div class="spark-wrap">
+	<div class="spark-wrap" id="spark-content">
 		<section class="spark-hero" aria-labelledby="spark-title">
 			<div class="hero-copy" data-reveal>
 				<p class="eyebrow">
@@ -71,26 +246,32 @@
 				</p>
 
 				<p class="hero-index">ONE NIGHT. ALL THE FEELING.</p>
-				<h1 id="spark-title">SPARK<span class="title-star" aria-hidden="true">✳</span></h1>
-				<p class="artist-intro">SPARK NIGHT <span>·</span> LIVE AT TECNOESIS</p>
-				<p class="artist-name">Raghav <em>Chaitanya</em></p>
+				<h1 id="spark-title" class="performance-title" aria-label="Spark Night">
+					<span class="spark-title-top" aria-hidden="true">
+						{#each ['S', 'P', 'A', 'R', 'K'] as letter, index (letter)}
+							<span class="spark-title-letter" style={`--letter-index: ${index}`}>{letter}</span>
+						{/each}
+						<span class="title-star">✳</span>
+					</span>
+					<span class="night-title-word" aria-hidden="true">NIGHT</span>
+				</h1>
+				<p class="artist-intro">LIVE AT TECNOESIS</p>
 				<p class="hero-description">
-					An evening of live music, bright lights, and a crowd singing together. The next Spark
+					An evening of live music, bright lights, and a crowd singing together. The Spark
 					night is getting ready to make some noise.
 				</p>
 
 				<div class="hero-actions">
 					<a class="archive-cta" href="#spark-archive">
 						<span>Revisit the last Spark nights</span>
-						<span aria-hidden="true">↓</span>
+						<span aria-hidden="true">↗</span>
 					</a>
-					<span class="registration-note">REGISTRATION DETAILS COMING SOON</span>
 				</div>
 
 				<div class="hero-facts" aria-label="Spark event details">
 					<div>
 						<span>DATE</span>
-						<strong>TO BE ANNOUNCED</strong>
+						<strong>01 November</strong>
 					</div>
 					<div>
 						<span>VENUE</span>
@@ -112,21 +293,62 @@
 				<div class="portrait-orbit portrait-orbit--outer" aria-hidden="true"></div>
 				<div class="portrait-orbit portrait-orbit--inner" aria-hidden="true"></div>
 				<div class="portrait-glow" aria-hidden="true"></div>
-				<div class="portrait-card">
-					<div class="portrait-topline">
-						<span>FEATURED ARTIST</span>
-						<span>RC <i></i> 01</span>
-					</div>
-					<div class="portrait-placeholder">
-						<span class="portrait-initials" aria-hidden="true">RC</span>
-						<span class="portrait-placeholder-label">ARTIST PORTRAIT</span>
-						<span class="portrait-placeholder-note">IMAGE TO BE ADDED</span>
-					</div>
-					<div class="portrait-caption">
-						<span>RAGHAV CHAITANYA</span>
-						<span>LIVE AT SPARK NIGHT <b aria-hidden="true">↗</b></span>
-					</div>
-				</div>
+				<button
+					class="portrait-card"
+					class:portrait-card-flipped={portraitFlipped}
+					type="button"
+					aria-label={portraitFlipped
+						? 'Show Raghav Chaitanya portrait'
+						: 'Show Spark Night event details'}
+					aria-pressed={portraitFlipped}
+					onclick={() => (portraitFlipped = !portraitFlipped)}
+				>
+					<span class="portrait-card-inner">
+						<span class="portrait-face portrait-face-front">
+							<span class="portrait-topline">
+								<span>FEATURED ARTIST</span>
+								<span>RC <i></i> 01</span>
+							</span>
+							<span class="portrait-image-frame">
+								<img
+									class="portrait-image"
+									src="/images/raghav-chaitanya.jpg"
+									alt="Raghav Chaitanya performing live at Spark Night"
+									width="2044"
+									height="2563"
+									loading="eager"
+									fetchpriority="high"
+								/>
+								<span class="portrait-image-shade" aria-hidden="true"></span>
+								<span class="portrait-image-sweep" aria-hidden="true"></span>
+							</span>
+							<span class="portrait-caption">
+								<span class="portrait-artist-name">RAGHAV CHAITANYA</span>
+								<span>LIVE AT SPARK NIGHT <b aria-hidden="true">↗</b></span>
+							</span>
+						</span>
+						<span class="portrait-face portrait-face-back" aria-hidden={!portraitFlipped}>
+							<span class="portrait-topline">
+								<span>SPARK NIGHT / 2026</span>
+								<span>01 <i></i> NOV</span>
+							</span>
+							<span class="portrait-back-content">
+								<span class="portrait-back-kicker">RAGHAV CHAITANYA</span>
+								<strong>See you at<br />Spark Night.</strong>
+								<span class="portrait-back-rule"></span>
+								<span class="portrait-back-details">
+									<span><i>DATE</i>01 NOVEMBER 2026</span>
+									<span><i>VENUE</i>NIT SILCHAR</span>
+									<span><i>LOCATION</i>ASSAM, INDIA</span>
+								</span>
+							</span>
+							<span class="portrait-caption">
+								<span class="portrait-artist-name">TECNOESIS 2026</span>
+								<span>SEE YOU THERE <b aria-hidden="true">↗</b></span>
+							</span>
+						</span>
+					</span>
+				</button>
 				<span class="stage-coordinate stage-coordinate--top">26° 43′ N</span>
 				<span class="stage-coordinate stage-coordinate--bottom">LIVE / NIT SILCHAR</span>
 				<span class="stage-cross" aria-hidden="true">+</span>
@@ -139,18 +361,67 @@
 			<span>MEET US IN THE CROWD&nbsp; ↘</span>
 		</div>
 
-		<section class="night-note" aria-labelledby="night-note-title" data-reveal>
+		<section class="night-note" aria-label="Raghav Chaitanya song highlights" data-reveal>
 			<div class="section-index"><span>01</span><i></i> THE NIGHT</div>
-			<div class="night-note-copy">
-				<h2 id="night-note-title">A little louder.<br /><em>A lot more alive.</em></h2>
-				<p>
-					Spark brings the festival together for one unforgettable live performance. Expect a
-					charged atmosphere, familiar voices, and a night that stays with you long after the lights
-					go down.
-				</p>
-			</div>
-			<div class="night-note-stamp" aria-hidden="true">
-				<span>TECNOESIS</span><strong>SPARK NIGHT</strong><span>EST. NIT SILCHAR</span>
+			<div class="spark-guitar-player" aria-label="Raghav Chaitanya songs">
+				<div class="guitar-art" aria-hidden="true">
+					<span class="guitar-string guitar-string--one"></span>
+					<span class="guitar-string guitar-string--two"></span>
+					<span class="guitar-string guitar-string--three"></span>
+					<span class="guitar-string guitar-string--four"></span>
+					<span class="guitar-string guitar-string--five"></span>
+					<span class="guitar-neck"></span>
+					<span class="guitar-fret guitar-fret--one"></span>
+					<span class="guitar-fret guitar-fret--two"></span>
+					<span class="guitar-fret guitar-fret--three"></span>
+					<span class="guitar-fret guitar-fret--four"></span>
+					<span class="guitar-body"><i></i></span>
+				</div>
+				<div class="song-carousel" aria-live="polite">
+					<span class="song-count">{String(selectedTrackIndex + 1).padStart(2, '0')} / {String(artistTracks.length).padStart(2, '0')}</span>
+						{#key selectedTrackIndex}
+						<a
+							class="song-slide"
+							href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`Raghav Chaitanya ${selectedTrack.title} official`)}`}
+							target="_blank"
+							rel="noreferrer"
+							aria-label={`Open ${selectedTrack.title} by Raghav Chaitanya on YouTube`}
+						>
+							<strong>{selectedTrack.title}</strong>
+							<span>{selectedTrack.film}</span>
+							<i aria-hidden="true">↗</i>
+						</a>
+					{/key}
+					<div class="song-carousel-controls">
+						{#key progressVersion}
+							<div class="song-progress" aria-hidden="true">
+								<span class:progress-paused={trackRotationPaused}></span>
+							</div>
+						{/key}
+						<button
+							class="song-pause"
+							type="button"
+							aria-label={trackRotationPaused ? 'Resume song rotation' : 'Pause song rotation'}
+							aria-pressed={trackRotationPaused}
+							onclick={() => {
+								trackRotationPaused = !trackRotationPaused;
+								progressVersion += 1;
+							}}
+						>{trackRotationPaused ? '▶' : 'Ⅱ'}</button>
+					</div>
+					<div class="song-track-dots" aria-label="Select song">
+						{#each artistTracks as track, index (track.title)}
+							<button
+								class:song-dot-active={selectedTrackIndex === index}
+								type="button"
+								aria-label={`Show ${track.title}`}
+								aria-pressed={selectedTrackIndex === index}
+								onclick={() => selectArtistTrack(index)}
+							></button>
+						{/each}
+					</div>
+					<span class="song-track-hint">SELECT A TRACK TO FIND IT ON YOUTUBE</span>
+				</div>
 			</div>
 		</section>
 
@@ -174,24 +445,55 @@
 			</div>
 
 			{#if sparkArchive.length}
-				<div class="archive-grid">
+				<div class="archive-roulette" aria-label="Spark Night photo carousel" aria-roledescription="carousel">
+					<div class="roulette-stage">
+						<div class="roulette-wheel" style={`--wheel-rotation: ${wheelTurn * 90}deg`} aria-hidden="true"></div>
 					{#each sparkArchive as photo, index (photo.id)}
-						<figure
-							class:archive-featured={index === 0}
-							data-reveal
-							style={`--reveal-delay: ${Math.min(index, 3) * 80}ms`}
+						{@const offset = ((index - activeSparkIndex + sparkArchive.length / 2) % sparkArchive.length) - sparkArchive.length / 2}
+						{@const wheelAngle = (index - wheelTurn) * 90}
+						<button
+							class="roulette-card"
+							class:roulette-active={offset === 0}
+							class:roulette-previous={offset === -1}
+							class:roulette-next={offset === 1}
+							class:roulette-far={Math.abs(offset) > 1}
+							aria-label={`Show photo ${index + 1} of ${sparkArchive.length}: ${photo.title}`}
+							aria-pressed={activeSparkIndex === index}
+							style={`--wheel-angle: ${wheelAngle}deg; --wheel-counter-angle: ${-wheelAngle}deg;`}
+							onclick={() => openSparkPhoto(index)}
 						>
 							<div class="archive-image">
-								<GalleryPhoto {photo} />
+								<GalleryPhoto {photo} eager={activeSparkIndex === index} />
 								<span class="photo-count">{String(index + 1).padStart(2, '0')}</span>
 								<span class="photo-corner" aria-hidden="true">↗</span>
 							</div>
-							<figcaption>
+							<span class="roulette-caption">
 								<span>{photo.title}</span>
 								<time datetime="2026-03-13">{photo.date}</time>
-							</figcaption>
-						</figure>
+							</span>
+						</button>
 					{/each}
+					</div>
+					<div class="roulette-controls">
+						<button class="roulette-arrow" aria-label="Previous Spark photo" onclick={showPreviousSparkPhoto}>
+							<span aria-hidden="true">←</span>
+						</button>
+						<p aria-live="polite">
+							<span>{String(activeSparkIndex + 1).padStart(2, '0')}</span>
+							/ {String(sparkArchive.length).padStart(2, '0')} <i></i>
+							{sparkArchive[activeSparkIndex]?.title}
+						</p>
+						<button class="roulette-arrow" aria-label="Next Spark photo" onclick={showNextSparkPhoto}>
+							<span aria-hidden="true">→</span>
+						</button>
+						<button
+							class="roulette-autoplay-toggle"
+							type="button"
+							aria-label={photoRotationPaused ? 'Resume photo rotation' : 'Pause photo rotation'}
+							aria-pressed={photoRotationPaused}
+							onclick={() => (photoRotationPaused = !photoRotationPaused)}
+						>{photoRotationPaused ? '▶' : 'Ⅱ'}</button>
+					</div>
 				</div>
 			{:else}
 				<p class="archive-empty">Performance photographs will appear here soon.</p>
@@ -200,13 +502,61 @@
 
 		<footer class="spark-footer" data-reveal>
 			<div>
-				<span>THE NEXT SPARK NIGHT</span>
+				<span>THE SPARK NIGHT</span>
 				<p>See you under the lights.</p>
 			</div>
 			<a href="#spark-top">Back to top <span aria-hidden="true">↗</span></a>
 		</footer>
 	</div>
 </main>
+
+<dialog
+	bind:this={photoViewer}
+	class="spark-photo-viewer"
+	aria-label="Spark Night photo viewer"
+	onclose={() => (selectedPhoto = null)}
+	onkeydown={handleViewerKeys}
+	onclick={(event) => {
+		if (event.target === photoViewer) closeSparkPhoto();
+	}}
+>
+	{#if selectedPhoto}
+		<div class="viewer-shell">
+			<div class="viewer-backdrop" style={`background-image: url("${selectedPhoto.src}")`} aria-hidden="true"></div>
+			<div class="viewer-overlay" aria-hidden="true"></div>
+			<div class="viewer-topbar">
+				<span>THE TECNOESIS ARCHIVE</span>
+				<button class="viewer-close" type="button" aria-label="Close photo viewer" onclick={closeSparkPhoto}>
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="viewer-stage">
+				<GalleryPhoto photo={selectedPhoto} eager contained />
+				<button
+					class="viewer-nav viewer-nav--previous"
+					type="button"
+					aria-label="Previous Spark photo"
+					onclick={() => moveViewerPhoto(-1)}>←</button
+				>
+				<button
+					class="viewer-nav viewer-nav--next"
+					type="button"
+					aria-label="Next Spark photo"
+					onclick={() => moveViewerPhoto(1)}>→</button
+				>
+			</div>
+			<div class="viewer-bottom">
+				<div class="viewer-caption">
+					<p>{selectedPhoto.category}</p>
+					<h2>{selectedPhoto.title}</h2>
+				</div>
+				<div class="viewer-controls">
+					<span>{String(activeSparkIndex + 1).padStart(2, '0')} / {String(sparkArchive.length).padStart(2, '0')}</span>
+				</div>
+			</div>
+		</div>
+	{/if}
+</dialog>
 
 <style>
 	:global(body .site-header) {
@@ -224,37 +574,136 @@
 		min-height: 100svh;
 		overflow: clip;
 		color: var(--paper);
-		background:
-			radial-gradient(ellipse at 80% 12%, rgba(138, 42, 120, 0.18), transparent 38%),
-			linear-gradient(180deg, rgba(13, 5, 28, 0.88), rgba(14, 6, 30, 0.95));
+		background: linear-gradient(180deg, rgba(13, 5, 28, 0.12), rgba(14, 6, 30, 0.88) 58%, #0e061e);
 		font-family: 'Sulphur Point', sans-serif;
 	}
 
-	.spark-video-layer {
+	.spark-intro {
 		position: fixed;
-		z-index: -1;
+		z-index: 0;
 		inset: 0;
-		overflow: hidden;
+		min-height: 100svh;
 		pointer-events: none;
-		background: #0d051c;
+		background: #090615;
+		opacity: calc(1 - var(--intro-progress, 0));
+		transition: opacity 180ms linear;
 	}
 
-	.spark-video-layer video {
+	.spark-intro > video {
 		position: absolute;
 		inset: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		opacity: 0.4;
-		filter: brightness(0.65) saturate(0.82);
+		filter: brightness(0.72) saturate(0.95);
+		transform: scale(1.035);
 	}
 
-	.spark-video-shade {
+	.intro-video-shade {
 		position: absolute;
 		inset: 0;
+		background-color: rgba(14, 6, 30, calc(var(--intro-progress, 0) * 0.62));
+		background-image: linear-gradient(
+			180deg,
+			rgba(9, 6, 21, 0.14),
+			rgba(9, 6, 21, 0.28) 52%,
+			#0e061e 100%
+		);
+	}
+
+	.intro-scroll-cue {
+		position: absolute;
+		z-index: 1;
+		pointer-events: auto;
+		bottom: 34px;
+		left: 50%;
+		display: grid;
+		width: 44px;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.46);
+		border-radius: 50%;
+		background: rgba(10, 7, 22, 0.16);
+		color: rgba(255, 255, 255, 0.86);
+		text-decoration: none;
+		backdrop-filter: blur(6px);
+		transform: translateX(-50%);
+		transition:
+			background 700ms ease,
+			border-color 700ms ease,
+			opacity 700ms ease;
+	}
+
+	.intro-scroll-space {
+		height: 100svh;
+		pointer-events: none;
+	}
+
+	.cursor-trail {
+		position: fixed;
+		z-index: 9;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.cursor-trail span {
+		position: absolute;
+		top: var(--trail-y);
+		left: var(--trail-x);
+		width: 42px;
+		height: 7px;
+		border-radius: 50%;
+		background: rgba(145, 222, 255, 0.11);
+		filter: blur(5px);
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate(var(--trail-angle)) scaleX(0.45);
+		animation: cursor-afterglow 560ms ease-out forwards;
+	}
+
+	.intro-scroll-cue i {
+		display: grid;
+		font: normal 1.2rem sans-serif;
+		animation: scroll-nudge 2.8s ease-in-out infinite;
+	}
+
+	.intro-scroll-cue:hover {
+		border-color: rgba(255, 255, 255, 0.8);
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.intro-scroll-cue:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 5px;
+	}
+
+	.cursor-warp {
+		position: fixed;
+		z-index: 10;
+		top: var(--pointer-y, 50%);
+		left: var(--pointer-x, 50%);
+		width: 270px;
+		aspect-ratio: 1;
+		border: 1px solid rgba(168, 232, 255, 0.075);
+		border-radius: 50%;
 		background:
-			linear-gradient(180deg, rgba(13, 5, 28, 0.62), rgba(13, 5, 28, 0.76) 50%, #0e061e),
-			linear-gradient(90deg, rgba(13, 5, 28, 0.62), transparent 60%);
+			radial-gradient(circle, rgba(121, 206, 255, 0.035), transparent 62%),
+			radial-gradient(circle, transparent 62%, rgba(117, 230, 244, 0.035) 63%, transparent 64%);
+		backdrop-filter: blur(2.5px) contrast(1.035);
+		mask-image: radial-gradient(circle, black 25%, transparent 72%);
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.84);
+		transition:
+			top 320ms cubic-bezier(0.2, 0.65, 0.3, 1),
+			left 320ms cubic-bezier(0.2, 0.65, 0.3, 1),
+			opacity 700ms ease,
+			transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+		pointer-events: none;
+	}
+
+	:global(.spark-page.pointer-active) .cursor-warp {
+		opacity: 0.34;
+		transform: translate(-50%, -50%) scale(1);
 	}
 
 	.spark-backdrop,
@@ -280,6 +729,8 @@
 	}
 
 	.spark-wrap {
+		position: relative;
+		z-index: 1;
 		width: min(1320px, calc(100% - 64px));
 		margin-inline: auto;
 	}
@@ -304,17 +755,12 @@
 	.artist-intro,
 	.hero-facts > div > span,
 	.edition-mark,
-	.registration-note,
 	.portrait-topline,
 	.portrait-caption,
-	.portrait-placeholder-label,
-	.portrait-placeholder-note,
 	.stage-coordinate,
 	.spark-divider,
 	.section-index,
-	.night-note-stamp,
 	.archive-toolbar,
-	.archive-grid figcaption,
 	.photo-count,
 	.spark-footer > div > span {
 		font-family: 'Bruno Ace', sans-serif;
@@ -352,14 +798,64 @@
 	}
 
 	.spark-hero h1 {
+		display: grid;
+		justify-items: start;
 		margin: 0;
-		color: #fff;
 		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(4.8rem, 12vw, 10.5rem);
+		font-size: clamp(3.7rem, 8vw, 7.4rem);
 		font-weight: 800;
-		letter-spacing: -0.09em;
-		line-height: 0.9;
+		line-height: 0.82;
+	}
+
+	.performance-title {
+		margin-top: 6px !important;
+	}
+
+	.spark-title-top {
+		white-space: nowrap;
+	}
+
+	.spark-title-letter {
+		display: inline-block;
+		color: #fff;
+		letter-spacing: 0;
 		text-shadow: 0 0 52px rgba(255, 87, 186, 0.24);
+		animation: letter-arrive 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+		animation-delay: calc(var(--letter-index) * 190ms + 280ms);
+	}
+
+	:global(.spark-page.motion-ready [data-reveal]:not(.is-revealed)) .spark-title-letter {
+		animation-play-state: paused;
+	}
+
+	.night-title-word {
+		margin-top: 0.16em;
+		color: transparent;
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.78em;
+		font-weight: 600;
+		letter-spacing: 0.2em;
+		-webkit-text-stroke: 1.25px rgba(177, 246, 255, 0.88);
+		text-shadow:
+			0 0 5px rgba(117, 230, 244, 0.95),
+			0 0 18px rgba(117, 230, 244, 0.75),
+			0 0 42px rgba(117, 230, 244, 0.42);
+		animation: night-ghost 7s ease-in-out infinite alternate;
+		transition: transform 900ms ease;
+	}
+
+	:global(.spark-page.is-scrolling) .night-title-word {
+		animation-duration: 4.6s;
+	}
+
+	:global(.spark-page.scrolling-down) .night-title-word {
+		animation-direction: alternate;
+		transform: translateY(-2px);
+	}
+
+	:global(.spark-page.scrolling-up) .night-title-word {
+		animation-direction: alternate-reverse;
+		transform: translateY(2px);
 	}
 
 	.title-star {
@@ -376,20 +872,6 @@
 		color: var(--muted);
 		font-size: 0.59rem;
 		letter-spacing: 0.2em;
-	}
-
-	.artist-name {
-		margin: 0;
-		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(1.75rem, 3.5vw, 3.4rem);
-		font-weight: 500;
-		letter-spacing: -0.055em;
-		line-height: 1.1;
-	}
-
-	.artist-name em {
-		color: var(--pink);
-		font-style: normal;
 	}
 
 	.hero-description {
@@ -409,27 +891,54 @@
 	}
 
 	.archive-cta {
+		position: relative;
+		isolation: isolate;
 		display: inline-flex;
-		min-height: 48px;
+		min-width: 266px;
+		min-height: 54px;
 		align-items: center;
-		gap: 24px;
-		padding: 0 18px;
-		border: 1px solid rgba(255, 115, 190, 0.76);
-		background: linear-gradient(105deg, rgba(255, 115, 190, 0.18), rgba(183, 138, 255, 0.08));
+		justify-content: center;
+		gap: 18px;
+		padding: 0 25px 2px 30px;
+		clip-path: polygon(0 0, 100% 0, 100% 75%, 91% 100%, 0 100%);
+		background: linear-gradient(110deg, #8126cc, #281038 18%, #1c0c2a 82%, #6625a5);
 		color: #fff;
-		font-size: 0.9rem;
+		font-family: 'Orbitron', sans-serif;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
 		text-decoration: none;
+		box-shadow: 0 0 0 1px rgba(215, 141, 255, 0.52), 0 8px 28px rgba(100, 27, 157, 0.18);
 		transition:
-			transform 180ms ease,
-			background 180ms ease,
-			border-color 180ms ease;
+			transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+			filter 450ms ease,
+			box-shadow 450ms ease;
+	}
+
+	.archive-cta::before {
+		position: absolute;
+		z-index: -1;
+		top: 50%;
+		left: 50%;
+		inset: 0;
+		border-radius: 50%;
+		background: linear-gradient(110deg, rgba(190, 74, 255, 0.38), transparent 58%);
+		content: '';
+		opacity: 0.2;
+		transition: opacity 450ms ease;
 	}
 
 	.archive-cta:hover,
 	.archive-cta:focus-visible {
-		transform: translateY(-2px);
-		border-color: var(--cyan);
-		background: rgba(255, 115, 190, 0.25);
+		filter: brightness(1.16);
+		transform: translateY(-2px) scale(1.015);
+		box-shadow: 0 0 0 1px rgba(231, 188, 255, 0.8), 0 10px 32px rgba(130, 38, 204, 0.3);
+	}
+
+	.archive-cta:hover::before,
+	.archive-cta:focus-visible::before {
+		opacity: 0.62;
 	}
 
 	.archive-cta:focus-visible,
@@ -440,31 +949,11 @@
 	}
 
 	.archive-cta > span:last-child {
-		color: var(--cyan);
-		font-size: 1.15rem;
-	}
-
-	.registration-note {
-		display: inline-flex;
-		min-height: 42px;
-		align-items: center;
-		gap: 9px;
-		padding: 0 12px;
-		border: 1px solid rgba(117, 230, 244, 0.3);
-		background: rgba(117, 230, 244, 0.045);
-		color: rgba(255, 255, 255, 0.82);
-		font-size: 0.5rem;
-		letter-spacing: 0.07em;
-	}
-
-	.registration-note::before {
-		width: 6px;
-		height: 6px;
-		flex: 0 0 auto;
-		border-radius: 50%;
-		background: var(--pink);
-		box-shadow: 0 0 10px rgba(255, 115, 190, 0.8);
-		content: '';
+		color: #d8a8ff;
+		font-family: sans-serif;
+		font-size: 1.35rem;
+		line-height: 1;
+		letter-spacing: 0;
 	}
 
 	.hero-facts {
@@ -512,21 +1001,33 @@
 	.portrait-stage {
 		position: relative;
 		display: grid;
-		min-height: 580px;
+		min-height: 650px;
 		place-items: center;
 		isolation: isolate;
+		perspective: 1500px;
 	}
 
 	.portrait-card {
 		position: relative;
 		z-index: 1;
-		display: flex;
-		width: min(100%, 460px);
-		height: 510px;
-		flex-direction: column;
-		justify-content: space-between;
-		padding: 19px;
-		overflow: hidden;
+		display: block;
+		width: min(100%, 490px);
+		height: 550px;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+		perspective: 1500px;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.portrait-card-inner {
+		position: absolute;
+		inset: 0;
+		display: block;
 		border: 1px solid rgba(255, 255, 255, 0.4);
 		background:
 			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
@@ -536,26 +1037,139 @@
 			0 28px 100px rgba(2, 0, 12, 0.52),
 			0 0 60px rgba(255, 83, 183, 0.12);
 		transform: rotate(2deg);
+		transform-style: preserve-3d;
 		transition:
-			transform 350ms cubic-bezier(0.2, 0.65, 0.3, 1),
-			box-shadow 350ms ease;
+			transform 850ms cubic-bezier(0.2, 0.72, 0.2, 1),
+			box-shadow 650ms ease,
+			border-color 650ms ease;
+	}
+
+	.portrait-card-flipped .portrait-card-inner {
+		transform: rotateY(180deg);
+	}
+
+	.portrait-card:not(.portrait-card-flipped):hover .portrait-card-inner {
+		transform: rotate(0) translateY(-4px);
+	}
+
+	.portrait-card-flipped:hover .portrait-card-inner {
+		transform: rotateY(180deg) translateY(-3px);
 	}
 
 	.portrait-stage:hover .portrait-card {
-		box-shadow:
-			0 38px 110px rgba(2, 0, 12, 0.58),
-			0 0 74px rgba(255, 83, 183, 0.2);
-		transform: translateY(-5px) rotate(0);
+		filter: brightness(1.04);
 	}
 
-	.portrait-card::before,
-	.portrait-card::after {
+	.portrait-card:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 7px;
+	}
+
+	.portrait-face {
 		position: absolute;
-		z-index: -1;
-		content: '';
+		inset: 0;
+		z-index: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 19px;
+		overflow: hidden;
+		border-radius: 2px;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		background:
+			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
+			radial-gradient(ellipse at 52% 45%, rgba(255, 88, 185, 0.5), transparent 54%),
+			linear-gradient(135deg, #371843, #13152f 56%, #15283e);
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
 	}
 
-	.portrait-card::before {
+	.portrait-face-front {
+		background:
+			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
+			radial-gradient(ellipse at 52% 45%, rgba(255, 88, 185, 0.5), transparent 54%),
+			linear-gradient(135deg, #371843, #13152f 56%, #15283e);
+	}
+
+	.portrait-face-back {
+		z-index: 1;
+		justify-content: space-between;
+		border-color: rgba(161, 224, 255, 0.55);
+		background:
+			radial-gradient(ellipse at 85% 8%, rgba(93, 197, 236, 0.14), transparent 40%),
+			radial-gradient(ellipse at 14% 86%, rgba(255, 96, 184, 0.18), transparent 42%),
+			linear-gradient(145deg, #1b102b, #0a1025 60%, #101c32);
+		transform: rotateY(180deg);
+	}
+
+	.portrait-back-content {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		gap: 20px;
+		align-content: center;
+		flex: 1;
+		padding: 42px 18px;
+	}
+
+	.portrait-back-kicker {
+		color: var(--cyan);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.58rem;
+		letter-spacing: 0.18em;
+	}
+
+	.portrait-back-content > strong {
+		color: #fff;
+		font-family: 'Orbitron', sans-serif;
+		font-size: clamp(2.25rem, 4vw, 3.25rem);
+		font-weight: 600;
+		line-height: 1.08;
+		text-shadow: 0 0 30px rgba(117, 230, 244, 0.16);
+	}
+
+	.portrait-back-rule {
+		width: 72px;
+		height: 2px;
+		background: linear-gradient(90deg, var(--pink), var(--cyan));
+		box-shadow: 0 0 16px rgba(117, 230, 244, 0.4);
+	}
+
+	.portrait-back-details {
+		display: grid;
+		gap: 17px;
+	}
+
+	.portrait-back-details > span {
+		display: grid;
+		gap: 6px;
+		color: rgba(255, 255, 255, 0.92);
+		font-size: 0.95rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+	}
+
+	.portrait-back-details i {
+		color: rgba(210, 220, 238, 0.58);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.48rem;
+		font-style: normal;
+		letter-spacing: 0.16em;
+	}
+
+	.portrait-face-back .portrait-caption {
+		border-color: rgba(161, 224, 255, 0.28);
+	}
+
+	.portrait-card-inner::before,
+	.portrait-card-inner::after {
+		position: absolute;
+		z-index: 2;
+		content: '';
+		pointer-events: none;
+	}
+
+	.portrait-card-inner::before {
 		inset: 0;
 		background:
 			linear-gradient(90deg, transparent 49.8%, rgba(255, 255, 255, 0.08) 50%, transparent 50.2%),
@@ -564,7 +1178,7 @@
 		mask-image: linear-gradient(180deg, transparent, black 30%, black 70%, transparent);
 	}
 
-	.portrait-card::after {
+	.portrait-card-inner::after {
 		right: -19%;
 		bottom: 8%;
 		width: 112%;
@@ -575,6 +1189,7 @@
 			0 0 0 18px rgba(255, 115, 190, 0.05),
 			0 0 50px rgba(117, 230, 244, 0.12);
 		transform: rotate(-26deg);
+		pointer-events: none;
 	}
 
 	.portrait-topline,
@@ -602,58 +1217,83 @@
 		background: var(--pink);
 	}
 
-	.portrait-placeholder {
+	.portrait-image-frame {
 		position: absolute;
 		inset: 66px 19px;
-		display: grid;
-		place-content: center;
-		gap: 10px;
-		border: 1px dashed rgba(255, 255, 255, 0.34);
-		text-align: center;
+		isolation: isolate;
+		overflow: hidden;
+		border: 1px solid rgba(189, 231, 255, 0.26);
+		background: #080b20;
+		box-shadow: inset 0 0 30px rgba(7, 8, 27, 0.44);
+		transition:
+			border-color 650ms ease,
+			box-shadow 650ms ease;
 	}
 
-	.portrait-placeholder::before,
-	.portrait-placeholder::after {
+	.portrait-image-frame::before {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: min(75%, 250px);
-		aspect-ratio: 1;
-		border: 1px solid rgba(255, 115, 190, 0.22);
-		border-radius: 50%;
+		z-index: 1;
+		inset: 0;
+		background:
+			linear-gradient(180deg, rgba(7, 8, 25, 0.12), transparent 30%, transparent 60%, #09071b 100%),
+			linear-gradient(90deg, rgba(12, 8, 28, 0.28), transparent 24%, transparent 76%, rgba(12, 8, 28, 0.22));
 		content: '';
-		transform: translate(-50%, -50%);
+		pointer-events: none;
 	}
 
-	.portrait-placeholder::after {
-		width: min(58%, 190px);
-		border-color: rgba(117, 230, 244, 0.34);
-		border-style: dashed;
+	.portrait-image-frame::after {
+		position: absolute;
+		z-index: 2;
+		inset: 0;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: inset 0 0 0 1px rgba(117, 230, 244, 0.06);
+		content: '';
+		pointer-events: none;
 	}
 
-	.portrait-initials {
-		position: relative;
-		z-index: 1;
-		color: rgba(255, 255, 255, 0.82);
+	.portrait-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 38%;
+		filter: saturate(0.86) contrast(1.04) brightness(0.88);
+		transform: scale(1.015);
+		transition:
+			filter 800ms ease,
+			transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.portrait-image-sweep {
+		position: absolute;
+		z-index: 2;
+		top: -35%;
+		left: -75%;
+		width: 38%;
+		height: 175%;
+		background: linear-gradient(90deg, transparent, rgba(178, 236, 255, 0.15), transparent);
+		filter: blur(8px);
+		transform: rotate(16deg);
+		animation: portrait-light-pass 9s ease-in-out 1.2s infinite;
+		pointer-events: none;
+	}
+
+	.portrait-stage:hover .portrait-image-frame {
+		border-color: rgba(184, 236, 255, 0.72);
+		box-shadow: inset 0 0 36px rgba(7, 8, 27, 0.32), 0 0 22px rgba(117, 230, 244, 0.13);
+	}
+
+	.portrait-stage:hover .portrait-image {
+		filter: saturate(0.96) contrast(1.04) brightness(0.98);
+		transform: scale(1.045);
+	}
+
+	.portrait-artist-name {
 		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(4.8rem, 9vw, 7.2rem);
-		font-weight: 600;
-		letter-spacing: -0.1em;
-		text-shadow: 0 0 40px rgba(255, 115, 190, 0.48);
-	}
-
-	.portrait-placeholder-label,
-	.portrait-placeholder-note {
-		position: relative;
-		z-index: 1;
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 0.59rem;
-		letter-spacing: 0.13em;
-	}
-
-	.portrait-placeholder-note {
-		color: var(--cyan);
-		font-size: 0.48rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-shadow: 0 0 18px rgba(117, 230, 244, 0.18);
 	}
 
 	.portrait-caption {
@@ -752,9 +1392,9 @@
 
 	.night-note {
 		display: grid;
-		grid-template-columns: minmax(130px, 0.45fr) minmax(0, 1.5fr) minmax(150px, 0.5fr);
+		grid-template-columns: minmax(130px, 0.32fr) minmax(0, 1.68fr);
 		align-items: center;
-		gap: 36px;
+		gap: clamp(24px, 4vw, 56px);
 		padding-block: clamp(76px, 10vw, 140px);
 	}
 
@@ -778,7 +1418,6 @@
 		background: rgba(255, 115, 190, 0.7);
 	}
 
-	.night-note-copy h2,
 	.archive-heading h2 {
 		margin: 0;
 		font-family: 'Orbitron', sans-serif;
@@ -788,39 +1427,349 @@
 		line-height: 1.12;
 	}
 
-	.night-note-copy h2 em,
 	.archive-heading h2 em {
 		color: var(--pink);
 		font-style: normal;
 	}
 
-	.night-note-copy p {
-		max-width: 610px;
-		margin: 22px 0 0;
-		color: var(--muted);
-		font-size: 1.06rem;
-		line-height: 1.75;
-	}
-
-	.night-note-stamp {
+	.spark-guitar-player {
+		--player-cyan: #77e8f3;
+		position: relative;
+		z-index: 1;
 		display: grid;
-		justify-items: center;
-		gap: 10px;
-		aspect-ratio: 1;
-		align-content: center;
-		border: 1px solid rgba(255, 115, 190, 0.38);
-		border-radius: 50%;
-		color: rgba(255, 255, 255, 0.66);
-		font-size: 0.47rem;
-		letter-spacing: 0.1em;
-		transform: rotate(8deg);
+		grid-column: 2;
+		width: min(100%, 780px);
+		min-height: 270px;
+		grid-template-columns: minmax(190px, 0.9fr) minmax(0, 1.1fr);
+		align-items: center;
+		gap: clamp(20px, 4vw, 48px);
+		padding: 28px clamp(20px, 4vw, 48px);
+		border-block: 1px solid rgba(117, 230, 244, 0.32);
+		background:
+			radial-gradient(ellipse at 20% 50%, rgba(117, 230, 244, 0.07), transparent 44%),
+			linear-gradient(100deg, rgba(21, 13, 39, 0.38), rgba(10, 11, 29, 0.18));
+		transition:
+			border-color 450ms ease,
+			background 450ms ease;
 	}
 
-	.night-note-stamp strong {
-		color: var(--cyan);
+	.spark-guitar-player:hover {
+		border-color: rgba(117, 230, 244, 0.48);
+		background: linear-gradient(100deg, rgba(21, 13, 39, 0.52), rgba(10, 11, 29, 0.3));
+	}
+
+	.guitar-art {
+		position: relative;
+		width: 205px;
+		height: 250px;
+		justify-self: center;
+		filter: drop-shadow(0 0 16px rgba(117, 230, 244, 0.22));
+		transform: rotate(-11deg);
+		transition:
+			transform 800ms cubic-bezier(0.16, 1, 0.3, 1),
+			filter 800ms ease;
+	}
+
+	.spark-guitar-player:hover .guitar-art {
+		filter: drop-shadow(0 0 22px rgba(117, 230, 244, 0.34));
+		transform: rotate(-7deg) translateY(-4px);
+	}
+
+	.guitar-body {
+		position: absolute;
+		bottom: 7px;
+		left: 32px;
+		width: 111px;
+		height: 108px;
+		border: 1px solid rgba(219, 181, 255, 0.9);
+		border-radius: 48% 52% 46% 54% / 42% 44% 56% 58%;
+		background:
+			radial-gradient(ellipse at 40% 37%, rgba(255, 127, 211, 0.35), transparent 48%),
+			linear-gradient(145deg, rgba(117, 230, 244, 0.16), rgba(29, 17, 49, 0.9) 58%, rgba(255, 115, 190, 0.2));
+		box-shadow: inset 0 0 20px rgba(117, 230, 244, 0.13), 0 0 15px rgba(205, 154, 255, 0.13);
+	}
+
+	.guitar-body::before {
+		position: absolute;
+		top: 31px;
+		left: 41px;
+		width: 25px;
+		aspect-ratio: 1;
+		border: 1px solid rgba(231, 218, 255, 0.72);
+		border-radius: 50%;
+		box-shadow: 0 0 9px rgba(117, 230, 244, 0.2);
+		content: '';
+	}
+
+	.guitar-body::after {
+		position: absolute;
+		right: 21px;
+		bottom: 16px;
+		left: 21px;
+		height: 3px;
+		border-block: 1px solid rgba(225, 213, 250, 0.6);
+		content: '';
+	}
+
+	.guitar-body > i {
+		position: absolute;
+		z-index: 2;
+		top: 8px;
+		left: 52px;
+		width: 7px;
+		height: 17px;
+		border-radius: 3px;
+		background: rgba(230, 224, 255, 0.8);
+	}
+
+	.guitar-neck {
+		position: absolute;
+		z-index: 1;
+		top: 9px;
+		left: 77px;
+		width: 19px;
+		height: 112px;
+		border: 1px solid rgba(213, 198, 244, 0.84);
+		border-bottom: 0;
+		background: linear-gradient(90deg, rgba(42, 31, 65, 0.95), rgba(135, 114, 158, 0.82), rgba(37, 28, 59, 0.95));
+		transform: rotate(13deg);
+		transform-origin: bottom center;
+	}
+
+	.guitar-neck::after {
+		position: absolute;
+		top: -18px;
+		left: -3px;
+		width: 24px;
+		height: 22px;
+		border: 1px solid rgba(213, 198, 244, 0.82);
+		border-radius: 5px 5px 2px 2px;
+		background: linear-gradient(120deg, #33264b, #17172e);
+		content: '';
+	}
+
+	.guitar-string {
+		position: absolute;
+		z-index: 3;
+		top: 5px;
+		left: 79px;
+		width: 1px;
+		height: 190px;
+		background: rgba(228, 244, 255, 0.68);
+		box-shadow: 0 0 4px rgba(117, 230, 244, 0.32);
+		transform: rotate(13deg);
+		transform-origin: top center;
+	}
+
+	.guitar-string--two { left: 83px; opacity: 0.8; }
+	.guitar-string--three { left: 87px; opacity: 0.68; }
+	.guitar-string--four { left: 91px; opacity: 0.55; }
+	.guitar-string--five { left: 95px; opacity: 0.42; }
+
+	.guitar-fret {
+		position: absolute;
+		z-index: 4;
+		left: 72px;
+		width: 27px;
+		height: 1px;
+		background: rgba(228, 224, 249, 0.68);
+		transform: rotate(13deg);
+	}
+
+	.guitar-fret--one { top: 39px; }
+	.guitar-fret--two { top: 56px; }
+	.guitar-fret--three { top: 73px; }
+	.guitar-fret--four { top: 90px; }
+
+	.song-carousel {
+		display: grid;
+		min-width: 0;
+		gap: 14px;
+		align-content: center;
+	}
+
+	.song-count {
+		color: var(--player-cyan);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.48rem;
+		letter-spacing: 0.16em;
+	}
+
+	.song-slide {
+		position: relative;
+		display: grid;
+		min-width: 0;
+		gap: 8px;
+		padding: 5px 28px 6px 0;
+		color: #fff;
+		text-decoration: none;
+		animation: song-arrive 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+	}
+
+	.song-slide strong {
+		overflow-wrap: anywhere;
 		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(1.1rem, 2vw, 1.8rem);
-		letter-spacing: -0.04em;
+		font-size: clamp(1rem, 1.6vw, 1.35rem);
+		font-weight: 600;
+		line-height: 1.2;
+	}
+
+	.song-slide > span {
+		color: rgba(235, 224, 245, 0.64);
+		font-size: 0.78rem;
+		line-height: 1.35;
+	}
+
+	.song-slide > i {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		color: var(--player-cyan);
+		font-size: 1.15rem;
+		font-style: normal;
+		transform: translateY(-50%);
+		transition:
+			color 300ms ease,
+			transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.song-slide:hover > i {
+		color: #fff;
+		transform: translate(3px, -50%);
+	}
+
+	.song-carousel-controls {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.song-progress {
+		height: 2px;
+		flex: 1;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.16);
+	}
+
+	.song-progress > span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(90deg, #ff73be, var(--player-cyan));
+		transform: scaleX(0);
+		transform-origin: left center;
+		animation: song-progress 5s linear forwards;
+	}
+
+	.song-progress > span.progress-paused {
+		animation-play-state: paused;
+	}
+
+	.song-pause {
+		display: grid;
+		width: 30px;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.26);
+		border-radius: 50%;
+		background: rgba(12, 10, 26, 0.48);
+		color: rgba(255, 255, 255, 0.86);
+		font-size: 0.62rem;
+		cursor: pointer;
+		transition:
+			background 300ms ease,
+			border-color 300ms ease,
+			transform 300ms ease;
+	}
+
+	.song-pause:hover,
+	.song-pause:focus-visible {
+		transform: scale(1.06);
+		border-color: var(--player-cyan);
+		background: rgba(117, 230, 244, 0.12);
+	}
+
+	.song-pause:focus-visible,
+	.song-slide:focus-visible,
+	.song-track-dots button:focus-visible {
+		outline: 2px solid var(--player-cyan);
+		outline-offset: 3px;
+	}
+
+	.song-track-dots {
+		display: flex;
+		gap: 8px;
+		justify-content: end;
+	}
+
+	.song-track-dots button {
+		width: 7px;
+		height: 7px;
+		padding: 0;
+		border: 1px solid rgba(237, 225, 247, 0.48);
+		border-radius: 50%;
+		background: transparent;
+		cursor: pointer;
+		transition:
+			transform 300ms ease,
+			background 300ms ease,
+			border-color 300ms ease;
+	}
+
+	.song-track-dots button:hover {
+		transform: scale(1.28);
+	}
+
+	.song-track-dots button.song-dot-active {
+		border-color: var(--player-cyan);
+		background: var(--player-cyan);
+		box-shadow: 0 0 10px rgba(117, 230, 244, 0.44);
+	}
+
+	.song-track-hint {
+		color: rgba(230, 224, 245, 0.42);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.38rem;
+		letter-spacing: 0.11em;
+		text-align: right;
+	}
+
+	.roulette-autoplay-toggle {
+		display: grid;
+		width: 34px;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		border-radius: 50%;
+		background: rgba(14, 8, 30, 0.88);
+		color: #fff;
+		font-size: 0.72rem;
+		cursor: pointer;
+		transition:
+			border-color 250ms ease,
+			background 250ms ease,
+			transform 250ms ease;
+	}
+
+	.roulette-autoplay-toggle:hover,
+	.roulette-autoplay-toggle:focus-visible {
+		transform: scale(1.06);
+		border-color: var(--cyan);
+		background: rgba(117, 230, 244, 0.16);
+	}
+
+	.roulette-autoplay-toggle:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 3px;
+	}
+
+	@keyframes song-arrive {
+		from { opacity: 0; transform: translateY(9px); filter: blur(4px); }
+		to { opacity: 1; transform: translateY(0); filter: blur(0); }
+	}
+
+	@keyframes song-progress {
+		to { transform: scaleX(1); }
 	}
 
 	.spark-archive {
@@ -890,31 +1839,104 @@
 		color: var(--cyan);
 	}
 
-	.archive-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 28px 18px;
-		padding-top: 22px;
+	.archive-roulette {
+		position: relative;
+		padding-top: 30px;
 	}
 
-	.archive-grid figure {
-		min-width: 0;
-		margin: 0;
+	.roulette-stage {
+		--wheel-radius: clamp(260px, 31vw, 360px);
+		position: relative;
+		height: clamp(510px, 58vw, 680px);
+		isolation: isolate;
+		overflow: hidden;
+		mask-image: linear-gradient(180deg, black 0%, black 82%, transparent 100%);
 	}
 
-	.archive-grid figure:nth-child(4n + 1) {
-		grid-column: span 2;
+	.roulette-wheel {
+		position: absolute;
+		z-index: -1;
+		bottom: calc(var(--wheel-radius) * -1);
+		left: 50%;
+		width: calc(var(--wheel-radius) * 2);
+		aspect-ratio: 1;
+		border: 1px solid rgba(117, 230, 244, 0.19);
+		border-radius: 50%;
+		background: repeating-conic-gradient(
+			from 0deg,
+			transparent 0deg 27.7deg,
+			rgba(117, 230, 244, 0.08) 28deg 28.25deg,
+			transparent 28.5deg 360deg
+		);
+		box-shadow:
+			0 0 0 22px rgba(255, 115, 190, 0.025),
+			inset 0 0 50px rgba(117, 230, 244, 0.035);
+		transform: translateX(-50%) rotate(var(--wheel-rotation, 0deg));
+		transition: transform 1800ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.roulette-card {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		width: min(49%, 530px);
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		text-align: left;
+		cursor: pointer;
+		opacity: 0.3;
+		filter: saturate(0.6) brightness(0.58);
+				transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.72);
+		transition:
+			transform 1800ms cubic-bezier(0.16, 1, 0.3, 1),
+			opacity 1200ms ease,
+			filter 1200ms ease;
+	}
+
+	.roulette-card:focus-visible,
+	.roulette-arrow:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 5px;
+	}
+
+	.roulette-active {
+		z-index: 3;
+		opacity: 1;
+		filter: none;
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(1);
+	}
+
+	.roulette-previous,
+	.roulette-next {
+		z-index: 2;
+		opacity: 0.48;
+		filter: saturate(0.62) brightness(0.65);
+		pointer-events: auto;
+	}
+
+	.roulette-previous {
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+	}
+
+	.roulette-next {
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+	}
+
+	.roulette-far {
+		z-index: 1;
+		opacity: 0.14;
+		filter: saturate(0.45) brightness(0.45);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.56);
 	}
 
 	.archive-image {
 		position: relative;
-		height: clamp(210px, 25vw, 340px);
+		height: clamp(270px, 39vw, 470px);
 		overflow: hidden;
 		background: #1b1026;
-	}
-
-	.archive-grid figure:nth-child(4n + 1) .archive-image {
-		height: clamp(260px, 34vw, 440px);
+		box-shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
 	}
 
 	.archive-image :global(picture),
@@ -923,9 +1945,13 @@
 		height: 100%;
 	}
 
+	.archive-image :global(picture) {
+		overflow: hidden;
+	}
+
 	.archive-image :global(img) {
 		object-fit: cover;
-		transition: transform 500ms cubic-bezier(0.2, 0.65, 0.3, 1);
+		transition: transform 700ms cubic-bezier(0.2, 0.65, 0.3, 1);
 	}
 
 	.archive-image::before {
@@ -938,11 +1964,13 @@
 		transition: border-color 250ms ease;
 	}
 
-	.archive-grid figure:hover .archive-image :global(img) {
-		transform: scale(1.04);
+	.roulette-card:hover .archive-image :global(img),
+	.roulette-active:hover .archive-image :global(img) {
+		transform: scale(1.045);
 	}
 
-	.archive-grid figure:hover .archive-image::before {
+	.roulette-card:hover .archive-image::before,
+	.roulette-active .archive-image::before {
 		border-color: rgba(117, 230, 244, 0.7);
 	}
 
@@ -979,7 +2007,7 @@
 		font: 1rem sans-serif;
 	}
 
-	.archive-grid figcaption {
+	.roulette-caption {
 		display: flex;
 		justify-content: space-between;
 		gap: 12px;
@@ -987,17 +2015,288 @@
 		color: rgba(255, 255, 255, 0.8);
 		font-size: 0.5rem;
 		letter-spacing: 0.08em;
+		font-family: 'Bruno Ace', sans-serif;
+		text-transform: uppercase;
 	}
 
-	.archive-grid time {
+	.roulette-caption time {
 		color: var(--cyan);
 		white-space: nowrap;
+	}
+
+	.roulette-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 28px;
+		margin-top: 24px;
+	}
+
+	.roulette-controls p {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+		color: var(--muted);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.55rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.roulette-controls p > span {
+		color: var(--cyan);
+	}
+
+	.roulette-controls i {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: var(--pink);
+		box-shadow: 0 0 12px var(--pink);
+	}
+
+	.roulette-arrow {
+		display: grid;
+		width: 48px;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(117, 230, 244, 0.7);
+		border-radius: 50%;
+		background: rgba(23, 12, 38, 0.94);
+		color: #e9fbff;
+		font-size: 1.35rem;
+		line-height: 1;
+		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.28), 0 0 14px rgba(117, 230, 244, 0.12);
+		cursor: pointer;
+		transition:
+			transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+			border-color 350ms ease,
+			background 350ms ease,
+			box-shadow 350ms ease;
+	}
+
+	.roulette-arrow:hover {
+		transform: scale(1.045);
+		border-color: #d9fbff;
+		background: rgba(35, 21, 52, 0.98);
+		box-shadow: 0 7px 24px rgba(0, 0, 0, 0.34), 0 0 19px rgba(117, 230, 244, 0.22);
 	}
 
 	.archive-empty {
 		padding: 44px 0;
 		color: var(--muted);
 		font-size: 1rem;
+	}
+
+	.spark-photo-viewer {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100dvh;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		background: transparent;
+		color: white;
+		opacity: 0;
+		transform: scale(0.985);
+		transition:
+			opacity 500ms ease,
+			transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+			display 500ms allow-discrete,
+			overlay 500ms allow-discrete;
+	}
+
+	.spark-photo-viewer[open] {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	.spark-photo-viewer::backdrop {
+		background: #080808;
+		transition: background 500ms ease;
+	}
+
+	@starting-style {
+		.spark-photo-viewer[open] {
+			opacity: 0;
+			transform: scale(0.985);
+		}
+	}
+
+	.viewer-shell {
+		position: relative;
+		display: flex;
+		width: 100%;
+		height: 100%;
+		min-height: 0;
+		flex-direction: column;
+		isolation: isolate;
+		overflow: hidden;
+	}
+
+	.viewer-backdrop {
+		position: absolute;
+		z-index: -2;
+		inset: -48px;
+		background-position: center;
+		background-size: cover;
+		filter: blur(30px);
+		opacity: 0.62;
+		transform: scale(1.12);
+		transition: opacity 500ms ease;
+	}
+
+	.viewer-overlay {
+		position: absolute;
+		z-index: -1;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(5, 5, 5, 0.84), rgba(5, 5, 5, 0.12) 36%, rgba(5, 5, 5, 0.9));
+	}
+
+	.viewer-topbar,
+	.viewer-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		padding: clamp(18px, 3vw, 38px) clamp(20px, 4vw, 56px);
+	}
+
+	.viewer-topbar > span,
+	.viewer-caption p,
+	.viewer-controls > span {
+		color: rgba(255, 255, 255, 0.7);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.55rem;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+	}
+
+	.viewer-stage {
+		position: relative;
+		display: grid;
+		min-width: 0;
+		min-height: 0;
+		flex: 1;
+		place-items: center;
+		padding: clamp(16px, 3vw, 48px);
+	}
+
+	.viewer-nav {
+		position: absolute;
+		z-index: 3;
+		top: 50%;
+		display: grid;
+		width: clamp(44px, 4.4vw, 58px);
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.62);
+		border-radius: 50%;
+		background: rgba(6, 5, 16, 0.55);
+		color: white;
+		font-size: 1.55rem;
+		line-height: 1;
+		cursor: pointer;
+		box-shadow: 0 6px 30px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(12px);
+		transform: translateY(-50%);
+		transition:
+			background 500ms ease,
+			border-color 500ms ease,
+			transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.viewer-nav--previous {
+		left: clamp(14px, 3vw, 42px);
+	}
+
+	.viewer-nav--next {
+		right: clamp(14px, 3vw, 42px);
+	}
+
+	.viewer-nav:hover {
+		border-color: white;
+		background: rgba(25, 19, 48, 0.86);
+		transform: translateY(-50%) scale(1.045);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.46), 0 0 18px rgba(117, 230, 244, 0.16);
+	}
+
+	.viewer-close:hover {
+		transform: rotate(90deg) scale(1.06);
+		border-color: rgba(255, 255, 255, 0.8);
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.viewer-nav:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 4px;
+	}
+
+	.viewer-stage :global(picture) {
+		position: absolute;
+		inset: clamp(16px, 3vw, 48px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+	}
+
+	.viewer-stage :global(img) {
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+	}
+
+	.viewer-caption p {
+		margin: 0 0 8px;
+		color: rgba(200, 186, 240, 0.7);
+	}
+
+	.viewer-caption h2 {
+		margin: 0;
+		font-family: 'Orbitron', sans-serif;
+		font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+	}
+
+	.viewer-controls {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.viewer-close {
+		display: grid;
+		width: 44px;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(255, 255, 255, 0.34);
+		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.2);
+		color: white;
+		font-size: 1.15rem;
+		cursor: pointer;
+		backdrop-filter: blur(12px);
+		transition:
+			transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+			background 350ms ease,
+			border-color 350ms ease;
+	}
+
+	.viewer-close {
+		font-size: 1.7rem;
+	}
+
+	.viewer-nav:focus-visible,
+	.viewer-close:focus-visible {
+		outline: 2px solid var(--cyan);
+		outline-offset: 4px;
 	}
 
 	.spark-footer {
@@ -1044,18 +2343,83 @@
 		}
 	}
 
+	@keyframes letter-arrive {
+		from {
+			opacity: 0;
+			transform: translateY(0.22em) scale(0.88);
+			filter: blur(8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+			filter: blur(0);
+		}
+	}
+
+	@keyframes night-ghost {
+		from {
+			-webkit-text-stroke-color: rgba(177, 246, 255, 0.58);
+			text-shadow: 0 0 7px rgba(117, 230, 244, 0.5), 0 0 24px rgba(117, 230, 244, 0.24);
+		}
+		to {
+			-webkit-text-stroke-color: rgba(215, 252, 255, 1);
+			text-shadow: 0 0 6px rgba(117, 230, 244, 1), 0 0 24px rgba(117, 230, 244, 0.84),
+				0 0 52px rgba(117, 230, 244, 0.48);
+		}
+	}
+
+	@keyframes scroll-nudge {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(7px);
+		}
+	}
+
+	@keyframes cursor-afterglow {
+		0% {
+			opacity: 0.28;
+			transform: translate(-50%, -50%) rotate(var(--trail-angle)) scaleX(0.45);
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) rotate(var(--trail-angle)) scaleX(1.15);
+		}
+	}
+
+	@keyframes portrait-light-pass {
+		0%,
+		68%,
+		100% {
+			left: -75%;
+			opacity: 0;
+		}
+		74% {
+			opacity: 0.8;
+		}
+		92% {
+			left: 145%;
+			opacity: 0;
+		}
+	}
+
 	:global(.spark-page.motion-ready [data-reveal]) {
 		opacity: 0;
-		transform: translateY(26px);
+		transform: translateY(38px) scale(0.985);
 		transition:
-			opacity 650ms ease,
-			transform 650ms cubic-bezier(0.2, 0.65, 0.3, 1);
+			opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+			transform 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+			filter 1100ms ease;
 		transition-delay: var(--reveal-delay, 0ms);
+		filter: blur(5px);
 	}
 
 	:global(.spark-page.motion-ready [data-reveal].is-revealed) {
 		opacity: 1;
-		transform: translateY(0);
+		transform: translateY(0) scale(1);
+		filter: blur(0);
 	}
 
 	@media (max-width: 900px) {
@@ -1084,37 +2448,31 @@
 		}
 
 		.portrait-card {
-			width: min(78%, 430px);
-			height: 460px;
+			width: min(86%, 460px);
+			height: 520px;
 		}
 
 		.night-note {
-			grid-template-columns: minmax(100px, 0.36fr) minmax(0, 1.64fr);
+			grid-template-columns: minmax(100px, 0.3fr) minmax(0, 1.7fr);
 			gap: 26px;
 		}
 
-		.night-note-stamp {
-			display: none;
+		.spark-guitar-player {
+			width: 100%;
+			grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.2fr);
 		}
 
-		.archive-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.roulette-stage {
+			--wheel-radius: clamp(210px, 40vw, 280px);
+			height: clamp(450px, 82vw, 560px);
 		}
 
-		.archive-grid figure:nth-child(n) {
-			grid-column: auto;
+		.roulette-card {
+			width: 67%;
 		}
 
-		.archive-grid figure:nth-child(4n + 1) {
-			grid-column: span 2;
-		}
-
-		.archive-grid figure:nth-child(n) .archive-image {
-			height: clamp(220px, 38vw, 340px);
-		}
-
-		.archive-grid figure:nth-child(4n + 1) .archive-image {
-			height: clamp(270px, 48vw, 410px);
+		.archive-image {
+			height: clamp(245px, 48vw, 360px);
 		}
 	}
 
@@ -1141,9 +2499,10 @@
 			font-size: clamp(4rem, 20vw, 7rem);
 		}
 
-		.artist-name {
-			max-width: 420px;
-			font-size: clamp(1.8rem, 9vw, 2.8rem);
+		.night-title-word {
+			font-size: 0.56em;
+			letter-spacing: 0.16em;
+			-webkit-text-stroke-width: 1px;
 		}
 
 		.hero-description {
@@ -1168,17 +2527,29 @@
 		}
 
 		.portrait-stage {
-			min-height: 450px;
+			min-height: 520px;
 		}
 
 		.portrait-card {
-			width: min(84%, 350px);
-			height: 390px;
-			padding: 14px;
+			width: min(92%, 410px);
+			height: 490px;
 		}
 
-		.portrait-placeholder {
-			inset: 56px 14px;
+		.portrait-face {
+			padding: 15px;
+		}
+
+		.portrait-image-frame {
+			inset: 60px 15px;
+		}
+
+		.portrait-back-content {
+			gap: 16px;
+			padding-inline: 12px;
+		}
+
+		.portrait-back-content > strong {
+			font-size: clamp(2rem, 9vw, 2.7rem);
 		}
 
 		.stage-coordinate--top {
@@ -1196,8 +2567,31 @@
 			padding-block: 76px;
 		}
 
-		.night-note-copy h2 {
-			font-size: clamp(2.15rem, 10vw, 3.4rem);
+		.spark-guitar-player {
+			grid-column: 1;
+			width: 100%;
+			min-height: 230px;
+			grid-template-columns: 110px minmax(0, 1fr);
+			gap: 8px;
+			padding: 18px 10px;
+			justify-self: center;
+		}
+
+		.guitar-art {
+			transform: rotate(-11deg) scale(0.66);
+			transform-origin: center;
+		}
+
+		.song-carousel {
+			gap: 11px;
+		}
+
+		.song-slide strong {
+			font-size: 0.96rem;
+		}
+
+		.song-track-hint {
+			font-size: 0.31rem;
 		}
 
 		.archive-heading {
@@ -1230,36 +2624,37 @@
 			font-size: 0.42rem;
 		}
 
-		.archive-grid {
-			grid-template-columns: 1fr 1fr;
-			gap: 21px 11px;
-			padding-top: 16px;
+		.roulette-stage {
+			--wheel-radius: 200px;
+			height: 410px;
+			margin-inline: -6px;
 		}
 
-		.archive-grid figure:nth-child(n) {
-			grid-column: auto;
+		.roulette-card {
+			width: 78%;
 		}
 
-		.archive-grid figure:nth-child(4n + 1) {
-			grid-column: span 2;
+		.archive-image {
+			height: 270px;
 		}
 
-		.archive-grid figure:nth-child(n) .archive-image {
-			height: clamp(150px, 46vw, 230px);
-		}
-
-		.archive-grid figure:nth-child(4n + 1) .archive-image {
-			height: clamp(220px, 65vw, 310px);
-		}
-
-		.archive-grid figcaption {
+		.roulette-caption {
 			flex-direction: column;
 			gap: 5px;
 			font-size: 0.43rem;
 		}
 
-		.archive-grid time {
+		.roulette-caption time {
 			font-size: 0.42rem;
+		}
+
+		.roulette-controls {
+			gap: 16px;
+			margin-top: 18px;
+		}
+
+		.roulette-arrow {
+			width: 38px;
 		}
 
 		.spark-footer {
@@ -1285,6 +2680,18 @@
 
 		:global(.spark-page.motion-ready [data-reveal]) {
 			opacity: 1;
+		}
+
+		.cursor-trail {
+			display: none;
+		}
+
+		.portrait-image-sweep {
+			display: none;
+		}
+
+		.portrait-card-inner {
+			transition-duration: 0.01ms;
 		}
 	}
 </style>
