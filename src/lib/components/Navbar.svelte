@@ -53,11 +53,11 @@
 			href={resolve('/modules')}
 			onclick={() => (menuOpen = false)}><span class="marker marker-dot"></span>Modules</a
 		>
-		<!-- <a
+		<a
 			class:active={page.url.pathname.startsWith('/spark')}
 			href={resolve('/spark')}
 			onclick={() => (menuOpen = false)}><span class="marker marker-star"></span>Spark</a
-		> -->
+		>
 		<a
 			class:active={page.url.pathname.startsWith('/merch')}
 			href={resolve('/merch')}
