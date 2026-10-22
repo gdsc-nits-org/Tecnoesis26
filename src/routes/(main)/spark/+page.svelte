@@ -18,7 +18,6 @@
 	let activeSparkIndex = $state(0);
 	let wheelTurn = $state(0);
 	let selectedPhoto = $state<GalleryPhotoType | null>(null);
-	let portraitFlipped = $state(false);
 	let selectedTrackIndex = $state(0);
 	let trackRotationPaused = $state(false);
 	let progressVersion = $state(0);
@@ -82,15 +81,24 @@
 		}
 	}
 
-	function updateIntroProgress() {
-		const fadeDistance = Math.max(window.innerHeight * 1.65, 1);
+	function updateIntroProgress(reduceMotion: boolean) {
+		const fadeDistance = Math.max(window.innerHeight * 0.7, 1);
 		const progress = Math.min(1, Math.max(0, window.scrollY / fadeDistance));
 		pageRoot.style.setProperty('--intro-progress', String(progress));
+		if (progress >= 1 || reduceMotion) {
+			backgroundVideo.pause();
+		} else if (backgroundVideo.paused) {
+			void backgroundVideo.play().catch((error: unknown) => {
+				console.error('Could not resume the Spark Night background video:', error);
+			});
+		}
 	}
 
 	function scrollIntoContent(event: MouseEvent) {
 		event.preventDefault();
-		document.getElementById('spark-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		document
+			.getElementById('spark-content')
+			?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 
 	onMount(() => {
@@ -108,7 +116,8 @@
 		let previousScrollY = window.scrollY;
 
 		const handlePointerMove = (event: PointerEvent) => {
-			if (reduceMotion.matches || (event.pointerType !== 'mouse' && event.pointerType !== 'pen')) return;
+			if (reduceMotion.matches || (event.pointerType !== 'mouse' && event.pointerType !== 'pen'))
+				return;
 			pageRoot.style.setProperty('--pointer-x', `${event.clientX}px`);
 			pageRoot.style.setProperty('--pointer-y', `${event.clientY}px`);
 			pageRoot.classList.add('pointer-active');
@@ -139,7 +148,7 @@
 
 		const handleScroll = () => {
 			const scrollY = window.scrollY;
-			updateIntroProgress();
+			updateIntroProgress(reduceMotion.matches);
 			if (Math.abs(scrollY - previousScrollY) < 2) return;
 			pageRoot.classList.add('is-scrolling');
 			pageRoot.classList.toggle('scrolling-down', scrollY > previousScrollY);
@@ -153,7 +162,7 @@
 		};
 
 		let scrollEndTimer = 0;
-		updateIntroProgress();
+		updateIntroProgress(reduceMotion.matches);
 		window.addEventListener('pointermove', handlePointerMove, { passive: true });
 		window.addEventListener('pointerout', handlePointerLeave, { passive: true });
 		window.addEventListener('scroll', handleScroll, { passive: true });
@@ -230,7 +239,9 @@
 	<div class="intro-scroll-space" aria-hidden="true"></div>
 	<div class="cursor-trail" aria-hidden="true">
 		{#each cursorTrail as point (point.id)}
-			<span style={`--trail-x: ${point.x}px; --trail-y: ${point.y}px; --trail-angle: ${point.angle}deg`}></span>
+			<span
+				style={`--trail-x: ${point.x}px; --trail-y: ${point.y}px; --trail-angle: ${point.angle}deg`}
+			></span>
 		{/each}
 	</div>
 	<div class="cursor-warp" aria-hidden="true"></div>
@@ -251,14 +262,13 @@
 						{#each ['S', 'P', 'A', 'R', 'K'] as letter, index (letter)}
 							<span class="spark-title-letter" style={`--letter-index: ${index}`}>{letter}</span>
 						{/each}
-						<span class="title-star">✳</span>
 					</span>
 					<span class="night-title-word" aria-hidden="true">NIGHT</span>
 				</h1>
 				<p class="artist-intro">LIVE AT TECNOESIS</p>
 				<p class="hero-description">
-					An evening of live music, bright lights, and a crowd singing together. The Spark
-					night is getting ready to make some noise.
+					The grand finale of Tecnoesis: one night of live music, shared voices, and a crowd under
+					the lights.
 				</p>
 
 				<div class="hero-actions">
@@ -284,74 +294,64 @@
 				</div>
 			</div>
 
-			<div
-				class="portrait-stage"
-				aria-label="Raghav Chaitanya portrait placeholder"
-				data-reveal
-				style="--reveal-delay: 120ms"
-			>
-				<div class="portrait-orbit portrait-orbit--outer" aria-hidden="true"></div>
-				<div class="portrait-orbit portrait-orbit--inner" aria-hidden="true"></div>
+			<div class="portrait-stage" data-reveal style="--reveal-delay: 120ms">
 				<div class="portrait-glow" aria-hidden="true"></div>
-				<button
-					class="portrait-card"
-					class:portrait-card-flipped={portraitFlipped}
-					type="button"
-					aria-label={portraitFlipped
-						? 'Show Raghav Chaitanya portrait'
-						: 'Show Spark Night event details'}
-					aria-pressed={portraitFlipped}
-					onclick={() => (portraitFlipped = !portraitFlipped)}
-				>
-					<span class="portrait-card-inner">
-						<span class="portrait-face portrait-face-front">
-							<span class="portrait-topline">
-								<span>FEATURED ARTIST</span>
-								<span>RC <i></i> 01</span>
-							</span>
-							<span class="portrait-image-frame">
-								<img
-									class="portrait-image"
-									src="/images/raghav-chaitanya.jpg"
-									alt="Raghav Chaitanya performing live at Spark Night"
-									width="2044"
-									height="2563"
-									loading="eager"
-									fetchpriority="high"
-								/>
-								<span class="portrait-image-shade" aria-hidden="true"></span>
-								<span class="portrait-image-sweep" aria-hidden="true"></span>
-							</span>
-							<span class="portrait-caption">
-								<span class="portrait-artist-name">RAGHAV CHAITANYA</span>
-								<span>LIVE AT SPARK NIGHT <b aria-hidden="true">↗</b></span>
-							</span>
-						</span>
-						<span class="portrait-face portrait-face-back" aria-hidden={!portraitFlipped}>
-							<span class="portrait-topline">
-								<span>SPARK NIGHT / 2026</span>
-								<span>01 <i></i> NOV</span>
-							</span>
-							<span class="portrait-back-content">
-								<span class="portrait-back-kicker">RAGHAV CHAITANYA</span>
-								<strong>See you at<br />Spark Night.</strong>
-								<span class="portrait-back-rule"></span>
-								<span class="portrait-back-details">
-									<span><i>DATE</i>01 NOVEMBER 2026</span>
-									<span><i>VENUE</i>NIT SILCHAR</span>
-									<span><i>LOCATION</i>ASSAM, INDIA</span>
-								</span>
-							</span>
-							<span class="portrait-caption">
-								<span class="portrait-artist-name">TECNOESIS 2026</span>
-								<span>SEE YOU THERE <b aria-hidden="true">↗</b></span>
-							</span>
-						</span>
-					</span>
-				</button>
+				<img
+					class="portrait-grid"
+					src="/images/spark-grid.png"
+					alt=""
+					width="1920"
+					height="1080"
+					aria-hidden="true"
+					loading="eager"
+				/>
+				<img
+					class="portrait-silhouette"
+					src="/images/raghav-chaitanya-cutout.webp"
+					alt=""
+					width="2044"
+					height="2563"
+					aria-hidden="true"
+					loading="eager"
+				/>
+				<img
+					class="portrait-image"
+					src="/images/raghav-chaitanya-cutout.webp"
+					alt="Raghav Chaitanya singing on stage"
+					width="2044"
+					height="2563"
+					loading="eager"
+					fetchpriority="high"
+				/>
+				<span class="portrait-image-sweep" aria-hidden="true"></span>
 				<span class="stage-coordinate stage-coordinate--top">26° 43′ N</span>
 				<span class="stage-coordinate stage-coordinate--bottom">LIVE / NIT SILCHAR</span>
-				<span class="stage-cross" aria-hidden="true">+</span>
+			</div>
+		</section>
+
+		<section class="spark-about" aria-labelledby="about-spark-title" data-reveal>
+			<div class="section-index"><span>01</span><i></i> ABOUT SPARK</div>
+			<div class="about-heading">
+				<p class="about-kicker">THE GRAND FINALE</p>
+				<h2 id="about-spark-title">When the lights go down, <em>the music takes over.</em></h2>
+			</div>
+			<div class="about-copy">
+				<p>
+					Spark is Tecnoesis’ closing-night celebration: a live music experience that brings the
+					festival crowd together for one last unforgettable night. From guitar-driven energy to
+					soulful melodies, it’s a chance to sing along, find your rhythm, and make the finale
+					yours.
+				</p>
+				<p>
+					This edition welcomes <strong>Raghav Chaitanya</strong>, whose expressive voice moves
+					effortlessly from intimate moments to full-stage anthems. Come for the performance; leave
+					with a night worth remembering.
+				</p>
+				<div class="about-tags" aria-label="Spark highlights">
+					<span>LIVE PERFORMANCE</span>
+					<span>ONE FINAL NIGHT</span>
+					<span>NIT SILCHAR</span>
+				</div>
 			</div>
 		</section>
 
@@ -362,7 +362,7 @@
 		</div>
 
 		<section class="night-note" aria-label="Raghav Chaitanya song highlights" data-reveal>
-			<div class="section-index"><span>01</span><i></i> THE NIGHT</div>
+			<div class="section-index"><span>02</span><i></i> THE NIGHT</div>
 			<div class="spark-guitar-player" aria-label="Raghav Chaitanya songs">
 				<div class="guitar-art" aria-hidden="true">
 					<span class="guitar-string guitar-string--one"></span>
@@ -378,8 +378,12 @@
 					<span class="guitar-body"><i></i></span>
 				</div>
 				<div class="song-carousel" aria-live="polite">
-					<span class="song-count">{String(selectedTrackIndex + 1).padStart(2, '0')} / {String(artistTracks.length).padStart(2, '0')}</span>
-						{#key selectedTrackIndex}
+					<span class="song-count"
+						>{String(selectedTrackIndex + 1).padStart(2, '0')} / {String(
+							artistTracks.length
+						).padStart(2, '0')}</span
+					>
+					{#key selectedTrackIndex}
 						<a
 							class="song-slide"
 							href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`Raghav Chaitanya ${selectedTrack.title} official`)}`}
@@ -406,8 +410,8 @@
 							onclick={() => {
 								trackRotationPaused = !trackRotationPaused;
 								progressVersion += 1;
-							}}
-						>{trackRotationPaused ? '▶' : 'Ⅱ'}</button>
+							}}>{trackRotationPaused ? '▶' : 'Ⅱ'}</button
+						>
 					</div>
 					<div class="song-track-dots" aria-label="Select song">
 						{#each artistTracks as track, index (track.title)}
@@ -428,7 +432,9 @@
 		<section class="spark-archive" id="spark-archive" aria-labelledby="archive-title">
 			<div class="archive-heading" data-reveal>
 				<div>
-					<p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> THE ARCHIVE</p>
+					<p class="eyebrow">
+						<span class="status-dot" aria-hidden="true"></span> 03 / THE ARCHIVE
+					</p>
 					<h2 id="archive-title">Past nights.<br /><em>Still echoing.</em></h2>
 				</div>
 				<div class="archive-aside">
@@ -445,37 +451,51 @@
 			</div>
 
 			{#if sparkArchive.length}
-				<div class="archive-roulette" aria-label="Spark Night photo carousel" aria-roledescription="carousel">
+				<div
+					class="archive-roulette"
+					aria-label="Spark Night photo carousel"
+					aria-roledescription="carousel"
+				>
 					<div class="roulette-stage">
-						<div class="roulette-wheel" style={`--wheel-rotation: ${wheelTurn * 90}deg`} aria-hidden="true"></div>
-					{#each sparkArchive as photo, index (photo.id)}
-						{@const offset = ((index - activeSparkIndex + sparkArchive.length / 2) % sparkArchive.length) - sparkArchive.length / 2}
-						{@const wheelAngle = (index - wheelTurn) * 90}
-						<button
-							class="roulette-card"
-							class:roulette-active={offset === 0}
-							class:roulette-previous={offset === -1}
-							class:roulette-next={offset === 1}
-							class:roulette-far={Math.abs(offset) > 1}
-							aria-label={`Show photo ${index + 1} of ${sparkArchive.length}: ${photo.title}`}
-							aria-pressed={activeSparkIndex === index}
-							style={`--wheel-angle: ${wheelAngle}deg; --wheel-counter-angle: ${-wheelAngle}deg;`}
-							onclick={() => openSparkPhoto(index)}
-						>
-							<div class="archive-image">
-								<GalleryPhoto {photo} eager={activeSparkIndex === index} />
-								<span class="photo-count">{String(index + 1).padStart(2, '0')}</span>
-								<span class="photo-corner" aria-hidden="true">↗</span>
-							</div>
-							<span class="roulette-caption">
-								<span>{photo.title}</span>
-								<time datetime="2026-03-13">{photo.date}</time>
-							</span>
-						</button>
-					{/each}
+						<div
+							class="roulette-wheel"
+							style={`--wheel-rotation: ${wheelTurn * 90}deg`}
+							aria-hidden="true"
+						></div>
+						{#each sparkArchive as photo, index (photo.id)}
+							{@const offset =
+								((index - activeSparkIndex + sparkArchive.length / 2) % sparkArchive.length) -
+								sparkArchive.length / 2}
+							{@const wheelAngle = (index - wheelTurn) * 90}
+							<button
+								class="roulette-card"
+								class:roulette-active={offset === 0}
+								class:roulette-previous={offset === -1}
+								class:roulette-next={offset === 1}
+								class:roulette-far={Math.abs(offset) > 1}
+								aria-label={`Show photo ${index + 1} of ${sparkArchive.length}: ${photo.title}`}
+								aria-pressed={activeSparkIndex === index}
+								style={`--wheel-angle: ${wheelAngle}deg; --wheel-counter-angle: ${-wheelAngle}deg;`}
+								onclick={() => openSparkPhoto(index)}
+							>
+								<div class="archive-image">
+									<GalleryPhoto {photo} eager={activeSparkIndex === index} />
+									<span class="photo-count">{String(index + 1).padStart(2, '0')}</span>
+									<span class="photo-corner" aria-hidden="true">↗</span>
+								</div>
+								<span class="roulette-caption">
+									<span>{photo.title}</span>
+									<time datetime="2026-03-13">{photo.date}</time>
+								</span>
+							</button>
+						{/each}
 					</div>
 					<div class="roulette-controls">
-						<button class="roulette-arrow" aria-label="Previous Spark photo" onclick={showPreviousSparkPhoto}>
+						<button
+							class="roulette-arrow"
+							aria-label="Previous Spark photo"
+							onclick={showPreviousSparkPhoto}
+						>
 							<span aria-hidden="true">←</span>
 						</button>
 						<p aria-live="polite">
@@ -483,7 +503,11 @@
 							/ {String(sparkArchive.length).padStart(2, '0')} <i></i>
 							{sparkArchive[activeSparkIndex]?.title}
 						</p>
-						<button class="roulette-arrow" aria-label="Next Spark photo" onclick={showNextSparkPhoto}>
+						<button
+							class="roulette-arrow"
+							aria-label="Next Spark photo"
+							onclick={showNextSparkPhoto}
+						>
 							<span aria-hidden="true">→</span>
 						</button>
 						<button
@@ -492,7 +516,8 @@
 							aria-label={photoRotationPaused ? 'Resume photo rotation' : 'Pause photo rotation'}
 							aria-pressed={photoRotationPaused}
 							onclick={() => (photoRotationPaused = !photoRotationPaused)}
-						>{photoRotationPaused ? '▶' : 'Ⅱ'}</button>
+							>{photoRotationPaused ? '▶' : 'Ⅱ'}</button
+						>
 					</div>
 				</div>
 			{:else}
@@ -522,11 +547,20 @@
 >
 	{#if selectedPhoto}
 		<div class="viewer-shell">
-			<div class="viewer-backdrop" style={`background-image: url("${selectedPhoto.src}")`} aria-hidden="true"></div>
+			<div
+				class="viewer-backdrop"
+				style={`background-image: url("${selectedPhoto.src}")`}
+				aria-hidden="true"
+			></div>
 			<div class="viewer-overlay" aria-hidden="true"></div>
 			<div class="viewer-topbar">
 				<span>THE TECNOESIS ARCHIVE</span>
-				<button class="viewer-close" type="button" aria-label="Close photo viewer" onclick={closeSparkPhoto}>
+				<button
+					class="viewer-close"
+					type="button"
+					aria-label="Close photo viewer"
+					onclick={closeSparkPhoto}
+				>
 					<span aria-hidden="true">×</span>
 				</button>
 			</div>
@@ -551,7 +585,11 @@
 					<h2>{selectedPhoto.title}</h2>
 				</div>
 				<div class="viewer-controls">
-					<span>{String(activeSparkIndex + 1).padStart(2, '0')} / {String(sparkArchive.length).padStart(2, '0')}</span>
+					<span
+						>{String(activeSparkIndex + 1).padStart(2, '0')} / {String(
+							sparkArchive.length
+						).padStart(2, '0')}</span
+					>
 				</div>
 			</div>
 		</div>
@@ -755,8 +793,6 @@
 	.artist-intro,
 	.hero-facts > div > span,
 	.edition-mark,
-	.portrait-topline,
-	.portrait-caption,
 	.stage-coordinate,
 	.spark-divider,
 	.section-index,
@@ -858,15 +894,6 @@
 		transform: translateY(2px);
 	}
 
-	.title-star {
-		display: inline-block;
-		margin-left: 0.12em;
-		color: var(--pink);
-		font-size: 0.29em;
-		vertical-align: top;
-		animation: star-pulse 4s ease-in-out infinite;
-	}
-
 	.artist-intro {
 		margin: 32px 0 3px;
 		color: var(--muted);
@@ -909,7 +936,9 @@
 		letter-spacing: 0.3em;
 		text-transform: uppercase;
 		text-decoration: none;
-		box-shadow: 0 0 0 1px rgba(215, 141, 255, 0.52), 0 8px 28px rgba(100, 27, 157, 0.18);
+		box-shadow:
+			0 0 0 1px rgba(215, 141, 255, 0.52),
+			0 8px 28px rgba(100, 27, 157, 0.18);
 		transition:
 			transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
 			filter 450ms ease,
@@ -933,7 +962,9 @@
 	.archive-cta:focus-visible {
 		filter: brightness(1.16);
 		transform: translateY(-2px) scale(1.015);
-		box-shadow: 0 0 0 1px rgba(231, 188, 255, 0.8), 0 10px 32px rgba(130, 38, 204, 0.3);
+		box-shadow:
+			0 0 0 1px rgba(231, 188, 255, 0.8),
+			0 10px 32px rgba(130, 38, 204, 0.3);
 	}
 
 	.archive-cta:hover::before,
@@ -1004,345 +1035,100 @@
 		min-height: 650px;
 		place-items: center;
 		isolation: isolate;
-		perspective: 1500px;
-	}
-
-	.portrait-card {
-		position: relative;
-		z-index: 1;
-		display: block;
-		width: min(100%, 490px);
-		height: 550px;
-		padding: 0;
-		border: 0;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		text-align: left;
-		cursor: pointer;
-		perspective: 1500px;
-		-webkit-tap-highlight-color: transparent;
-	}
-
-	.portrait-card-inner {
-		position: absolute;
-		inset: 0;
-		display: block;
-		border: 1px solid rgba(255, 255, 255, 0.4);
-		background:
-			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
-			radial-gradient(ellipse at 52% 45%, rgba(255, 88, 185, 0.5), transparent 54%),
-			linear-gradient(135deg, #371843, #13152f 56%, #15283e);
-		box-shadow:
-			0 28px 100px rgba(2, 0, 12, 0.52),
-			0 0 60px rgba(255, 83, 183, 0.12);
-		transform: rotate(2deg);
-		transform-style: preserve-3d;
-		transition:
-			transform 850ms cubic-bezier(0.2, 0.72, 0.2, 1),
-			box-shadow 650ms ease,
-			border-color 650ms ease;
-	}
-
-	.portrait-card-flipped .portrait-card-inner {
-		transform: rotateY(180deg);
-	}
-
-	.portrait-card:not(.portrait-card-flipped):hover .portrait-card-inner {
-		transform: rotate(0) translateY(-4px);
-	}
-
-	.portrait-card-flipped:hover .portrait-card-inner {
-		transform: rotateY(180deg) translateY(-3px);
-	}
-
-	.portrait-stage:hover .portrait-card {
-		filter: brightness(1.04);
-	}
-
-	.portrait-card:focus-visible {
-		outline: 2px solid var(--cyan);
-		outline-offset: 7px;
-	}
-
-	.portrait-face {
-		position: absolute;
-		inset: 0;
-		z-index: 0;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		padding: 19px;
-		overflow: hidden;
-		border-radius: 2px;
-		border: 1px solid rgba(255, 255, 255, 0.4);
-		background:
-			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
-			radial-gradient(ellipse at 52% 45%, rgba(255, 88, 185, 0.5), transparent 54%),
-			linear-gradient(135deg, #371843, #13152f 56%, #15283e);
-		backface-visibility: hidden;
-		-webkit-backface-visibility: hidden;
-	}
-
-	.portrait-face-front {
-		background:
-			linear-gradient(155deg, rgba(38, 13, 52, 0.3), rgba(11, 8, 28, 0.88)),
-			radial-gradient(ellipse at 52% 45%, rgba(255, 88, 185, 0.5), transparent 54%),
-			linear-gradient(135deg, #371843, #13152f 56%, #15283e);
-	}
-
-	.portrait-face-back {
-		z-index: 1;
-		justify-content: space-between;
-		border-color: rgba(161, 224, 255, 0.55);
-		background:
-			radial-gradient(ellipse at 85% 8%, rgba(93, 197, 236, 0.14), transparent 40%),
-			radial-gradient(ellipse at 14% 86%, rgba(255, 96, 184, 0.18), transparent 42%),
-			linear-gradient(145deg, #1b102b, #0a1025 60%, #101c32);
-		transform: rotateY(180deg);
-	}
-
-	.portrait-back-content {
-		position: relative;
-		z-index: 1;
-		display: grid;
-		gap: 20px;
-		align-content: center;
-		flex: 1;
-		padding: 42px 18px;
-	}
-
-	.portrait-back-kicker {
-		color: var(--cyan);
-		font-family: 'Bruno Ace', sans-serif;
-		font-size: 0.58rem;
-		letter-spacing: 0.18em;
-	}
-
-	.portrait-back-content > strong {
-		color: #fff;
-		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(2.25rem, 4vw, 3.25rem);
-		font-weight: 600;
-		line-height: 1.08;
-		text-shadow: 0 0 30px rgba(117, 230, 244, 0.16);
-	}
-
-	.portrait-back-rule {
-		width: 72px;
-		height: 2px;
-		background: linear-gradient(90deg, var(--pink), var(--cyan));
-		box-shadow: 0 0 16px rgba(117, 230, 244, 0.4);
-	}
-
-	.portrait-back-details {
-		display: grid;
-		gap: 17px;
-	}
-
-	.portrait-back-details > span {
-		display: grid;
-		gap: 6px;
-		color: rgba(255, 255, 255, 0.92);
-		font-size: 0.95rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-	}
-
-	.portrait-back-details i {
-		color: rgba(210, 220, 238, 0.58);
-		font-family: 'Bruno Ace', sans-serif;
-		font-size: 0.48rem;
-		font-style: normal;
-		letter-spacing: 0.16em;
-	}
-
-	.portrait-face-back .portrait-caption {
-		border-color: rgba(161, 224, 255, 0.28);
-	}
-
-	.portrait-card-inner::before,
-	.portrait-card-inner::after {
-		position: absolute;
-		z-index: 2;
-		content: '';
-		pointer-events: none;
-	}
-
-	.portrait-card-inner::before {
-		inset: 0;
-		background:
-			linear-gradient(90deg, transparent 49.8%, rgba(255, 255, 255, 0.08) 50%, transparent 50.2%),
-			linear-gradient(0deg, transparent 49.8%, rgba(255, 255, 255, 0.06) 50%, transparent 50.2%);
-		background-size: 54px 54px;
-		mask-image: linear-gradient(180deg, transparent, black 30%, black 70%, transparent);
-	}
-
-	.portrait-card-inner::after {
-		right: -19%;
-		bottom: 8%;
-		width: 112%;
-		height: 54%;
-		border: 1px solid rgba(117, 230, 244, 0.32);
-		border-radius: 50%;
-		box-shadow:
-			0 0 0 18px rgba(255, 115, 190, 0.05),
-			0 0 50px rgba(117, 230, 244, 0.12);
-		transform: rotate(-26deg);
-		pointer-events: none;
-	}
-
-	.portrait-topline,
-	.portrait-caption {
-		position: relative;
-		z-index: 2;
-		display: flex;
-		justify-content: space-between;
-		gap: 12px;
-		color: rgba(255, 255, 255, 0.88);
-		font-size: 0.55rem;
-		letter-spacing: 0.1em;
-	}
-
-	.portrait-topline span:last-child {
-		color: var(--cyan);
-	}
-
-	.portrait-topline i {
-		display: inline-block;
-		width: 4px;
-		height: 4px;
-		margin: 0 3px 2px;
-		border-radius: 50%;
-		background: var(--pink);
-	}
-
-	.portrait-image-frame {
-		position: absolute;
-		inset: 66px 19px;
-		isolation: isolate;
-		overflow: hidden;
-		border: 1px solid rgba(189, 231, 255, 0.26);
-		background: #080b20;
-		box-shadow: inset 0 0 30px rgba(7, 8, 27, 0.44);
-		transition:
-			border-color 650ms ease,
-			box-shadow 650ms ease;
-	}
-
-	.portrait-image-frame::before {
-		position: absolute;
-		z-index: 1;
-		inset: 0;
-		background:
-			linear-gradient(180deg, rgba(7, 8, 25, 0.12), transparent 30%, transparent 60%, #09071b 100%),
-			linear-gradient(90deg, rgba(12, 8, 28, 0.28), transparent 24%, transparent 76%, rgba(12, 8, 28, 0.22));
-		content: '';
-		pointer-events: none;
-	}
-
-	.portrait-image-frame::after {
-		position: absolute;
-		z-index: 2;
-		inset: 0;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: inset 0 0 0 1px rgba(117, 230, 244, 0.06);
-		content: '';
-		pointer-events: none;
 	}
 
 	.portrait-image {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center 38%;
-		filter: saturate(0.86) contrast(1.04) brightness(0.88);
-		transform: scale(1.015);
+		position: absolute;
+		z-index: 3;
+		inset: auto auto -1% 50%;
+		width: min(112%, 620px);
+		height: 112%;
+		translate: -50% 0;
+		object-fit: contain;
+		object-position: center bottom;
+		filter: saturate(1.04) contrast(1.04) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
 		transition:
 			filter 800ms ease,
 			transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	.portrait-image-sweep {
+	.portrait-silhouette {
 		position: absolute;
 		z-index: 2;
-		top: -35%;
-		left: -75%;
-		width: 38%;
-		height: 175%;
-		background: linear-gradient(90deg, transparent, rgba(178, 236, 255, 0.15), transparent);
-		filter: blur(8px);
-		transform: rotate(16deg);
-		animation: portrait-light-pass 9s ease-in-out 1.2s infinite;
+		inset: auto auto -1% 50%;
+		width: min(112%, 620px);
+		height: 112%;
+		translate: -50% 0;
+		object-fit: contain;
+		object-position: center bottom;
+		filter: brightness(0) saturate(100%) invert(83%) sepia(63%) saturate(1700%) hue-rotate(139deg)
+			brightness(104%) contrast(105%) drop-shadow(0 0 8px rgba(77, 240, 255, 0.95))
+			drop-shadow(0 0 30px rgba(27, 205, 255, 0.76));
+		opacity: 0.9;
+		transform: scale(1.025);
 		pointer-events: none;
 	}
 
-	.portrait-stage:hover .portrait-image-frame {
-		border-color: rgba(184, 236, 255, 0.72);
-		box-shadow: inset 0 0 36px rgba(7, 8, 27, 0.32), 0 0 22px rgba(117, 230, 244, 0.13);
-	}
-
 	.portrait-stage:hover .portrait-image {
-		filter: saturate(0.96) contrast(1.04) brightness(0.98);
-		transform: scale(1.045);
+		filter: saturate(1.12) contrast(1.06) drop-shadow(0 16px 34px rgba(0, 0, 0, 0.34));
+		transform: translateY(-7px) scale(1.025);
 	}
 
-	.portrait-artist-name {
-		font-family: 'Orbitron', sans-serif;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-		text-shadow: 0 0 18px rgba(117, 230, 244, 0.18);
-	}
-
-	.portrait-caption {
-		align-items: end;
-		padding-top: 14px;
-		border-top: 1px solid rgba(255, 255, 255, 0.23);
-		font-size: 0.56rem;
-	}
-
-	.portrait-caption > span:last-child {
-		color: var(--pink);
-		text-align: right;
-	}
-
-	.portrait-caption b {
-		margin-left: 4px;
-		color: var(--cyan);
-		font: 0.9rem sans-serif;
-	}
-
-	.portrait-orbit {
+	.portrait-image-sweep {
 		position: absolute;
-		z-index: -1;
-		top: 50%;
-		left: 50%;
-		width: min(78vw, 530px);
-		aspect-ratio: 1;
-		border: 1px solid rgba(255, 115, 190, 0.3);
-		border-radius: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.portrait-orbit--inner {
-		width: min(65vw, 440px);
-		border-color: rgba(117, 230, 244, 0.25);
-		transform: translate(-50%, -50%) rotateX(68deg) rotate(-18deg);
+		z-index: 3;
+		top: 13%;
+		bottom: 2%;
+		left: -36%;
+		width: 24%;
+		background: linear-gradient(90deg, transparent, rgba(173, 252, 255, 0.2), transparent);
+		filter: blur(16px);
+		transform: skewX(-18deg);
+		animation: portrait-light-pass 8s ease-in-out 1.2s infinite;
+		pointer-events: none;
 	}
 
 	.portrait-glow {
 		position: absolute;
-		z-index: -1;
-		top: 50%;
-		left: 50%;
-		width: 68%;
-		aspect-ratio: 1;
+		z-index: 0;
+		inset: 0 auto 0 50%;
+		width: 176%;
+		height: 148%;
+		margin-block: auto;
+		translate: -50% 0;
 		border-radius: 50%;
-		background: rgba(211, 63, 166, 0.2);
-		filter: blur(90px);
-		transform: translate(-50%, -50%);
+		background:
+			radial-gradient(ellipse at 50% 42%, rgba(93, 243, 255, 0.72), transparent 30%),
+			radial-gradient(ellipse at 50% 48%, rgba(30, 172, 255, 0.56), transparent 54%),
+			radial-gradient(ellipse at 51% 56%, rgba(128, 58, 241, 0.42), transparent 74%);
+		filter: blur(76px);
+		animation: artist-bloom 5.6s ease-in-out infinite;
+	}
+
+	.portrait-grid {
+		position: absolute;
+		z-index: 1;
+		inset: -5% -9% 0;
+		width: auto;
+		height: auto;
+		object-fit: cover;
+		object-position: center;
+		filter: saturate(1.7) brightness(1.42) contrast(1.16);
+		-webkit-mask-image: radial-gradient(
+			ellipse 88% 88% at 50% 48%,
+			#000 34%,
+			rgba(0, 0, 0, 0.82) 58%,
+			transparent 100%
+		);
+		mask-image: radial-gradient(
+			ellipse 88% 88% at 50% 48%,
+			#000 34%,
+			rgba(0, 0, 0, 0.82) 58%,
+			transparent 100%
+		);
+		opacity: 0.78;
+		mix-blend-mode: screen;
+		pointer-events: none;
 	}
 
 	.stage-coordinate {
@@ -1363,14 +1149,6 @@
 	.stage-coordinate--bottom {
 		bottom: 13%;
 		left: 2%;
-	}
-
-	.stage-cross {
-		position: absolute;
-		top: 12%;
-		left: 7%;
-		color: var(--pink);
-		font-size: 1.3rem;
 	}
 
 	.spark-divider {
@@ -1416,6 +1194,81 @@
 		width: 34px;
 		height: 1px;
 		background: rgba(255, 115, 190, 0.7);
+	}
+
+	.spark-about {
+		display: grid;
+		grid-template-columns: minmax(150px, 0.38fr) minmax(0, 0.92fr) minmax(0, 1fr);
+		align-items: start;
+		gap: clamp(24px, 4vw, 62px);
+		padding-block: clamp(64px, 8vw, 112px);
+		border-block: 1px solid rgba(255, 255, 255, 0.16);
+		background:
+			radial-gradient(ellipse at 72% 50%, rgba(68, 194, 255, 0.075), transparent 42%),
+			linear-gradient(90deg, transparent, rgba(19, 15, 43, 0.36), transparent);
+	}
+
+	.spark-about > .section-index {
+		padding-top: 10px;
+	}
+
+	.about-kicker {
+		margin: 0 0 16px;
+		color: var(--cyan);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.54rem;
+		letter-spacing: 0.14em;
+	}
+
+	.about-heading h2 {
+		max-width: 470px;
+		margin: 0;
+		font-family: 'Orbitron', sans-serif;
+		font-size: clamp(1.75rem, 3.25vw, 3.2rem);
+		font-weight: 500;
+		letter-spacing: -0.06em;
+		line-height: 1.18;
+	}
+
+	.about-heading h2 em {
+		color: var(--pink);
+		font-style: normal;
+		text-shadow: 0 0 28px rgba(255, 115, 190, 0.2);
+	}
+
+	.about-copy {
+		display: grid;
+		gap: 16px;
+	}
+
+	.about-copy p {
+		margin: 0;
+		color: var(--muted);
+		font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+		line-height: 1.8;
+	}
+
+	.about-copy strong {
+		color: #fff;
+		font-weight: 700;
+	}
+
+	.about-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 3px;
+	}
+
+	.about-tags span {
+		padding: 7px 10px;
+		border: 1px solid rgba(117, 230, 244, 0.24);
+		border-radius: 999px;
+		background: rgba(10, 21, 42, 0.26);
+		color: rgba(223, 250, 255, 0.76);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.42rem;
+		letter-spacing: 0.08em;
 	}
 
 	.archive-heading h2 {
@@ -1485,8 +1338,15 @@
 		border-radius: 48% 52% 46% 54% / 42% 44% 56% 58%;
 		background:
 			radial-gradient(ellipse at 40% 37%, rgba(255, 127, 211, 0.35), transparent 48%),
-			linear-gradient(145deg, rgba(117, 230, 244, 0.16), rgba(29, 17, 49, 0.9) 58%, rgba(255, 115, 190, 0.2));
-		box-shadow: inset 0 0 20px rgba(117, 230, 244, 0.13), 0 0 15px rgba(205, 154, 255, 0.13);
+			linear-gradient(
+				145deg,
+				rgba(117, 230, 244, 0.16),
+				rgba(29, 17, 49, 0.9) 58%,
+				rgba(255, 115, 190, 0.2)
+			);
+		box-shadow:
+			inset 0 0 20px rgba(117, 230, 244, 0.13),
+			0 0 15px rgba(205, 154, 255, 0.13);
 	}
 
 	.guitar-body::before {
@@ -1531,7 +1391,12 @@
 		height: 112px;
 		border: 1px solid rgba(213, 198, 244, 0.84);
 		border-bottom: 0;
-		background: linear-gradient(90deg, rgba(42, 31, 65, 0.95), rgba(135, 114, 158, 0.82), rgba(37, 28, 59, 0.95));
+		background: linear-gradient(
+			90deg,
+			rgba(42, 31, 65, 0.95),
+			rgba(135, 114, 158, 0.82),
+			rgba(37, 28, 59, 0.95)
+		);
 		transform: rotate(13deg);
 		transform-origin: bottom center;
 	}
@@ -1561,10 +1426,22 @@
 		transform-origin: top center;
 	}
 
-	.guitar-string--two { left: 83px; opacity: 0.8; }
-	.guitar-string--three { left: 87px; opacity: 0.68; }
-	.guitar-string--four { left: 91px; opacity: 0.55; }
-	.guitar-string--five { left: 95px; opacity: 0.42; }
+	.guitar-string--two {
+		left: 83px;
+		opacity: 0.8;
+	}
+	.guitar-string--three {
+		left: 87px;
+		opacity: 0.68;
+	}
+	.guitar-string--four {
+		left: 91px;
+		opacity: 0.55;
+	}
+	.guitar-string--five {
+		left: 95px;
+		opacity: 0.42;
+	}
 
 	.guitar-fret {
 		position: absolute;
@@ -1576,10 +1453,18 @@
 		transform: rotate(13deg);
 	}
 
-	.guitar-fret--one { top: 39px; }
-	.guitar-fret--two { top: 56px; }
-	.guitar-fret--three { top: 73px; }
-	.guitar-fret--four { top: 90px; }
+	.guitar-fret--one {
+		top: 39px;
+	}
+	.guitar-fret--two {
+		top: 56px;
+	}
+	.guitar-fret--three {
+		top: 73px;
+	}
+	.guitar-fret--four {
+		top: 90px;
+	}
 
 	.song-carousel {
 		display: grid;
@@ -1764,12 +1649,22 @@
 	}
 
 	@keyframes song-arrive {
-		from { opacity: 0; transform: translateY(9px); filter: blur(4px); }
-		to { opacity: 1; transform: translateY(0); filter: blur(0); }
+		from {
+			opacity: 0;
+			transform: translateY(9px);
+			filter: blur(4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+			filter: blur(0);
+		}
 	}
 
 	@keyframes song-progress {
-		to { transform: scaleX(1); }
+		to {
+			transform: scaleX(1);
+		}
 	}
 
 	.spark-archive {
@@ -1888,7 +1783,8 @@
 		cursor: pointer;
 		opacity: 0.3;
 		filter: saturate(0.6) brightness(0.58);
-				transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.72);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
+			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.72);
 		transition:
 			transform 1800ms cubic-bezier(0.16, 1, 0.3, 1),
 			opacity 1200ms ease,
@@ -1905,7 +1801,8 @@
 		z-index: 3;
 		opacity: 1;
 		filter: none;
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(1);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
+			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(1);
 	}
 
 	.roulette-previous,
@@ -1917,18 +1814,23 @@
 	}
 
 	.roulette-previous {
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+		top: calc(100% - 92px);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
+			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
 	}
 
 	.roulette-next {
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+		top: calc(100% - 92px);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
+			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
 	}
 
 	.roulette-far {
 		z-index: 1;
 		opacity: 0.14;
 		filter: saturate(0.45) brightness(0.45);
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle)) translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.56);
+		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
+			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.56);
 	}
 
 	.archive-image {
@@ -2067,7 +1969,9 @@
 		color: #e9fbff;
 		font-size: 1.35rem;
 		line-height: 1;
-		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.28), 0 0 14px rgba(117, 230, 244, 0.12);
+		box-shadow:
+			0 5px 20px rgba(0, 0, 0, 0.28),
+			0 0 14px rgba(117, 230, 244, 0.12);
 		cursor: pointer;
 		transition:
 			transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -2080,7 +1984,9 @@
 		transform: scale(1.045);
 		border-color: #d9fbff;
 		background: rgba(35, 21, 52, 0.98);
-		box-shadow: 0 7px 24px rgba(0, 0, 0, 0.34), 0 0 19px rgba(117, 230, 244, 0.22);
+		box-shadow:
+			0 7px 24px rgba(0, 0, 0, 0.34),
+			0 0 19px rgba(117, 230, 244, 0.22);
 	}
 
 	.archive-empty {
@@ -2146,7 +2052,7 @@
 		background-position: center;
 		background-size: cover;
 		filter: blur(30px);
-		opacity: 0.62;
+		opacity: 0.76;
 		transform: scale(1.12);
 		transition: opacity 500ms ease;
 	}
@@ -2155,7 +2061,12 @@
 		position: absolute;
 		z-index: -1;
 		inset: 0;
-		background: linear-gradient(180deg, rgba(5, 5, 5, 0.84), rgba(5, 5, 5, 0.12) 36%, rgba(5, 5, 5, 0.9));
+		background: linear-gradient(
+			180deg,
+			rgba(5, 5, 5, 0.84),
+			rgba(5, 5, 5, 0.12) 36%,
+			rgba(5, 5, 5, 0.9)
+		);
 	}
 
 	.viewer-topbar,
@@ -2223,7 +2134,9 @@
 		border-color: white;
 		background: rgba(25, 19, 48, 0.86);
 		transform: translateY(-50%) scale(1.045);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.46), 0 0 18px rgba(117, 230, 244, 0.16);
+		box-shadow:
+			0 8px 32px rgba(0, 0, 0, 0.46),
+			0 0 18px rgba(117, 230, 244, 0.16);
 	}
 
 	.viewer-close:hover {
@@ -2331,18 +2244,6 @@
 		color: var(--pink);
 	}
 
-	@keyframes star-pulse {
-		0%,
-		100% {
-			opacity: 0.82;
-			transform: scale(0.94) rotate(-8deg);
-		}
-		50% {
-			opacity: 1;
-			transform: scale(1.08) rotate(8deg);
-		}
-	}
-
 	@keyframes letter-arrive {
 		from {
 			opacity: 0;
@@ -2359,11 +2260,15 @@
 	@keyframes night-ghost {
 		from {
 			-webkit-text-stroke-color: rgba(177, 246, 255, 0.58);
-			text-shadow: 0 0 7px rgba(117, 230, 244, 0.5), 0 0 24px rgba(117, 230, 244, 0.24);
+			text-shadow:
+				0 0 7px rgba(117, 230, 244, 0.5),
+				0 0 24px rgba(117, 230, 244, 0.24);
 		}
 		to {
 			-webkit-text-stroke-color: rgba(215, 252, 255, 1);
-			text-shadow: 0 0 6px rgba(117, 230, 244, 1), 0 0 24px rgba(117, 230, 244, 0.84),
+			text-shadow:
+				0 0 6px rgba(117, 230, 244, 1),
+				0 0 24px rgba(117, 230, 244, 0.84),
 				0 0 52px rgba(117, 230, 244, 0.48);
 		}
 	}
@@ -2405,6 +2310,18 @@
 		}
 	}
 
+	@keyframes artist-bloom {
+		0%,
+		100% {
+			opacity: 0.9;
+			filter: blur(68px);
+		}
+		50% {
+			opacity: 1;
+			filter: blur(86px);
+		}
+	}
+
 	:global(.spark-page.motion-ready [data-reveal]) {
 		opacity: 0;
 		transform: translateY(38px) scale(0.985);
@@ -2434,6 +2351,15 @@
 			padding-top: 112px;
 		}
 
+		.spark-about {
+			grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+			gap: 26px 34px;
+		}
+
+		.spark-about > .section-index {
+			grid-column: 1 / -1;
+		}
+
 		.hero-copy {
 			padding-block: 0;
 		}
@@ -2443,13 +2369,13 @@
 		}
 
 		.portrait-stage {
-			min-height: 530px;
+			min-height: 620px;
 			margin-top: 8px;
 		}
 
-		.portrait-card {
-			width: min(86%, 460px);
-			height: 520px;
+		.portrait-image {
+			width: min(112%, 620px);
+			height: 112%;
 		}
 
 		.night-note {
@@ -2509,6 +2435,25 @@
 			font-size: 1rem;
 		}
 
+		.spark-about {
+			grid-template-columns: 1fr;
+			gap: 22px;
+			padding-block: 64px;
+		}
+
+		.spark-about > .section-index {
+			grid-column: auto;
+		}
+
+		.about-heading h2 {
+			max-width: 420px;
+			font-size: clamp(2rem, 9vw, 3rem);
+		}
+
+		.about-copy p {
+			font-size: 0.96rem;
+		}
+
 		.hero-facts {
 			gap: 20px 28px;
 			margin-top: 38px;
@@ -2527,29 +2472,22 @@
 		}
 
 		.portrait-stage {
-			min-height: 520px;
+			min-height: clamp(470px, 128vw, 570px);
 		}
 
-		.portrait-card {
-			width: min(92%, 410px);
-			height: 490px;
+		.portrait-image {
+			width: min(116%, 510px);
+			height: 112%;
 		}
 
-		.portrait-face {
-			padding: 15px;
+		.portrait-silhouette {
+			width: min(116%, 510px);
+			height: 112%;
 		}
 
-		.portrait-image-frame {
-			inset: 60px 15px;
-		}
-
-		.portrait-back-content {
-			gap: 16px;
-			padding-inline: 12px;
-		}
-
-		.portrait-back-content > strong {
-			font-size: clamp(2rem, 9vw, 2.7rem);
+		.portrait-grid {
+			inset: -2% -12% 0;
+			opacity: 0.8;
 		}
 
 		.stage-coordinate--top {
@@ -2634,6 +2572,11 @@
 			width: 78%;
 		}
 
+		.roulette-previous,
+		.roulette-next {
+			top: calc(100% - 64px);
+		}
+
 		.archive-image {
 			height: 270px;
 		}
@@ -2688,10 +2631,6 @@
 
 		.portrait-image-sweep {
 			display: none;
-		}
-
-		.portrait-card-inner {
-			transition-duration: 0.01ms;
 		}
 	}
 </style>

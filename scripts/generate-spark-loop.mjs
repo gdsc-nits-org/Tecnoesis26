@@ -4,7 +4,12 @@ import { spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
 const outputPath = resolve('static/videos/spark-night-background.webm');
-const ffmpegPath = join(process.env.LOCALAPPDATA, 'ms-playwright', 'ffmpeg-1011', 'ffmpeg-win64.exe');
+const ffmpegPath = join(
+	process.env.LOCALAPPDATA,
+	'ms-playwright',
+	'ffmpeg-1011',
+	'ffmpeg-win64.exe'
+);
 const browser = await chromium.launch({ headless: true });
 
 try {
