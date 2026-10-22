@@ -250,76 +250,61 @@
 
 	<div class="spark-wrap" id="spark-content">
 		<section class="spark-hero" aria-labelledby="spark-title">
-			<div class="hero-copy" data-reveal>
-				<p class="eyebrow">
-					<span class="status-dot" aria-hidden="true"></span>
-					THE TECNOESIS LIVE EXPERIENCE <span class="edition">/ 2026</span>
-				</p>
-
-				<p class="hero-index">ONE NIGHT. ALL THE FEELING.</p>
+			<div class="hero-copy">
+				<div class="hero-copy-lead" data-reveal>
+					<p class="eyebrow">
+						<span class="status-dot" aria-hidden="true"></span>
+						THE TECNOESIS LIVE EXPERIENCE <span class="edition">/ 2026</span>
+					</p>
+					<p class="hero-index">ONE NIGHT. ALL THE FEELING.</p>
+				</div>
 				<h1 id="spark-title" class="performance-title" aria-label="Spark Night">
 					<span class="spark-title-top" aria-hidden="true">
-						{#each ['S', 'P', 'A', 'R', 'K'] as letter, index (letter)}
-							<span class="spark-title-letter" style={`--letter-index: ${index}`}>{letter}</span>
+						{#each ['S', 'P', 'A', 'R', 'K'] as letter (letter)}
+							<span>{letter}</span>
 						{/each}
 					</span>
-					<span class="night-title-word" aria-hidden="true">NIGHT</span>
+					<span class="night-title-word" aria-hidden="true">
+						{#each ['N', 'I', 'G', 'H', 'T'] as letter (letter)}
+							<span>{letter}</span>
+						{/each}
+					</span>
 				</h1>
-				<p class="artist-intro">LIVE AT TECNOESIS</p>
-				<p class="hero-description">
-					The grand finale of Tecnoesis: one night of live music, shared voices, and a crowd under
-					the lights.
-				</p>
+				<div class="hero-copy-details" data-reveal>
+					<p class="artist-intro">LIVE AT TECNOESIS</p>
+					<p class="hero-description">
+						Spark Night is Tecnoesis’ closing-night celebration: a live music experience that brings
+						the festival crowd together for one last unforgettable night. From guitar-driven energy
+						to soulful melodies, it’s a chance to sing along, find your rhythm, and make the finale
+						yours.
+					</p>
 
-				<div class="hero-actions">
-					<a class="archive-cta" href="#spark-archive">
-						<span>Revisit the last Spark nights</span>
-						<span aria-hidden="true">↗</span>
-					</a>
-				</div>
-
-				<div class="hero-facts" aria-label="Spark event details">
-					<div>
-						<span>DATE</span>
-						<strong>01 November</strong>
-					</div>
-					<div>
-						<span>VENUE</span>
-						<strong>NIT SILCHAR</strong>
-					</div>
-					<div class="edition-mark">
-						<span>TECNOESIS</span>
-						<strong>2026</strong>
+					<div class="hero-facts" aria-label="Spark event details">
+						<div>
+							<span>DATE</span>
+							<strong>01 November</strong>
+						</div>
+						<div>
+							<span>VENUE</span>
+							<strong>NIT SILCHAR</strong>
+						</div>
+						<div class="edition-mark">
+							<span>TECNOESIS</span>
+							<strong>2026</strong>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="portrait-stage" data-reveal style="--reveal-delay: 120ms">
 				<div class="portrait-glow" aria-hidden="true"></div>
-				<img
-					class="portrait-grid"
-					src="/images/spark-grid.png"
-					alt=""
-					width="1920"
-					height="1080"
-					aria-hidden="true"
-					loading="eager"
-				/>
-				<img
-					class="portrait-silhouette"
-					src="/images/raghav-chaitanya-cutout.webp"
-					alt=""
-					width="2044"
-					height="2563"
-					aria-hidden="true"
-					loading="eager"
-				/>
+				<div class="portrait-grid" aria-hidden="true"></div>
 				<img
 					class="portrait-image"
-					src="/images/raghav-chaitanya-cutout.webp"
+					src="/images/raghav-chaitanya-final.png"
 					alt="Raghav Chaitanya singing on stage"
-					width="2044"
-					height="2563"
+					width="1123"
+					height="1401"
 					loading="eager"
 					fetchpriority="high"
 				/>
@@ -329,19 +314,23 @@
 			</div>
 		</section>
 
+		<figure class="artist-wordmark" data-reveal>
+			<img
+				src="/images/spark-artist-wordmark.png"
+				alt="Raghav Chaitanya's name in filled and outlined burgundy lettering"
+				width="3196"
+				height="1780"
+				loading="lazy"
+				decoding="async"
+			/>
+		</figure>
+
 		<section class="spark-about" aria-labelledby="about-spark-title" data-reveal>
-			<div class="section-index"><span>01</span><i></i> ABOUT SPARK</div>
 			<div class="about-heading">
 				<p class="about-kicker">THE GRAND FINALE</p>
 				<h2 id="about-spark-title">When the lights go down, <em>the music takes over.</em></h2>
 			</div>
 			<div class="about-copy">
-				<p>
-					Spark is Tecnoesis’ closing-night celebration: a live music experience that brings the
-					festival crowd together for one last unforgettable night. From guitar-driven energy to
-					soulful melodies, it’s a chance to sing along, find your rhythm, and make the finale
-					yours.
-				</p>
 				<p>
 					This edition welcomes <strong>Raghav Chaitanya</strong>, whose expressive voice moves
 					effortlessly from intimate moments to full-stage anthems. Come for the performance; leave
@@ -362,7 +351,7 @@
 		</div>
 
 		<section class="night-note" aria-label="Raghav Chaitanya song highlights" data-reveal>
-			<div class="section-index"><span>02</span><i></i> THE NIGHT</div>
+			<div class="section-index"><span>01</span><i></i> THE NIGHT</div>
 			<div class="spark-guitar-player" aria-label="Raghav Chaitanya songs">
 				<div class="guitar-art" aria-hidden="true">
 					<span class="guitar-string guitar-string--one"></span>
@@ -433,7 +422,7 @@
 			<div class="archive-heading" data-reveal>
 				<div>
 					<p class="eyebrow">
-						<span class="status-dot" aria-hidden="true"></span> 03 / THE ARCHIVE
+						<span class="status-dot" aria-hidden="true"></span> 02 / THE ARCHIVE
 					</p>
 					<h2 id="archive-title">Past nights.<br /><em>Still echoing.</em></h2>
 				</div>
@@ -612,7 +601,7 @@
 		min-height: 100svh;
 		overflow: clip;
 		color: var(--paper);
-		background: linear-gradient(180deg, rgba(13, 5, 28, 0.12), rgba(14, 6, 30, 0.88) 58%, #0e061e);
+		background: #100b23;
 		font-family: 'Sulphur Point', sans-serif;
 	}
 
@@ -788,6 +777,11 @@
 		padding-block: 28px;
 	}
 
+	.hero-copy-lead,
+	.hero-copy-details {
+		display: flow-root;
+	}
+
 	.eyebrow,
 	.hero-index,
 	.artist-intro,
@@ -827,7 +821,7 @@
 	}
 
 	.hero-index {
-		margin: 52px 0 8px;
+		margin: 34px 0 8px;
 		color: var(--cyan);
 		font-size: 0.62rem;
 		letter-spacing: 0.14em;
@@ -847,55 +841,39 @@
 		margin-top: 6px !important;
 	}
 
-	.spark-title-top {
+	.spark-title-top,
+	.night-title-word {
+		display: flex;
+		gap: 0.055em;
 		white-space: nowrap;
+		font-family: 'Orbitron', sans-serif;
+		font-weight: 800;
+		line-height: 0.95;
 	}
 
-	.spark-title-letter {
-		display: inline-block;
-		color: #fff;
+	.spark-title-top {
+		font-size: 1em;
 		letter-spacing: 0;
-		text-shadow: 0 0 52px rgba(255, 87, 186, 0.24);
-		animation: letter-arrive 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-		animation-delay: calc(var(--letter-index) * 190ms + 280ms);
-	}
-
-	:global(.spark-page.motion-ready [data-reveal]:not(.is-revealed)) .spark-title-letter {
-		animation-play-state: paused;
+		color: #fff;
+		background: linear-gradient(105deg, #fff 8%, #f5eaf0 52%, #cf829e 100%);
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
 	}
 
 	.night-title-word {
-		margin-top: 0.16em;
-		color: transparent;
-		font-family: 'Bruno Ace', sans-serif;
+		margin-top: 0.12em;
 		font-size: 0.78em;
-		font-weight: 600;
-		letter-spacing: 0.2em;
-		-webkit-text-stroke: 1.25px rgba(177, 246, 255, 0.88);
-		text-shadow:
-			0 0 5px rgba(117, 230, 244, 0.95),
-			0 0 18px rgba(117, 230, 244, 0.75),
-			0 0 42px rgba(117, 230, 244, 0.42);
-		animation: night-ghost 7s ease-in-out infinite alternate;
-		transition: transform 900ms ease;
-	}
-
-	:global(.spark-page.is-scrolling) .night-title-word {
-		animation-duration: 4.6s;
-	}
-
-	:global(.spark-page.scrolling-down) .night-title-word {
-		animation-direction: alternate;
-		transform: translateY(-2px);
-	}
-
-	:global(.spark-page.scrolling-up) .night-title-word {
-		animation-direction: alternate-reverse;
-		transform: translateY(2px);
+		letter-spacing: 0;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
+		-webkit-text-stroke: 0.5px #12617c;
+		text-shadow: none;
+		filter: none;
+		box-shadow: none;
 	}
 
 	.artist-intro {
-		margin: 32px 0 3px;
+		margin: 22px 0 3px;
 		color: var(--muted);
 		font-size: 0.59rem;
 		letter-spacing: 0.2em;
@@ -903,95 +881,23 @@
 
 	.hero-description {
 		max-width: 510px;
-		margin: 22px 0 0;
+		margin: 16px 0 0;
 		color: var(--muted);
 		font-size: clamp(1rem, 1.4vw, 1.15rem);
 		line-height: 1.7;
 	}
 
-	.hero-actions {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 18px 24px;
-		margin-top: 30px;
-	}
-
-	.archive-cta {
-		position: relative;
-		isolation: isolate;
-		display: inline-flex;
-		min-width: 266px;
-		min-height: 54px;
-		align-items: center;
-		justify-content: center;
-		gap: 18px;
-		padding: 0 25px 2px 30px;
-		clip-path: polygon(0 0, 100% 0, 100% 75%, 91% 100%, 0 100%);
-		background: linear-gradient(110deg, #8126cc, #281038 18%, #1c0c2a 82%, #6625a5);
-		color: #fff;
-		font-family: 'Orbitron', sans-serif;
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.3em;
-		text-transform: uppercase;
-		text-decoration: none;
-		box-shadow:
-			0 0 0 1px rgba(215, 141, 255, 0.52),
-			0 8px 28px rgba(100, 27, 157, 0.18);
-		transition:
-			transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
-			filter 450ms ease,
-			box-shadow 450ms ease;
-	}
-
-	.archive-cta::before {
-		position: absolute;
-		z-index: -1;
-		top: 50%;
-		left: 50%;
-		inset: 0;
-		border-radius: 50%;
-		background: linear-gradient(110deg, rgba(190, 74, 255, 0.38), transparent 58%);
-		content: '';
-		opacity: 0.2;
-		transition: opacity 450ms ease;
-	}
-
-	.archive-cta:hover,
-	.archive-cta:focus-visible {
-		filter: brightness(1.16);
-		transform: translateY(-2px) scale(1.015);
-		box-shadow:
-			0 0 0 1px rgba(231, 188, 255, 0.8),
-			0 10px 32px rgba(130, 38, 204, 0.3);
-	}
-
-	.archive-cta:hover::before,
-	.archive-cta:focus-visible::before {
-		opacity: 0.62;
-	}
-
-	.archive-cta:focus-visible,
 	.all-moments-link:focus-visible,
 	.spark-footer a:focus-visible {
 		outline: 2px solid var(--cyan);
 		outline-offset: 4px;
 	}
 
-	.archive-cta > span:last-child {
-		color: #d8a8ff;
-		font-family: sans-serif;
-		font-size: 1.35rem;
-		line-height: 1;
-		letter-spacing: 0;
-	}
-
 	.hero-facts {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 28px clamp(24px, 4vw, 58px);
-		margin-top: 52px;
+		margin-top: 36px;
 		padding-top: 19px;
 		border-top: 1px solid rgba(255, 255, 255, 0.16);
 	}
@@ -1052,23 +958,6 @@
 			transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	.portrait-silhouette {
-		position: absolute;
-		z-index: 2;
-		inset: auto auto -1% 50%;
-		width: min(112%, 620px);
-		height: 112%;
-		translate: -50% 0;
-		object-fit: contain;
-		object-position: center bottom;
-		filter: brightness(0) saturate(100%) invert(83%) sepia(63%) saturate(1700%) hue-rotate(139deg)
-			brightness(104%) contrast(105%) drop-shadow(0 0 8px rgba(77, 240, 255, 0.95))
-			drop-shadow(0 0 30px rgba(27, 205, 255, 0.76));
-		opacity: 0.9;
-		transform: scale(1.025);
-		pointer-events: none;
-	}
-
 	.portrait-stage:hover .portrait-image {
 		filter: saturate(1.12) contrast(1.06) drop-shadow(0 16px 34px rgba(0, 0, 0, 0.34));
 		transform: translateY(-7px) scale(1.025);
@@ -1108,27 +997,101 @@
 	.portrait-grid {
 		position: absolute;
 		z-index: 1;
-		inset: -5% -9% 0;
-		width: auto;
-		height: auto;
-		object-fit: cover;
-		object-position: center;
-		filter: saturate(1.7) brightness(1.42) contrast(1.16);
-		-webkit-mask-image: radial-gradient(
-			ellipse 88% 88% at 50% 48%,
-			#000 34%,
-			rgba(0, 0, 0, 0.82) 58%,
-			transparent 100%
-		);
-		mask-image: radial-gradient(
-			ellipse 88% 88% at 50% 48%,
-			#000 34%,
-			rgba(0, 0, 0, 0.82) 58%,
-			transparent 100%
-		);
-		opacity: 0.78;
-		mix-blend-mode: screen;
+		inset: 0;
+		background-color: transparent;
+		background-image:
+			radial-gradient(circle, rgba(153, 67, 226, 0.66) 1.5px, transparent 1.9px),
+			linear-gradient(rgba(153, 67, 226, 0.4) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(153, 67, 226, 0.4) 1px, transparent 1px);
+		background-position: center;
+		background-size: 66px 66px;
+		-webkit-mask-image: radial-gradient(ellipse at center, #000 45%, transparent 100%);
+		mask-image: radial-gradient(ellipse at center, #000 45%, transparent 100%);
+		opacity: 0.86;
 		pointer-events: none;
+	}
+
+	.artist-wordmark {
+		width: 100%;
+		margin: clamp(12px, 2vw, 26px) auto clamp(28px, 4vw, 52px);
+	}
+
+	.artist-wordmark img {
+		display: block;
+		width: 100%;
+		height: auto;
+		opacity: 0.92;
+	}
+
+	.spark-about {
+		display: grid;
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+		align-items: start;
+		gap: clamp(24px, 4vw, 62px);
+		padding-block: clamp(48px, 6vw, 80px);
+		border-block: 1px solid rgba(255, 255, 255, 0.16);
+		background:
+			radial-gradient(ellipse at 72% 50%, rgba(68, 194, 255, 0.075), transparent 42%),
+			linear-gradient(90deg, transparent, rgba(19, 15, 43, 0.36), transparent);
+	}
+
+	.about-kicker {
+		margin: 0 0 16px;
+		color: var(--cyan);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.54rem;
+		letter-spacing: 0.14em;
+	}
+
+	.about-heading h2 {
+		max-width: 560px;
+		margin: 0;
+		font-family: 'Orbitron', sans-serif;
+		font-size: clamp(1.75rem, 3.25vw, 3.2rem);
+		font-weight: 500;
+		letter-spacing: -0.06em;
+		line-height: 1.18;
+	}
+
+	.about-heading h2 em {
+		color: var(--pink);
+		font-style: normal;
+		text-shadow: 0 0 28px rgba(255, 115, 190, 0.2);
+	}
+
+	.about-copy {
+		display: grid;
+		gap: 16px;
+	}
+
+	.about-copy p {
+		margin: 0;
+		color: var(--muted);
+		font-size: clamp(0.94rem, 1.2vw, 1.05rem);
+		line-height: 1.8;
+	}
+
+	.about-copy strong {
+		color: #fff;
+		font-weight: 700;
+	}
+
+	.about-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 3px;
+	}
+
+	.about-tags span {
+		padding: 7px 10px;
+		border: 1px solid rgba(117, 230, 244, 0.24);
+		border-radius: 999px;
+		background: rgba(10, 21, 42, 0.26);
+		color: rgba(223, 250, 255, 0.76);
+		font-family: 'Bruno Ace', sans-serif;
+		font-size: 0.42rem;
+		letter-spacing: 0.08em;
 	}
 
 	.stage-coordinate {
@@ -1194,81 +1157,6 @@
 		width: 34px;
 		height: 1px;
 		background: rgba(255, 115, 190, 0.7);
-	}
-
-	.spark-about {
-		display: grid;
-		grid-template-columns: minmax(150px, 0.38fr) minmax(0, 0.92fr) minmax(0, 1fr);
-		align-items: start;
-		gap: clamp(24px, 4vw, 62px);
-		padding-block: clamp(64px, 8vw, 112px);
-		border-block: 1px solid rgba(255, 255, 255, 0.16);
-		background:
-			radial-gradient(ellipse at 72% 50%, rgba(68, 194, 255, 0.075), transparent 42%),
-			linear-gradient(90deg, transparent, rgba(19, 15, 43, 0.36), transparent);
-	}
-
-	.spark-about > .section-index {
-		padding-top: 10px;
-	}
-
-	.about-kicker {
-		margin: 0 0 16px;
-		color: var(--cyan);
-		font-family: 'Bruno Ace', sans-serif;
-		font-size: 0.54rem;
-		letter-spacing: 0.14em;
-	}
-
-	.about-heading h2 {
-		max-width: 470px;
-		margin: 0;
-		font-family: 'Orbitron', sans-serif;
-		font-size: clamp(1.75rem, 3.25vw, 3.2rem);
-		font-weight: 500;
-		letter-spacing: -0.06em;
-		line-height: 1.18;
-	}
-
-	.about-heading h2 em {
-		color: var(--pink);
-		font-style: normal;
-		text-shadow: 0 0 28px rgba(255, 115, 190, 0.2);
-	}
-
-	.about-copy {
-		display: grid;
-		gap: 16px;
-	}
-
-	.about-copy p {
-		margin: 0;
-		color: var(--muted);
-		font-size: clamp(0.94rem, 1.2vw, 1.05rem);
-		line-height: 1.8;
-	}
-
-	.about-copy strong {
-		color: #fff;
-		font-weight: 700;
-	}
-
-	.about-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-top: 3px;
-	}
-
-	.about-tags span {
-		padding: 7px 10px;
-		border: 1px solid rgba(117, 230, 244, 0.24);
-		border-radius: 999px;
-		background: rgba(10, 21, 42, 0.26);
-		color: rgba(223, 250, 255, 0.76);
-		font-family: 'Bruno Ace', sans-serif;
-		font-size: 0.42rem;
-		letter-spacing: 0.08em;
 	}
 
 	.archive-heading h2 {
@@ -2244,35 +2132,6 @@
 		color: var(--pink);
 	}
 
-	@keyframes letter-arrive {
-		from {
-			opacity: 0;
-			transform: translateY(0.22em) scale(0.88);
-			filter: blur(8px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-			filter: blur(0);
-		}
-	}
-
-	@keyframes night-ghost {
-		from {
-			-webkit-text-stroke-color: rgba(177, 246, 255, 0.58);
-			text-shadow:
-				0 0 7px rgba(117, 230, 244, 0.5),
-				0 0 24px rgba(117, 230, 244, 0.24);
-		}
-		to {
-			-webkit-text-stroke-color: rgba(215, 252, 255, 1);
-			text-shadow:
-				0 0 6px rgba(117, 230, 244, 1),
-				0 0 24px rgba(117, 230, 244, 0.84),
-				0 0 52px rgba(117, 230, 244, 0.48);
-		}
-	}
-
 	@keyframes scroll-nudge {
 		0%,
 		100% {
@@ -2352,12 +2211,7 @@
 		}
 
 		.spark-about {
-			grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 			gap: 26px 34px;
-		}
-
-		.spark-about > .section-index {
-			grid-column: 1 / -1;
 		}
 
 		.hero-copy {
@@ -2365,7 +2219,7 @@
 		}
 
 		.hero-index {
-			margin-top: 44px;
+			margin-top: 30px;
 		}
 
 		.portrait-stage {
@@ -2417,18 +2271,12 @@
 		}
 
 		.hero-index {
-			margin-top: 37px;
+			margin-top: 24px;
 			font-size: 0.53rem;
 		}
 
 		.spark-hero h1 {
 			font-size: clamp(4rem, 20vw, 7rem);
-		}
-
-		.night-title-word {
-			font-size: 0.56em;
-			letter-spacing: 0.16em;
-			-webkit-text-stroke-width: 1px;
 		}
 
 		.hero-description {
@@ -2438,11 +2286,7 @@
 		.spark-about {
 			grid-template-columns: 1fr;
 			gap: 22px;
-			padding-block: 64px;
-		}
-
-		.spark-about > .section-index {
-			grid-column: auto;
+			padding-block: 48px;
 		}
 
 		.about-heading h2 {
@@ -2476,11 +2320,6 @@
 		}
 
 		.portrait-image {
-			width: min(116%, 510px);
-			height: 112%;
-		}
-
-		.portrait-silhouette {
 			width: min(116%, 510px);
 			height: 112%;
 		}

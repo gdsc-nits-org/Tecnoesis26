@@ -47,9 +47,11 @@
 </svelte:head>
 <div
 	class="relative min-h-screen bg-cover bg-fixed bg-center"
-	style:background-image={page.url.pathname === '/merch' ? 'none' : "url('/background.jpg')"}
+	style:background-image={page.url.pathname === '/merch' || page.url.pathname === '/spark'
+		? 'none'
+		: "url('/background.jpg')"}
 >
-	{#if page.url.pathname !== '/merch'}
+	{#if page.url.pathname !== '/merch' && page.url.pathname !== '/spark'}
 		<div
 			class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(22,9,36,0.12),rgba(76,26,115,0.2))]"
 			aria-hidden="true"
