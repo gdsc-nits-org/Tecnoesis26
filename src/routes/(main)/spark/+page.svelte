@@ -3,6 +3,9 @@
 	import { resolve } from '$app/paths';
 	import GalleryPhoto from '$lib/components/GalleryPhoto.svelte';
 	import { photos, type GalleryPhoto as GalleryPhotoType } from '$lib/data/gallery';
+	import raghavPortrait from './Raghav_Chaitanya.png';
+	import raghavWordmark from './Raghav_name.png';
+	import backgroundVideoPath from './Banner_video.mp4?url';
 
 	const sparkArchive = photos.filter((photo) => photo.title === 'Spark Night');
 	const artistTracks = [
@@ -11,12 +14,10 @@
 		{ title: 'Hua Main', film: 'Animal' },
 		{ title: 'Tum Se', film: 'Teri Baaton Mein Aisa Uljha Jiya' }
 	];
-	const backgroundVideoPath = '/videos/spark-night.mp4';
 	let pageRoot: HTMLElement;
 	let backgroundVideo: HTMLVideoElement;
 	let photoViewer: HTMLDialogElement;
 	let activeSparkIndex = $state(0);
-	let wheelTurn = $state(0);
 	let selectedPhoto = $state<GalleryPhotoType | null>(null);
 	let selectedTrackIndex = $state(0);
 	let trackRotationPaused = $state(false);
@@ -40,21 +41,19 @@
 	let lastTrailPoint = { x: 0, y: 0 };
 
 	function showPreviousSparkPhoto() {
-		wheelTurn -= 1;
 		activeSparkIndex = (activeSparkIndex - 1 + sparkArchive.length) % sparkArchive.length;
 	}
 
 	function showNextSparkPhoto() {
-		wheelTurn += 1;
 		activeSparkIndex = (activeSparkIndex + 1) % sparkArchive.length;
 	}
 
 	async function openSparkPhoto(index: number) {
-		wheelTurn += (index - activeSparkIndex + sparkArchive.length) % sparkArchive.length;
 		activeSparkIndex = index;
 		selectedPhoto = sparkArchive[index];
 		await tick();
 		photoViewer.showModal();
+		window.dispatchEvent(new Event('tecnoesis:modal-open'));
 	}
 
 	function closeSparkPhoto() {
@@ -301,7 +300,7 @@
 				<div class="portrait-grid" aria-hidden="true"></div>
 				<img
 					class="portrait-image"
-					src="/images/raghav-chaitanya-final.png"
+					src={raghavPortrait}
 					alt="Raghav Chaitanya singing on stage"
 					width="1123"
 					height="1401"
@@ -314,23 +313,10 @@
 			</div>
 		</section>
 
-		<figure class="artist-wordmark" data-reveal>
-			<img
-				src="/images/spark-artist-wordmark.png"
-				alt="Raghav Chaitanya's name in filled and outlined burgundy lettering"
-				width="3196"
-				height="1780"
-				loading="lazy"
-				decoding="async"
-			/>
-		</figure>
-
-		<section class="spark-about" aria-labelledby="about-spark-title" data-reveal>
-			<div class="about-heading">
+		<section class="artist-finale" aria-labelledby="about-spark-title" data-reveal>
+			<div class="artist-finale-copy">
 				<p class="about-kicker">THE GRAND FINALE</p>
 				<h2 id="about-spark-title">When the lights go down, <em>the music takes over.</em></h2>
-			</div>
-			<div class="about-copy">
 				<p>
 					This edition welcomes <strong>Raghav Chaitanya</strong>, whose expressive voice moves
 					effortlessly from intimate moments to full-stage anthems. Come for the performance; leave
@@ -342,6 +328,16 @@
 					<span>NIT SILCHAR</span>
 				</div>
 			</div>
+			<figure class="artist-wordmark">
+				<img
+					src={raghavWordmark}
+					alt="Raghav Chaitanya's name in filled and outlined burgundy lettering"
+					width="3197"
+					height="1783"
+					loading="lazy"
+					decoding="async"
+				/>
+			</figure>
 		</section>
 
 		<div class="spark-divider" aria-hidden="true" data-reveal>
@@ -446,25 +442,19 @@
 					aria-roledescription="carousel"
 				>
 					<div class="roulette-stage">
-						<div
-							class="roulette-wheel"
-							style={`--wheel-rotation: ${wheelTurn * 90}deg`}
-							aria-hidden="true"
-						></div>
 						{#each sparkArchive as photo, index (photo.id)}
 							{@const offset =
 								((index - activeSparkIndex + sparkArchive.length / 2) % sparkArchive.length) -
 								sparkArchive.length / 2}
-							{@const wheelAngle = (index - wheelTurn) * 90}
 							<button
 								class="roulette-card"
 								class:roulette-active={offset === 0}
 								class:roulette-previous={offset === -1}
 								class:roulette-next={offset === 1}
 								class:roulette-far={Math.abs(offset) > 1}
+								class:roulette-landscape={photo.id === 20 || photo.id === 22}
 								aria-label={`Show photo ${index + 1} of ${sparkArchive.length}: ${photo.title}`}
 								aria-pressed={activeSparkIndex === index}
-								style={`--wheel-angle: ${wheelAngle}deg; --wheel-counter-angle: ${-wheelAngle}deg;`}
 								onclick={() => openSparkPhoto(index)}
 							>
 								<div class="archive-image">
@@ -768,7 +758,7 @@
 		grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.98fr);
 		align-items: center;
 		gap: clamp(28px, 5vw, 80px);
-		padding-block: 92px 60px;
+		padding-block: 92px clamp(16px, 2vw, 28px);
 	}
 
 	.hero-copy {
@@ -952,20 +942,21 @@
 		translate: -50% 0;
 		object-fit: contain;
 		object-position: center bottom;
-		filter: saturate(1.04) contrast(1.04) drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
+		filter: brightness(0.9) saturate(0.82) contrast(0.98)
+			drop-shadow(0 12px 28px rgba(0, 0, 0, 0.3));
 		transition:
 			filter 800ms ease,
 			transform 1000ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.portrait-stage:hover .portrait-image {
-		filter: saturate(1.12) contrast(1.06) drop-shadow(0 16px 34px rgba(0, 0, 0, 0.34));
+		filter: brightness(0.9) saturate(0.88) contrast(1) drop-shadow(0 16px 34px rgba(0, 0, 0, 0.34));
 		transform: translateY(-7px) scale(1.025);
 	}
 
 	.portrait-image-sweep {
 		position: absolute;
-		z-index: 3;
+		z-index: 5;
 		top: 13%;
 		bottom: 2%;
 		left: -36%;
@@ -987,9 +978,9 @@
 		translate: -50% 0;
 		border-radius: 50%;
 		background:
-			radial-gradient(ellipse at 50% 42%, rgba(93, 243, 255, 0.72), transparent 30%),
-			radial-gradient(ellipse at 50% 48%, rgba(30, 172, 255, 0.56), transparent 54%),
-			radial-gradient(ellipse at 51% 56%, rgba(128, 58, 241, 0.42), transparent 74%);
+			radial-gradient(ellipse at 50% 42%, rgba(93, 243, 255, 0.4), transparent 30%),
+			radial-gradient(ellipse at 50% 48%, rgba(30, 172, 255, 0.3), transparent 54%),
+			radial-gradient(ellipse at 51% 56%, rgba(128, 58, 241, 0.22), transparent 74%);
 		filter: blur(76px);
 		animation: artist-bloom 5.6s ease-in-out infinite;
 	}
@@ -1007,43 +998,54 @@
 		background-size: 66px 66px;
 		-webkit-mask-image: radial-gradient(ellipse at center, #000 45%, transparent 100%);
 		mask-image: radial-gradient(ellipse at center, #000 45%, transparent 100%);
-		opacity: 0.86;
+		opacity: 0.52;
 		pointer-events: none;
 	}
 
+	.artist-finale {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		align-items: center;
+		gap: clamp(28px, 5vw, 72px);
+		margin-block: clamp(0px, 0.5vw, 8px) clamp(32px, 5vw, 64px);
+		padding: clamp(16px, 2vw, 28px);
+		background:
+			radial-gradient(ellipse at 28% 50%, rgba(68, 194, 255, 0.035), transparent 42%),
+			linear-gradient(90deg, transparent, rgba(19, 15, 43, 0.18));
+	}
+
 	.artist-wordmark {
+		display: grid;
 		width: 100%;
-		margin: clamp(12px, 2vw, 26px) auto clamp(28px, 4vw, 52px);
+		min-width: 0;
+		max-width: 100%;
+		margin: 0;
 	}
 
 	.artist-wordmark img {
 		display: block;
 		width: 100%;
-		height: auto;
-		opacity: 0.92;
+		max-width: 100%;
+		height: clamp(300px, 38vw, 480px);
+		object-fit: contain;
+		object-position: center;
+		filter: brightness(1.24) saturate(0.98) drop-shadow(0 0 16px rgba(255, 72, 124, 0.14));
 	}
 
-	.spark-about {
+	.artist-finale-copy {
 		display: grid;
-		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
-		align-items: start;
-		gap: clamp(24px, 4vw, 62px);
-		padding-block: clamp(48px, 6vw, 80px);
-		border-block: 1px solid rgba(255, 255, 255, 0.16);
-		background:
-			radial-gradient(ellipse at 72% 50%, rgba(68, 194, 255, 0.075), transparent 42%),
-			linear-gradient(90deg, transparent, rgba(19, 15, 43, 0.36), transparent);
+		gap: 16px;
 	}
 
 	.about-kicker {
-		margin: 0 0 16px;
+		margin: 0;
 		color: var(--cyan);
 		font-family: 'Bruno Ace', sans-serif;
 		font-size: 0.54rem;
 		letter-spacing: 0.14em;
 	}
 
-	.about-heading h2 {
+	.artist-finale-copy h2 {
 		max-width: 560px;
 		margin: 0;
 		font-family: 'Orbitron', sans-serif;
@@ -1053,25 +1055,20 @@
 		line-height: 1.18;
 	}
 
-	.about-heading h2 em {
+	.artist-finale-copy h2 em {
 		color: var(--pink);
 		font-style: normal;
 		text-shadow: 0 0 28px rgba(255, 115, 190, 0.2);
 	}
 
-	.about-copy {
-		display: grid;
-		gap: 16px;
-	}
-
-	.about-copy p {
+	.artist-finale-copy > p:not(.about-kicker) {
 		margin: 0;
 		color: var(--muted);
 		font-size: clamp(0.94rem, 1.2vw, 1.05rem);
 		line-height: 1.8;
 	}
 
-	.about-copy strong {
+	.artist-finale-copy strong {
 		color: #fff;
 		font-weight: 700;
 	}
@@ -1096,7 +1093,7 @@
 
 	.stage-coordinate {
 		position: absolute;
-		z-index: 2;
+		z-index: 6;
 		color: rgba(255, 255, 255, 0.7);
 		font-size: 0.48rem;
 		letter-spacing: 0.12em;
@@ -1628,55 +1625,32 @@
 	}
 
 	.roulette-stage {
-		--wheel-radius: clamp(260px, 31vw, 360px);
 		position: relative;
-		height: clamp(510px, 58vw, 680px);
+		height: clamp(470px, 54vw, 650px);
 		isolation: isolate;
 		overflow: hidden;
-		mask-image: linear-gradient(180deg, black 0%, black 82%, transparent 100%);
-	}
-
-	.roulette-wheel {
-		position: absolute;
-		z-index: -1;
-		bottom: calc(var(--wheel-radius) * -1);
-		left: 50%;
-		width: calc(var(--wheel-radius) * 2);
-		aspect-ratio: 1;
-		border: 1px solid rgba(117, 230, 244, 0.19);
-		border-radius: 50%;
-		background: repeating-conic-gradient(
-			from 0deg,
-			transparent 0deg 27.7deg,
-			rgba(117, 230, 244, 0.08) 28deg 28.25deg,
-			transparent 28.5deg 360deg
-		);
-		box-shadow:
-			0 0 0 22px rgba(255, 115, 190, 0.025),
-			inset 0 0 50px rgba(117, 230, 244, 0.035);
-		transform: translateX(-50%) rotate(var(--wheel-rotation, 0deg));
-		transition: transform 1800ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.roulette-card {
 		position: absolute;
-		top: 100%;
+		top: 50%;
 		left: 50%;
-		width: min(49%, 530px);
+		width: min(68%, 820px);
 		padding: 0;
 		border: 0;
 		background: transparent;
 		color: inherit;
 		text-align: left;
 		cursor: pointer;
-		opacity: 0.3;
-		filter: saturate(0.6) brightness(0.58);
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
-			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.72);
+		opacity: 0;
+		filter: saturate(0.72) brightness(0.7);
+		transform: translate(-50%, -50%) scale(0.84);
 		transition:
-			transform 1800ms cubic-bezier(0.16, 1, 0.3, 1),
-			opacity 1200ms ease,
-			filter 1200ms ease;
+			left 760ms cubic-bezier(0.22, 1, 0.36, 1),
+			top 760ms cubic-bezier(0.22, 1, 0.36, 1),
+			transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 520ms ease,
+			filter 520ms ease;
 	}
 
 	.roulette-card:focus-visible,
@@ -1687,38 +1661,40 @@
 
 	.roulette-active {
 		z-index: 3;
+		left: 50%;
+		top: 50%;
 		opacity: 1;
 		filter: none;
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
-			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(1);
+		pointer-events: auto;
+		transform: translate(-50%, -50%) scale(1);
 	}
 
 	.roulette-previous,
 	.roulette-next {
 		z-index: 2;
-		opacity: 0.48;
-		filter: saturate(0.62) brightness(0.65);
+		top: 60%;
+		width: min(68%, 820px);
+		opacity: 0.58;
+		filter: saturate(0.7) brightness(0.72);
 		pointer-events: auto;
+		transform: translate(-50%, -50%) scale(0.78);
 	}
 
 	.roulette-previous {
-		top: calc(100% - 92px);
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
-			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+		left: 12%;
 	}
 
 	.roulette-next {
-		top: calc(100% - 92px);
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
-			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.76);
+		left: 88%;
 	}
 
 	.roulette-far {
-		z-index: 1;
-		opacity: 0.14;
-		filter: saturate(0.45) brightness(0.45);
-		transform: translate(-50%, -50%) rotate(var(--wheel-angle))
-			translateY(calc(var(--wheel-radius) * -1)) rotate(var(--wheel-counter-angle)) scale(0.56);
+		z-index: 0;
+		left: 50%;
+		opacity: 0;
+		filter: saturate(0.6) brightness(0.6);
+		pointer-events: none;
+		transform: translate(-50%, -50%) scale(0.68);
 	}
 
 	.archive-image {
@@ -1742,6 +1718,11 @@
 	.archive-image :global(img) {
 		object-fit: cover;
 		transition: transform 700ms cubic-bezier(0.2, 0.65, 0.3, 1);
+	}
+
+	.roulette-landscape .archive-image :global(img) {
+		object-fit: contain;
+		background: rgba(8, 6, 18, 0.72);
 	}
 
 	.archive-image::before {
@@ -2210,8 +2191,13 @@
 			padding-top: 112px;
 		}
 
-		.spark-about {
-			gap: 26px 34px;
+		.artist-finale {
+			gap: 26px;
+			padding-inline: 22px;
+		}
+
+		.artist-wordmark img {
+			height: clamp(280px, 38vw, 400px);
 		}
 
 		.hero-copy {
@@ -2243,12 +2229,16 @@
 		}
 
 		.roulette-stage {
-			--wheel-radius: clamp(210px, 40vw, 280px);
-			height: clamp(450px, 82vw, 560px);
+			height: clamp(430px, 68vw, 560px);
 		}
 
 		.roulette-card {
-			width: 67%;
+			width: 78%;
+		}
+
+		.roulette-previous,
+		.roulette-next {
+			width: 78%;
 		}
 
 		.archive-image {
@@ -2283,18 +2273,22 @@
 			font-size: 1rem;
 		}
 
-		.spark-about {
+		.artist-finale {
 			grid-template-columns: 1fr;
-			gap: 22px;
-			padding-block: 48px;
+			gap: 28px;
+			padding: 24px 18px;
 		}
 
-		.about-heading h2 {
+		.artist-wordmark img {
+			height: min(78vw, 360px);
+		}
+
+		.artist-finale-copy h2 {
 			max-width: 420px;
 			font-size: clamp(2rem, 9vw, 3rem);
 		}
 
-		.about-copy p {
+		.artist-finale-copy > p:not(.about-kicker) {
 			font-size: 0.96rem;
 		}
 
@@ -2326,7 +2320,7 @@
 
 		.portrait-grid {
 			inset: -2% -12% 0;
-			opacity: 0.8;
+			opacity: 0.48;
 		}
 
 		.stage-coordinate--top {
@@ -2402,18 +2396,27 @@
 		}
 
 		.roulette-stage {
-			--wheel-radius: 200px;
-			height: 410px;
+			height: clamp(390px, 112vw, 470px);
 			margin-inline: -6px;
 		}
 
 		.roulette-card {
-			width: 78%;
+			width: 86%;
 		}
 
 		.roulette-previous,
 		.roulette-next {
-			top: calc(100% - 64px);
+			top: 61%;
+			width: 86%;
+			transform: translate(-50%, -50%) scale(0.76);
+		}
+
+		.roulette-previous {
+			left: 8%;
+		}
+
+		.roulette-next {
+			left: 92%;
 		}
 
 		.archive-image {
