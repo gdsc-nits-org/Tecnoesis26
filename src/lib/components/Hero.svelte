@@ -232,12 +232,16 @@
 				class:opacity-0={currentPage >= 1}
 				class:pointer-events-none={currentPage >= 1}
 			>
-				<span
-					class="relative z-[1] flex w-full -translate-y-0.5 flex-col items-center text-center font-display leading-tight [text-shadow:0_0_18px_rgba(255,255,255,0.18)]"
-					><span class="text-[0.8em]">3D MAP</span><span class="text-[0.42em] tracking-[0.2em]"
-						>COMING SOON</span
-					></span
+				<a
+					href="https://tecno26-3d.vercel.app/"
+					target="_blank"
+					class="absolute inset-0 z-[1] flex cursor-pointer items-center justify-center"
 				>
+					<span
+						class="relative z-[1] flex w-full -translate-y-0.5 flex-col items-center text-center font-display leading-tight [text-shadow:0_0_18px_rgba(255,255,255,0.18)]"
+						><span class="text-[0.8em]">3D MAP</span></span
+					>
+				</a>
 			</div>
 
 			<button

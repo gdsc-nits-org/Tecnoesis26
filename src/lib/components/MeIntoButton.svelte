@@ -276,9 +276,12 @@
 			</div>
 
 			<div class="destinations">
-				<div
-					class="destination destination--map destination--coming-soon stagger-item"
+				<a
+					class="destination destination--map stagger-item"
 					style="--stagger: 2"
+					href="https://tecno26-3d.vercel.app/"
+					target="_blank"
+					rel="noopener noreferrer"
 				>
 					<span class="destination__art destination__art--map" aria-hidden="true">
 						<svg viewBox="0 0 180 120" fill="none">
@@ -292,8 +295,8 @@
 					<span class="destination__description"
 						>Find your place across the NIT Silchar campus.</span
 					>
-					<span class="destination__action">COMING SOON</span>
-				</div>
+					<span class="destination__action">EXPLORE THE MAP <span aria-hidden="true">↗</span></span>
+				</a>
 
 				<button
 					class="destination destination--site stagger-item"
@@ -681,18 +684,8 @@
 		transform: translateY(-4px);
 	}
 
-	.destination:not(.destination--coming-soon):active {
+	.destination:active {
 		transform: scale(0.98);
-	}
-
-	.destination--coming-soon {
-		cursor: default;
-	}
-
-	.destination--coming-soon:hover {
-		background: rgba(9, 12, 39, 0.3);
-		box-shadow: none;
-		transform: none;
 	}
 
 	.destination:focus-visible,
@@ -724,12 +717,7 @@
 			color 350ms ease;
 	}
 
-	.destination--coming-soon:hover .destination__art svg {
-		transform: none;
-		color: var(--lilac);
-	}
-
-	.destination:not(.destination--coming-soon):hover .destination__art svg,
+	.destination:hover .destination__art svg,
 	.destination:focus-visible .destination__art svg {
 		transform: translateY(-5px) scale(1.04);
 		color: #f3c0e1;
@@ -768,7 +756,7 @@
 		transition: transform 250ms ease;
 	}
 
-	.destination:not(.destination--coming-soon):hover .destination__action span,
+	.destination:hover .destination__action span,
 	.destination:focus-visible .destination__action span {
 		transform: translate(3px, -3px);
 	}
